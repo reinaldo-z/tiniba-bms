@@ -2,8 +2,6 @@ TINIBA
 ===========================
 TINIBA is a tool written in bash, perl, and fortran to do ab initio calculations of optical responses based on the popular ABINIT.
 
-![](https://raw2.github.com/roguephysicist/tiniba-manual/master/plots/3drho.png)
-
 Introduction
 -------------------
 
@@ -12,7 +10,7 @@ This is the official 3.0 release. New features and fixes are added all the time 
 I suggest adding these lines to the appropriate shell file:
 
 ```bash
-export TINIBA=$HOME/tiniba/ver3.0
+export TINIBA=$HOME/tiniba
 export PATH="$TINIBA/clustering/itaxeo:$TINIBA/utils:$PATH"
 ```
 
