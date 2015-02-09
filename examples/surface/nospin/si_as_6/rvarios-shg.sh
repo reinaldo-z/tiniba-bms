@@ -16,7 +16,7 @@ do
 	printf "\tLayer: $i ijk: $t\n"
 	echo all_responses.sh -w layer -m $k'_'$i'_'$ecut-nospin -s $tijera -o 1 -v $v -c $c -r $r  -t \'$t\' > natmat
 	chmod +x natmat
-	natmat
+	./natmat
 	rm natmat
     done
 done
