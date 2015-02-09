@@ -2089,6 +2089,7 @@ CONTAINS
                 END DO
              END DO
           END DO
+          tmp=2*tmp
 
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
