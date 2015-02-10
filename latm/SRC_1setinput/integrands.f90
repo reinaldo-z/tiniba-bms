@@ -4,6 +4,7 @@ MODULE integrands
   USE constants, ONLY : DP, DPC
   USE inparams, ONLY : nVal, nMax, nSym
   USE inparams, ONLY : tol
+  USE inparams, ONLY : SHGscaling
   USE inparams, ONLY : crystal_class
   USE inparams, ONLY : number_of_spectra_to_calculate
   USE inparams, ONLY : spectrum_info
@@ -2004,7 +2005,7 @@ CONTAINS
              END DO
           END DO
 
-          tmp=1*tmp
+          tmp=SHGscaling*tmp
           
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
@@ -2092,7 +2093,7 @@ CONTAINS
              END DO
           END DO
 
-          tmp=1*tmp
+          tmp=SHGscaling*tmp
 
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
