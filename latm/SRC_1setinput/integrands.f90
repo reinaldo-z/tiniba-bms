@@ -2004,7 +2004,7 @@ CONTAINS
              END DO
           END DO
 
-          tmp = 2*tmp
+          tmp=52.9177249*tmp
           
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
@@ -2092,7 +2092,7 @@ CONTAINS
              END DO
           END DO
 
-          tmp=2*tmp
+          tmp=52.9177249*tmp
 
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
@@ -2169,7 +2169,7 @@ CONTAINS
           
 !          ctmp = -(0.d0,1.d0)*ctmp/2.d0
           
-          
+
           IF (ic==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
                   FMT=104,ADVANCE="YES") REAL(ctmp)
