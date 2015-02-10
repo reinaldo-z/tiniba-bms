@@ -136,7 +136,7 @@ fi
     fi
 
     Nct=`expr $Nmax - $Nvf`
-    rm -f hoyj*
+#    rm -f hoyj*
 #
     if [ "$#" -eq 0 ]
 	then   # Script needs at least one command-line argument.
@@ -203,7 +203,7 @@ TIMESTARTALLI=`date`
 ### shell starts:
 # data for option=1 from all valence bands Nv to 1...Nc conduction bands
 #          option=2 from a given valence band  to a given conduction band
-	rm -f opt.dat
+#	rm -f opt.dat
 	echo $opt $Nv $Nc > opt.dat
 ###
     if [ $lt == 'layer' -o $lt == 'total' ]
@@ -251,18 +251,18 @@ TIMESTARTALLI=`date`
 	rm cthoy
 	fi
 #
-	rm -f chido
-	rm -f tmp*
+#	rm -f chido
+#	rm -f tmp*
 #	rm -f hoy* halfe* spectra.params* fort* 
-	rm -f bc*
-	rm -f Symmetries.Cartesian* kpoints.reciprocal_$Nk kpoints.cartesian_$Nk tetrahedra_$Nk
+	#rm -f bc*
+#	rm -f Symmetries.Cartesian* kpoints.reciprocal_$Nk kpoints.cartesian_$Nk tetrahedra_$Nk
 	if [ -z $sname ] 
 	then
 	    Line
 	    echo -e ${red}variable sname not set${NC}
 	    Line
 	else
-	    rm -f $sname* 
+#	    rm -f $sname* 
 	fi
 #
 # various checkups for consistency
@@ -313,7 +313,7 @@ TIMESTARTALLI=`date`
 	mme='me_pmn_'
 	ene='eigen_'
 	spe='spectrum_ab'
-	rm -f tmp_$pfix
+#	rm -f tmp_$pfix
 ##
 ## chooses a scissors shift
 ## stored in "sicw"
@@ -817,12 +817,12 @@ TIMESTARTALLI=`date`
 	else
 	    rm -f $sname* 
 	fi
-	rm -f bc*
-	rm -f Symmetries.Cartesian* kpoints.reciprocal_$Nk kpoints.cartesian_$Nk tetrahedra_$Nk
+#	rm -f bc*
+#	rm -f Symmetries.Cartesian* kpoints.reciprocal_$Nk kpoints.cartesian_$Nk tetrahedra_$Nk
 #        rm -rf tmp* 
-        rm -rf endWELL*		
-        rm -rf hoy*
-	rm -f energys.d* fort* fromSmear halfene*
-	rm -f input*set  tijeras spectra*
-	rm -f  response_type 
-	rm -f int_*
+#        rm -rf endWELL*		
+#        rm -rf hoy*
+#	rm -f energys.d* fort* fromSmear halfene*
+#	rm -f input*set  tijeras spectra*
+#	rm -f  response_type 
+#	rm -f int_*
