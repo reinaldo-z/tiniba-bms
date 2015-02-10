@@ -819,12 +819,12 @@ TIMESTARTALLI=`date`
 	else
 	    rm -f $sname* 
 	fi
-	rm -f bc*
-	rm -f Symmetries.Cartesian* kpoints.reciprocal_$Nk kpoints.cartesian_$Nk tetrahedra_$Nk
-        rm -rf tmp* 
-        rm -rf endWELL*		
-        rm -rf hoy*
-	rm -f energys.d* fort* fromSmear halfene*
-	rm -f input*set  tijeras spectra*
-	rm -f  response_type 
-	rm -f int_*
+#	rm -f bc*
+#	rm -f Symmetries.Cartesian* kpoints.reciprocal_$Nk kpoints.cartesian_$Nk tetrahedra_$Nk
+#        rm -rf tmp* 
+#        rm -rf endWELL*		
+#        rm -rf hoy*
+#	rm -f energys.d* fort* fromSmear halfene*
+#	rm -f input*set  tijeras spectra*
+#	rm -f  response_type 
+#	rm -f int_*
