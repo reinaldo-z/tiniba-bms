@@ -377,7 +377,7 @@ TIMESTARTALLI=`date`
 	echo tol= $toldef, >> tmp_$pfix
 ##
     echo nSpinor= $ESPINsetUp, >> tmp_$pfix
-    echo SHGscaling="${acellz}," >> tmp_$pfix 
+    echo SHGscaling="${acellz}, " >> tmp_$pfix 
         
 ### added 10 de diciembre de 2008 at 15:30
         if [  "$ESPINsetUp" -eq "1" ];then 
