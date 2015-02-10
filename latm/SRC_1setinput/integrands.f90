@@ -4,7 +4,7 @@ MODULE integrands
   USE constants, ONLY : DP, DPC
   USE inparams, ONLY : nVal, nMax, nSym
   USE inparams, ONLY : tol
-  USE inparams, ONLY : SHGscaling
+  USE inparams, ONLY : acellz
   USE inparams, ONLY : crystal_class
   USE inparams, ONLY : number_of_spectra_to_calculate
   USE inparams, ONLY : spectrum_info
@@ -2005,7 +2005,10 @@ CONTAINS
              END DO
           END DO
 
-          tmp=SHGscaling*tmp
+          !!! This calculatues the necessary scaling factor for normalizing layered SHG spectra.
+          !!! Units are in pm^2/V. The 52.9177249 factor is the conversion from Bohr to pm.
+          !!! Missing 1.e6 factor
+          tmp=acellz*52.9177249*tmp
           
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
@@ -2093,7 +2096,10 @@ CONTAINS
              END DO
           END DO
 
-          tmp=SHGscaling*tmp
+          !!! This calculatues the necessary scaling factor for normalizing layered SHG spectra.
+          !!! Units are in pm^2/V. The 52.9177249 factor is the conversion from Bohr to pm.
+          !!! Missing 1.e6 factor
+          tmp=acellz*52.9177249*tmp
 
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &

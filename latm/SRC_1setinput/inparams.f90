@@ -157,12 +157,6 @@ MODULE inparams
 !(pi*(4.803d-10)**3*(4.189d8) &
 !  /((1.0546d-27)**2*(9.109d-28)**3*(1.519d15)**5*(5.291d-9)**3*(1.993d-19)**3))/2.
 
-!!! This calculatues the necessary scaling factor for normalizing layered SHG spectra.
-!!! Units are in pm^2/V. The 52.9177249 factor is the conversion from Bohr to pm.
-!!! Missing 1.e6 factor
-  REAL(DP), PARAMETER :: SHGscaling = 52.9177249*acellz
-
-
 !!!
   REAL(DP), PARAMETER :: leo_factor = 0.d0  !! LEO not implemented
   
