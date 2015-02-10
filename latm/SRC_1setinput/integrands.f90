@@ -2006,9 +2006,9 @@ CONTAINS
           END DO
 
           !!! This calculatues the necessary scaling factor for normalizing layered SHG spectra.
-          !!! Units are in pm^2/V. The 52.9177249 factor is the conversion from Bohr to pm.
-          !!! Missing 1.e6 factor
-          tmp=acellz*52.9177249*tmp
+          !!! Units are in (\times 10^6 pm^2/V). The 52.9177249 factor is the conversion from Bohr to pm.
+          !!! We divide by 1.e6 to get the correct scale.
+          tmp=(acellz*52.9177249*1/1.e6)*tmp
           
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
@@ -2097,9 +2097,9 @@ CONTAINS
           END DO
 
           !!! This calculatues the necessary scaling factor for normalizing layered SHG spectra.
-          !!! Units are in pm^2/V. The 52.9177249 factor is the conversion from Bohr to pm.
-          !!! Missing 1.e6 factor
-          tmp=acellz*52.9177249*tmp
+          !!! Units are in (\times 10^6 pm^2/V). The 52.9177249 factor is the conversion from Bohr to pm.
+          !!! We divide by 1.e6 to get the correct scale.
+          tmp=(acellz*52.9177249*1/1.e6)*tmp
 
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
