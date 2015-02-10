@@ -33,6 +33,7 @@ MODULE inparams
   REAL(DP) :: actualBandGap=0.d0  ! actual badn gap in eV
   REAL(DP) :: scissor             ! scissor shift in eV
   REAL(DP) :: tol                 ! tolerance for degeneracy
+  REAL(DP) :: SHGscaling        ! scaling factor from third column of acell
   
   CHARACTER(LEN=10) :: crystal_class ! name of crystal type
   ! crystal_class can be zincblende or wurtzite
@@ -243,6 +244,7 @@ CONTAINS
     !#BMSVer3.0u
     NAMELIST/INDATA/actualBandGap
     NAMELIST/INDATA/scissor
+    NAMELIST/INDATA/SHGscaling
     NAMELIST/INDATA/energy_data_filename, energys_data_filename
     NAMELIST/INDATA/half_energys_data_filename
 !!! FN
@@ -303,6 +305,7 @@ CONTAINS
        !#BMSVer3.0u
        WRITE(*,*) "actualBandgap ", actualBandgap
        WRITE(*,*) "scissor ", scissor
+       WRITE(*,*) "SHGscaling ", SHGscaling
        WRITE(*,*) "energy_data_filename ", TRIM(energy_data_filename)
        WRITE(*,*) "energys_data_filename ", TRIM(energys_data_filename)
        WRITE(*,*) "half_energys_data_filename ", TRIM(half_energys_data_filename)
