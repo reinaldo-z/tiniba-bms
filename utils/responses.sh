@@ -253,7 +253,7 @@ TIMESTARTALLI=`date`
 #
 	rm -f chido
 	rm -f tmp*
-	rm -f hoy* halfe* spectra.params* fort* 
+#	rm -f hoy* halfe* spectra.params* fort* 
 	rm -f bc*
 	rm -f Symmetries.Cartesian* kpoints.reciprocal_$Nk kpoints.cartesian_$Nk tetrahedra_$Nk
 	if [ -z $sname ] 
