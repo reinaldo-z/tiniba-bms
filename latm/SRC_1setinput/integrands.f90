@@ -2004,7 +2004,7 @@ CONTAINS
              END DO
           END DO
 
-          tmp=52.9177249*tmp
+          tmp=1*tmp
           
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
@@ -2092,7 +2092,7 @@ CONTAINS
              END DO
           END DO
 
-          tmp=52.9177249*tmp
+          tmp=1*tmp
 
           IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
