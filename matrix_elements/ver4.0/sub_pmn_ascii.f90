@@ -94,7 +94,7 @@ SUBROUTINE mme(u_mme,u_vme,ik,nbandk,nspinor,npw,kp,kg,b1,b2,b3,cg,nkpt)
 !        write(u_mme,"(6E18.8)")real(ps(1,1)),aimag(ps(1,1))&
 !                             &,real(ps(2,1)),aimag(ps(2,1))&
 !                             &,real(ps(3,1)),aimag(ps(3,1))
-        write(u_mme,*)real(ps(1,1)),aimag(ps(1,1))&
+        write(u_mme)real(ps(1,1)),aimag(ps(1,1))&
                              &,real(ps(2,1)),aimag(ps(2,1))&
                              &,real(ps(3,1)),aimag(ps(3,1))
 !!!
@@ -107,7 +107,7 @@ SUBROUTINE mme(u_mme,u_vme,ik,nbandk,nspinor,npw,kp,kg,b1,b2,b3,cg,nkpt)
 !           write(u_vme,"(3E18.8)")real(ps(1,1))&
 !                &,real(ps(2,1))&
 !                &,real(ps(3,1))
-           write(u_vme,*)real(ps(1,1))&
+           write(u_vme)real(ps(1,1))&
                 &,real(ps(2,1))&
                 &,real(ps(3,1))
         end if
