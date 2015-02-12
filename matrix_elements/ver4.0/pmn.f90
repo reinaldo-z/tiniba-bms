@@ -155,7 +155,7 @@ PROGRAM matrixElements
   OPEN(UNIT=27, FILE="kcart.d")   ! k-points in cartesian coord.
   OPEN(UNIT=8, FILE="kpoints_reduced.d")   ! k-points in reduced coordinates 
   IF ( opmn ) THEN
-     OPEN(UNIT=u_mme,FILE="pmnhalf.d",FORM="unformatted") ! <m|p|n> half=only upper diagonal since its hermitian
+     OPEN(UNIT=u_mme,FILE="pmnhalf.d") ! <m|p|n> half=only upper diagonal since its hermitian
      OPEN(UNIT=u_vme,FILE="pnn.d") ! <n|p|n> velocity matrix elements
   END IF
 
