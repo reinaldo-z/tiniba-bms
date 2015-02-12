@@ -161,7 +161,7 @@ PROGRAM matrixElements
 
   IF (osccp) THEN
      IF(nspinor==2) THEN
-        OPEN(UNIT=u_spin,FILE="spinmn.d") ! <n|spin|m>
+        OPEN(UNIT=u_spin,FILE="spinmn.d",FORM="unformatted") ! <n|spin|m>
      ELSE
         write(*,*)"This is not a spin-orbit calculation, nspinor= ",nspinor
      END IF

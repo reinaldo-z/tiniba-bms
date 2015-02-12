@@ -218,7 +218,7 @@ SUBROUTINE sccp(u_spin,ik,nbandk,nspinor,npw,cg,nkpt,nval)
         end do !ipw
 !!!        write(u_spin,"(3i5,6E18.8)")ik,nband,mband,real(sx),aimag(sx),real(sy),aimag(sy),real(sz),aimag(sz)
 !           write(u_spin,"(6E18.8)")real(sx),aimag(sx),real(sy),aimag(sy),real(sz),aimag(sz)
-           write(u_spin,*)real(sx),aimag(sx),real(sy),aimag(sy),real(sz),aimag(sz)
+           write(u_spin)real(sx),aimag(sx),real(sy),aimag(sy),real(sz),aimag(sz)
 !!! counter
         imax = imax + 1
         if ( imax.eq.(int(icon*(cmax/5)))) then

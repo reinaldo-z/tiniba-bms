@@ -161,7 +161,7 @@ PROGRAM set_input
   !#BMSVer3.0u
 !  write(*,*)"%%%%%%%%%%%%%%%%%%%%%%"
 
-  OPEN(11, FILE=pmn_data_filename, STATUS='OLD', IOSTAT=io_status,FORM="unformatted")
+  OPEN(11, FILE=pmn_data_filename, STATUS='OLD', IOSTAT=io_status)
   IF (io_status /= 0) THEN
      WRITE(6,*) "Error occured trying to open:", pmn_data_filename
      WRITE(6,*) "Error status returned is:", io_status
@@ -176,7 +176,7 @@ PROGRAM set_input
   INQUIRE(FILE=smn_data_filename, EXIST=spinCalculation)
   if ( spinCalculation) then
 !     WRITE(*,*) "Found file ", TRIM(smn_data_filename), " => Performing spin calculation"
-     OPEN(41, FILE=smn_data_filename)
+     OPEN(41, FILE=smn_data_filename,FORM="unformatted")
 !  ELSE
 !     WRITE(6,*) "no smn_data_filename => no-spin calculation"
   END IF
@@ -301,7 +301,7 @@ PROGRAM set_input
 ! calculates S_{cc'} only!
            IF ( spinCalculation ) THEN
               if( (iv .ge. nval+1).and.(ic .ge. nval+1) ) then 
-                 READ(41, *) (matTemp(l), l=1,6)
+                 READ(41) (matTemp(l), l=1,6)
                  spiMatElem(1,iv,ic) = matTemp(1) + (0.d0,1.d0)*matTemp(2)
                  spiMatElem(2,iv,ic) = matTemp(3) + (0.d0,1.d0)*matTemp(4)
                  spiMatElem(3,iv,ic) = matTemp(5) + (0.d0,1.d0)*matTemp(6)
