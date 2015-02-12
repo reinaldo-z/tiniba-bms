@@ -161,7 +161,7 @@ PROGRAM set_input
   !#BMSVer3.0u
 !  write(*,*)"%%%%%%%%%%%%%%%%%%%%%%"
 
-  OPEN(11, FILE=pmn_data_filename, STATUS='OLD', IOSTAT=io_status)
+  OPEN(11, FILE=pmn_data_filename, STATUS='OLD', IOSTAT=io_status, FORM="unformatted")
   IF (io_status /= 0) THEN
      WRITE(6,*) "Error occured trying to open:", pmn_data_filename
      WRITE(6,*) "Error status returned is:", io_status
@@ -176,7 +176,7 @@ PROGRAM set_input
   INQUIRE(FILE=smn_data_filename, EXIST=spinCalculation)
   if ( spinCalculation) then
 !     WRITE(*,*) "Found file ", TRIM(smn_data_filename), " => Performing spin calculation"
-     OPEN(41, FILE=smn_data_filename,FORM="unformatted")
+     OPEN(41, FILE=smn_data_filename, FORM="unformatted")
 !  ELSE
 !     WRITE(6,*) "no smn_data_filename => no-spin calculation"
   END IF
