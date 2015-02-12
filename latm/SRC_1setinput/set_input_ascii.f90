@@ -977,7 +977,7 @@ PROGRAM set_input
   ! Check that we are really at the end of the input pmn file
   !
   matTemp(1:6) = 0.d0
-  READ(11,*,IOSTAT=io_status) (matTemp(l), l=1,6)
+  READ(11,IOSTAT=io_status) (matTemp(l), l=1,6)
   IF (io_status.LE.0) THEN
      WRITE(6,*) 'End of matrix elements file reached'
      call system("touch endWELLpmn")
