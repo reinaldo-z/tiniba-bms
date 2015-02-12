@@ -161,7 +161,7 @@ PROGRAM set_input
   !#BMSVer3.0u
 !  write(*,*)"%%%%%%%%%%%%%%%%%%%%%%"
 
-  OPEN(11, FILE=pmn_data_filename, STATUS='OLD', IOSTAT=io_status)
+  OPEN(11, FILE=pmn_data_filename, STATUS='OLD', IOSTAT=io_status,FORM="unformatted")
   IF (io_status /= 0) THEN
      WRITE(6,*) "Error occured trying to open:", pmn_data_filename
      WRITE(6,*) "Error status returned is:", io_status
@@ -278,7 +278,7 @@ PROGRAM set_input
            !---------------------
            ! reduced input end
            !---------------------
-           READ(11,*) (matTemp(l), l=1,6)
+           READ(11) (matTemp(l), l=1,6)
 
 101        FORMAT(2I3,6E15.7)
            !#BMSVer3.0d
