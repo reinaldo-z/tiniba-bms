@@ -253,13 +253,13 @@ PROGRAM matrixElements
 !!!     
         IF (layered) THEN
 !!! reads layered info from file
-           OPEN(unit=98,file="fort.98", FORM="unformatted")
-           OPEN(unit=99,file="fort.99", FORM="unformatted")
-           read(98)Lslab,Nlayers,zmin,ifrho
+           OPEN(unit=98,file="fort.98")
+           OPEN(unit=99,file="fort.99")
+           read(98,*)Lslab,Nlayers,zmin,ifrho
            if (Nlayers .NE. 0 ) then
               ALLOCATE(zeta(Nlayers),delta(Nlayers),deltab(Nlayers),deltaf(Nlayers))
               do i=1,Nlayers
-                 read(99)zeta(i),deltaf(i),deltab(i)
+                 read(99,*)zeta(i),deltaf(i),deltab(i)
               end do
               CLOSE(98)
               CLOSE(99)
