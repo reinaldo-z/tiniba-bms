@@ -185,7 +185,7 @@ PROGRAM set_input
   INQUIRE(FILE=cal_data_filename, EXIST=layeredCalculation)
   IF ( layeredCalculation ) THEN
 !     WRITE(*,*) "Found file ", TRIM(cal_data_filename), " => Performing layer P calculation"
-     OPEN(16, FILE=cal_data_filename,IOSTAT=io_status)
+     OPEN(16, FILE=cal_data_filename,IOSTAT=io_status, FORM="unformatted")
 !  else
 !     WRITE(6,*) "no cal_data_filename => no-caligraphic P calculation"
   END IF
@@ -194,7 +194,7 @@ PROGRAM set_input
     INQUIRE(FILE=cfmn_data_filename, EXIST=layeredCalculation)
   IF ( layeredCalculation ) THEN
 !     WRITE(*,*) "Found file ", TRIM(cfmn_data_filename), " => Performing layer P calculation"
-     OPEN(53, FILE=cfmn_data_filename,IOSTAT=io_status)
+     OPEN(53, FILE=cfmn_data_filename,IOSTAT=io_status, FORM="unformatted")
 !  else
 !     WRITE(6,*) "no cfmn_data_filename => no-caligraphic P calculation"
   END IF
@@ -340,7 +340,7 @@ PROGRAM set_input
 !!! 
 !!! FN
            IF ( layeredCalculation ) then
-              READ(16,*) (matTemp(l),l=1,6)
+              READ(16) (matTemp(l),l=1,6)
               IF(io_status.NE.0) THEN
                  WRITE(*,*) "ERROR: Could not read matTemp for layered calculation. Stopping"
                  WRITE(*,*) "Error number ", io_status
@@ -371,7 +371,7 @@ PROGRAM set_input
 !injection corrent and comment the next line 
            IF ( layeredCalculation.or.layeredInjectionCurrent ) then
 !           IF ( layeredCalculation ) then
-              READ(53,*) (matTemp2(l),l=1,2)
+              READ(53) (matTemp2(l),l=1,2)
               IF(io_status.NE.0) THEN
                  WRITE(*,*) "ERROR: Could not read matTemp2 for layered calculation. Stopping"
                  WRITE(*,*) "Error number ", io_status

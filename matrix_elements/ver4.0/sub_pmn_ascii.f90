@@ -394,10 +394,10 @@ SUBROUTINE lpmn(unitS,u_log,ik,nbandk,nspinor,npw&
 !           write(unitS+izeta-1,"(6E18.8)")dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
 !                ,dreal(ctmp1(2)/2.),dimag(ctmp1(2)/2.)&
 !                ,dreal(ctmp1(3)/2.),dimag(ctmp1(3)/2.) 
-           write(unitS+izeta-1,*)dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
+           write(unitS+izeta-1)dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
                 ,dreal(ctmp1(2)/2.),dimag(ctmp1(2)/2.)&
                 ,dreal(ctmp1(3)/2.),dimag(ctmp1(3)/2.) 
-           write(unitS+izeta+9,*)dreal(laycut),dimag(laycut)
+           write(unitS+izeta+9)dreal(laycut),dimag(laycut)
 !              write(31,63)ik,izeta,iband,jband,dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
 !                   ,dreal(ctmp1(2)/2.),dimag(ctmp1(2)/2.)&
 !                   ,dreal(ctmp1(3)/2.),dimag(ctmp1(3)/2.) 
@@ -1302,7 +1302,7 @@ SUBROUTINE lpmm(unitS,u_log,ik,nbandk,nspinor,npw&
 !!! with sum over G_perp only
 !!! writes for a given layer!
 !           write(unitS+izeta-1,"(6E18.8)")dreal(ctmp1(1)/2.),dreal(ctmp1(2)/2.),dreal(ctmp1(3)/2.)
-           write(unitS+izeta-1,*)dreal(ctmp1(1)/2.),dreal(ctmp1(2)/2.),dreal(ctmp1(3)/2.)
+           write(unitS+izeta-1)dreal(ctmp1(1)/2.),dreal(ctmp1(2)/2.),dreal(ctmp1(3)/2.)
 !           write(unitS+izeta-1,"(6E18.8)")dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
 !                ,dreal(ctmp1(2)/2.),dimag(ctmp1(2)/2.)&
 !                ,dreal(ctmp1(3)/2.),dimag(ctmp1(3)/2.)
