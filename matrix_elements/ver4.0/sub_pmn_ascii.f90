@@ -114,15 +114,18 @@ SUBROUTINE mme(u_mme,u_vme,ik,nbandk,nspinor,npw,kp,kg,b1,b2,b3,cg,nkpt)
         if(1.eq.2)then
         if(nspinor==2) then 
            ! K^{ix}_mn
-           write(u_mme+1,"(6E18.8)")real(ps(1,2)),aimag(ps(1,2))&
+!!!        write(u_mme+1,"(6E18.8)")real(ps(1,2)),aimag(ps(1,2))&
+           write(u_mme+1)real(ps(1,2)),aimag(ps(1,2))&
                                   &,real(ps(2,2)),aimag(ps(2,2))&
                                   &,real(ps(3,2)),aimag(ps(3,2))
            ! K^{iy}_mn
-           write(u_mme+2,"(6E18.8)")real(ps(1,3)),aimag(ps(1,3))&
+!!!        write(u_mme+2,"(6E18.8)")real(ps(1,3)),aimag(ps(1,3))&
+           write(u_mme+2)real(ps(1,3)),aimag(ps(1,3))&
                                   &,real(ps(2,3)),aimag(ps(2,3))&
                                   &,real(ps(3,3)),aimag(ps(3,3))
            ! K^{iz}_mn
-           write(u_mme+3,"(6E18.8)")real(ps(1,4)),aimag(ps(1,4))&
+!!!        write(u_mme+3,"(6E18.8)")real(ps(1,4)),aimag(ps(1,4))&
+           write(u_mme+3)real(ps(1,4)),aimag(ps(1,4))&
                                   &,real(ps(2,4)),aimag(ps(2,4))&
                                   &,real(ps(3,4)),aimag(ps(3,4))
         end if
@@ -551,7 +554,7 @@ SUBROUTINE slpmn(unitS,u_log,ik,nbandk,nspinor,npw&
 !           write(unitS+izeta-1,"(6E18.8)")dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
 !                ,dreal(ctmp1(2)/2.),dimag(ctmp1(2)/2.)&
 !                ,dreal(ctmp1(3)/2.),dimag(ctmp1(3)/2.) 
-           write(unitS+izeta-1,*)dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
+           write(unitS+izeta-1)dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
                 ,dreal(ctmp1(2)/2.),dimag(ctmp1(2)/2.)&
                 ,dreal(ctmp1(3)/2.),dimag(ctmp1(3)/2.) 
 !!!
@@ -695,7 +698,7 @@ SUBROUTINE srhoccp(unitS,u_log,ik,nbandk,nspinor,npw&
         end do ! ipw  (Gpara,Gperp)
 !!! with sum over G_perp only
 !        write(unitS+izeta-1,"(3E18.8)")real(ctmp1),aimag(ctmp1)
-        write(unitS+izeta-1,*)real(ctmp1),aimag(ctmp1)
+        write(unitS+izeta-1)real(ctmp1),aimag(ctmp1)
 !!!
 !!! counter
         imax = imax + 1
@@ -831,7 +834,7 @@ SUBROUTINE slpmm(unitS,u_log,ik,nbandk,nspinor,npw&
         end do ! ipw  (Gpara,Gperp)
 !!! with sum over G_perp only
 !        write(unitS+izeta-1,"(6E18.8)")dreal(ctmp1(1)/2.),dreal(ctmp1(2)/2.),dreal(ctmp1(3)/2.)
-        write(unitS+izeta-1,*)dreal(ctmp1(1)/2.),dreal(ctmp1(2)/2.),dreal(ctmp1(3)/2.)
+        write(unitS+izeta-1)dreal(ctmp1(1)/2.),dreal(ctmp1(2)/2.),dreal(ctmp1(3)/2.)
 !!!
 !!! counter
         imax = imax + 1
@@ -1013,7 +1016,7 @@ SUBROUTINE lsccp(unitS,u_log,ik,nbandk,nspinor,npw&
 !           write(unitS+izeta-1,"(6E18.8)")real(sx),aimag(sx)&
 !                                         ,real(sy),aimag(sy)&
 !                                         ,real(sz),aimag(sz)
-           write(unitS+izeta-1,*)real(sx),aimag(sx)&
+           write(unitS+izeta-1)real(sx),aimag(sx)&
                                          ,real(sy),aimag(sy)&
                                          ,real(sz),aimag(sz)
 !!!
@@ -1139,12 +1142,12 @@ SUBROUTINE rhoz(unitS,u_log,ik,nbandk,nspinor,npw&
            end do ! jz
         end do  ! ipw
 !        write(unitS,69)iband,(Lslab+zmin)-zeta*Lslab,dreal(ctmp1) !assumes zmin < 0
-        write(unitS,69)iband,zmesh(izeta),real(ctmp1),aimag(ctmp1) !assumes zmin < 0
-        write(unitS+1,69)iband,zmesh(izeta),real(ctmp2),aimag(ctmp2) !assumes zmin < 0
+        write(unitS)iband,zmesh(izeta),real(ctmp1),aimag(ctmp1) !assumes zmin < 0
+        write(unitS+1)iband,zmesh(izeta),real(ctmp2),aimag(ctmp2) !assumes zmin < 0
      end do  !izeta
-     write(unitS,69)
-     write(unitS+1,69)
-     write(unitS+1,69)
+     write(unitS)
+     write(unitS+1)
+     write(unitS+1)
   end do !iband
 69 format(i5,f11.4,2e14.5)
 END SUBROUTINE rhoz
@@ -1465,7 +1468,7 @@ SUBROUTINE rhomm(unitS,u_log,ik,nbandk,nspinor,npw&
 !!! with sum over G_perp only
 !!! writes for a given layer!
 !           write(unitS+izeta-1,"(6E18.8)")dreal(ctmp1(1)),dreal(ctmp1(2)),dreal(ctmp1(3))
-           write(unitS+izeta-1,*)dreal(ctmp1(1)),dreal(ctmp1(2)),dreal(ctmp1(3))
+           write(unitS+izeta-1)dreal(ctmp1(1)),dreal(ctmp1(2)),dreal(ctmp1(3))
 !!! counter
            imax = imax + 1
            if ( imax.eq.(int(icon*(cmax/5)))) then
@@ -1679,7 +1682,7 @@ SUBROUTINE snSzmn(unitS,u_log,ik,nbandk,nspinor,npw&
            end do ! ipw
            nSzmn(iband,jband)=ctmp1
 !           write(unitS+izeta-1,"(6E18.8)")dreal(ctmp1),dimag(ctmp1)
-           write(unitS+izeta-1,*)dreal(ctmp1),dimag(ctmp1)
+           write(unitS+izeta-1)dreal(ctmp1),dimag(ctmp1)
         end do !jband
      end do !iband
      !  write(*,*)'calculating calPmn'
@@ -1698,7 +1701,7 @@ SUBROUTINE snSzmn(unitS,u_log,ik,nbandk,nspinor,npw&
 !           write(unitS+Nlayers+izeta-1,"(6E18.8)")dreal(calPmn(1)),dimag(calPmn(1))&
 !                ,dreal(calPmn(2)),dimag(calPmn(2))&
 !                ,dreal(calPmn(3)),dimag(calPmn(3))
-           write(unitS+Nlayers+izeta-1,*)dreal(calPmn(1)),dimag(calPmn(1))&
+           write(unitS+Nlayers+izeta-1)dreal(calPmn(1)),dimag(calPmn(1))&
                 ,dreal(calPmn(2)),dimag(calPmn(2))&
                 ,dreal(calPmn(3)),dimag(calPmn(3))
         end do !jband
@@ -1825,7 +1828,7 @@ SUBROUTINE Snn(unitS,u_log,ik,nbandk,nspinor,npw&
               end do ! ipw  (Gpara,Gperp)
 !!! with sum over G_perp only
 !              write(unitS+izeta-1,"(6E18.8)")real(ctmp1),aimag(ctmp1)
-              write(unitS+izeta-1,*)real(ctmp1),aimag(ctmp1)
+              write(unitS+izeta-1)real(ctmp1),aimag(ctmp1)
 !!!
            end if !iband=jband
 !!! counter
@@ -2103,7 +2106,7 @@ idirac=0
 !           write(unitS+izeta-1,"(6E18.8)")dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
 !                ,dreal(ctmp1(2)/2.),dimag(ctmp1(2)/2.)&
 !                ,dreal(ctmp1(3)/2.),dimag(ctmp1(3)/2.) 
-           write(unitS+izeta-1,*)dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
+           write(unitS+izeta-1)dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
                 ,dreal(ctmp1(2)/2.),dimag(ctmp1(2)/2.)&
                 ,dreal(ctmp1(3)/2.),dimag(ctmp1(3)/2.) 
 !!! with full
@@ -2285,7 +2288,7 @@ SUBROUTINE jnmzk(unitS,u_log,ik,nbandk,nspinor,npw&
 !!!!!!!!!!!!!!!!!!!!!!!!
            end do ! ipw  (Gpara,Gperp)
 !!
-           write(unitS,61)iband,jband,zmesh(izeta),real(ctmp1(1)/2.),aimag(ctmp1(1)/2.)&
+           write(unitS)iband,jband,zmesh(izeta),real(ctmp1(1)/2.),aimag(ctmp1(1)/2.)&
                 ,real(ctmp2(1)/2.),aimag(ctmp2(1)/2.)&
                 ,real(ctmp1(2)/2.),aimag(ctmp1(2)/2.)&
                 ,real(ctmp2(2)/2.),aimag(ctmp2(2)/2.)&
@@ -2379,13 +2382,13 @@ SUBROUTINE jnmzk(unitS,u_log,ik,nbandk,nspinor,npw&
               end do ! ipwp
 !           end if
            end do ! ipw
-        write(unitS,69)iband,zmesh(izeta),(real(ctmp(i)),i=1,3)
-        write(unitS+1,69)iband,zmesh(izeta),real(ctmp1),aimag(ctmp1)
+        write(unitS)iband,zmesh(izeta),(real(ctmp(i)),i=1,3)
+        write(unitS+1)iband,zmesh(izeta),real(ctmp1),aimag(ctmp1)
      end do ! zmesh
-     write(unitS,*)
-     write(unitS,*)
-     write(unitS+1,*)
-     write(unitS+1,*)
+     write(unitS)
+     write(unitS)
+     write(unitS+1)
+     write(unitS+1)
   end do !iband
 69 format(i5,f9.4,3E12.4) 
 70 format(2i5,6f9.4) 
@@ -2420,6 +2423,7 @@ SUBROUTINE jnmzk(unitS,u_log,ik,nbandk,nspinor,npw&
 !!!      write(*,*)iband,ipwp,kg(:,ipwp),b1(:)
         ctmps = ctmps + cgn*cexpo
      end do  ! ipwp
+!!!  write(unitS,"(E18.8)")real(ctmps*conjg(ctmps))
      write(unitS,"(E18.8)")real(ctmps*conjg(ctmps))
   end do !iband
 END SUBROUTINE rhor
