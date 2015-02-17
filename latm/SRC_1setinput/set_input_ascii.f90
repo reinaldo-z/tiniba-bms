@@ -204,7 +204,7 @@ PROGRAM set_input
 !  INQUIRE(FILE=cur_data_filename, EXIST=layeredCalculation)
   IF ( layeredInjectionCurrent ) THEN
 !     WRITE(*,*) "Found file ", TRIM(cur_data_filename), " => Performing layer dotJ calculation"
-     OPEN(17, FILE=cur_data_filename,IOSTAT=io_status)
+     OPEN(17, FILE=cur_data_filename,IOSTAT=io_status, FORM="unformatted")
 !  else
 !     WRITE(6,*) "no cur_data_filename => no-caligraphic dotJ calculation"
   END IF
@@ -212,7 +212,7 @@ PROGRAM set_input
   INQUIRE(FILE=rhomm_data_filename, EXIST=ndotCalculation)
   IF ( ndotCalculation ) THEN
 !     WRITE(*,*) "Found file ", TRIM(rhomm_data_filename), " => Performing ndot layered calculation"
-     OPEN(69, FILE=rhomm_data_filename,IOSTAT=io_status)
+     OPEN(69, FILE=rhomm_data_filename,IOSTAT=io_status, FORM="unformatted")
 !  else
 !     WRITE(6,*) "no rhomm_data_filename => no-ndot calculation"
   END IF
@@ -220,7 +220,7 @@ PROGRAM set_input
 !!!
 !     INQUIRE(FILE=den_data_filename,EXIST=microscopicDensityCalculation)
 !     IF ( microscopicDensityCalculation ) THEN
-!        OPEN(16, FILE=den_data_filename,IOSTAT=io_status)
+!        OPEN(16, FILE=den_data_filename,IOSTAT=io_status, FORM="unformatted")
 !        IF (io_status /= 0) THEN
 !           WRITE(6,*) "Error occured trying to open:", den_data_filename
 !           WRITE(6,*) "Error status returned is:", io_status
@@ -231,7 +231,7 @@ PROGRAM set_input
 !!!
 !     INQUIRE(FILE=cur_data_filename,EXIST=microscopicCurrentCalculation)
 !     IF ( microscopicCurrentCalculation ) THEN
-!        OPEN(17, FILE=cur_data_filename,IOSTAT=io_status)
+!        OPEN(17, FILE=cur_data_filename,IOSTAT=io_status, FORM="unformatted")
 !        IF (io_status /= 0) THEN
 !           WRITE(6,*) "Error occured trying to open:", cur_data_filename
 !           WRITE(6,*) "Error status returned is:", io_status
@@ -248,8 +248,8 @@ PROGRAM set_input
   CALL scissorenergies
   
   IF (writeoutMEdata) THEN
-     OPEN(12, FILE=rmn_data_filename, STATUS='UNKNOWN')
-     OPEN(13, FILE=der_data_filename, STATUS='UNKNOWN')
+     OPEN(12, FILE=rmn_data_filename, STATUS='UNKNOWN', FORM="unformatted")
+     OPEN(13, FILE=der_data_filename, STATUS='UNKNOWN', FORM="unformatted")
   END IF
   
   ! Open additional files
@@ -321,7 +321,7 @@ PROGRAM set_input
 !                    READ(69,*) matTemp(1)
 !!! rho_{cc'} is complex (see arrays.f90)
                  if( (iv .ge. nval+1).and.(ic .ge. nval+1) ) then 
-                    READ(69,*) matTemp(1),matTemp(2)
+                    READ(69) matTemp(1),matTemp(2)
                     IF(io_status.NE.0) THEN
                        WRITE(*,*) "ERROR: Couldn't read matTemp: rhomm layered calculation. Stopping"
                        WRITE(*,*) "Error number ", io_status
@@ -418,7 +418,7 @@ PROGRAM set_input
         IF ( layeredInjectionCurrent ) THEN
            if(vnlkss.eqv..FALSE.)then
               if ( iv .eq. ic ) then
-                 READ(17,*) (matTemp3(l),l=1,3)
+                 READ(17) (matTemp3(l),l=1,3)
                  curMatElem(1,iv) = matTemp3(1) 
                  curMatElem(2,iv) = matTemp3(2) 
                  curMatElem(3,iv) = matTemp3(3) 
@@ -441,7 +441,8 @@ PROGRAM set_input
         
         ! Write out the position matrix elements
         IF (writeoutMEdata) THEN
-           WRITE(12,102) REAL(posMatElem(1,iv,ic)),IMAG(posMatElem(1,iv,ic)) &
+!!!        WRITE(12,102) REAL(posMatElem(1,iv,ic)),IMAG(posMatElem(1,iv,ic)) &
+           WRITE(12) REAL(posMatElem(1,iv,ic)),IMAG(posMatElem(1,iv,ic)) &
                 , REAL(posMatElem(2,iv,ic)),IMAG(posMatElem(2,iv,ic)) &
                 , REAL(posMatElem(3,iv,ic)),IMAG(posMatElem(3,iv,ic))
         END IF
@@ -494,13 +495,16 @@ PROGRAM set_input
            END DO
            
            IF (writeoutMEdata) THEN
-              WRITE(13,102) REAL(derMatElem(1,1,iv,ic)),IMAG(derMatElem(1,1,iv,ic)), &
+!!!           WRITE(13,102) REAL(derMatElem(1,1,iv,ic)),IMAG(derMatElem(1,1,iv,ic)), &
+              WRITE(13) REAL(derMatElem(1,1,iv,ic)),IMAG(derMatElem(1,1,iv,ic)), &
                    REAL(derMatElem(2,1,iv,ic)),IMAG(derMatElem(2,1,iv,ic)), &
                    REAL(derMatElem(3,1,iv,ic)),IMAG(derMatElem(3,1,iv,ic))
-              WRITE(13,102) REAL(derMatElem(1,2,iv,ic)),IMAG(derMatElem(1,2,iv,ic)), &
+!!!           WRITE(13,102) REAL(derMatElem(1,2,iv,ic)),IMAG(derMatElem(1,2,iv,ic)), &
+              WRITE(13) REAL(derMatElem(1,2,iv,ic)),IMAG(derMatElem(1,2,iv,ic)), &
                    REAL(derMatElem(2,2,iv,ic)),IMAG(derMatElem(2,2,iv,ic)), &
                    REAL(derMatElem(3,2,iv,ic)),IMAG(derMatElem(3,2,iv,ic)) 
-              WRITE(13,102) REAL(derMatElem(1,3,iv,ic)),IMAG(derMatElem(1,3,iv,ic)), &
+!!!          WRITE(13,102) REAL(derMatElem(1,3,iv,ic)),IMAG(derMatElem(1,3,iv,ic)), &
+             WRITE(13) REAL(derMatElem(1,3,iv,ic)),IMAG(derMatElem(1,3,iv,ic)), &
                    REAL(derMatElem(2,3,iv,ic)),IMAG(derMatElem(2,3,iv,ic)), &
                    REAL(derMatElem(3,3,iv,ic)),IMAG(derMatElem(3,3,iv,ic))
            END IF
