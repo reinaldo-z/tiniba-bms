@@ -226,10 +226,11 @@ fi
 # 
 espin=`grep nspinor $case'_check'/$case.out | awk -F= '{print $4}' | awk '{print $1}'`
 spincomment=`grep nspinor setUpAbinit_$case.in | grep "\#"`
-if [ -n $spincomment ]; then
-    inspin="1"
+if [[ -n $spincomment ]]
+    then
+        inspin="1"
 else
-    inspin=`grep nspinor setUpAbinit_$case.in | awk '{print $2}'`
+        inspin=`grep nspinor setUpAbinit_$case.in | awk '{print $2}'`
 fi
 if [ ! $espin == $inspin ]
 then
