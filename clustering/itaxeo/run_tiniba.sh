@@ -776,7 +776,7 @@ then
 	aux2='$TINIBA/vnonlocal/dp-vnl'
 	echo "cat $aux2 aux1 aux3 > dp-vnl-$case.in" > aux
 	chmod +x aux
-	aux
+	./aux
 	rm aux*
 #	exit 1
     fi
