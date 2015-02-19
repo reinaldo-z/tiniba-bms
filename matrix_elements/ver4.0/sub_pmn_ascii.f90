@@ -467,7 +467,9 @@ SUBROUTINE slpmn(unitS,u_log,ik,nbandk,nspinor,npw&
   DOUBLE COMPLEX, ALLOCATABLE :: cf(:,:)
   DOUBLE COMPLEX :: ci,cero
   DOUBLE COMPLEX :: cgnup,cgndn,cgmup,cgmdn
-  DOUBLE COMPLEX, DIMENSION(3) :: ctmp,ctmp1
+  DOUBLE COMPLEX :: ctmp
+  DOUBLE COMPLEX :: laycut ! layered cut function
+  DOUBLE COMPLEX, DIMENSION(3) :: ctmp1
   DOUBLE COMPLEX, DIMENSION(3) :: ctmp2 ! Only to check
   DOUBLE PRECISION, DIMENSION(3) :: kmg,kmg12
   ! i,cero
