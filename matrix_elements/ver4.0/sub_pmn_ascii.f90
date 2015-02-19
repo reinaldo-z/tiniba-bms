@@ -544,8 +544,9 @@ SUBROUTINE slpmn(unitS,u_log,ik,nbandk,nspinor,npw&
                        imagcg=cg(2,jband,2,ipw) !jband => m,dn
                        cgmdn=dcmplx(realcg,imagcg)
                        kmg = kmg12 + (2.*kp(3) + jz + iz)*b3
-                       ctmp=(CONJG(cgnup)*cgmup + CONJG(cgndn)*cgmdn)*kmg*cf(jz-iz,izeta)
-                       ctmp1= ctmp1 + ctmp
+                       ctmp=(CONJG(cgnup)*cgmup + CONJG(cgndn)*cgmdn)*cf(jz-iz,izeta)
+                       ctmp1= ctmp1 + ctmp*kmg
+                       laycut= laycut + ctmp
                     end if
                  end do ! jz (Gperp)
 !!!
@@ -557,6 +558,7 @@ SUBROUTINE slpmn(unitS,u_log,ik,nbandk,nspinor,npw&
            write(unitS+izeta-1)dreal(ctmp1(1)/2.),dimag(ctmp1(1)/2.)&
                 ,dreal(ctmp1(2)/2.),dimag(ctmp1(2)/2.)&
                 ,dreal(ctmp1(3)/2.),dimag(ctmp1(3)/2.) 
+           write(unitS+izeta+9)dreal(laycut),dimag(laycut)
 !!!
 !!! counter
            imax = imax + 1
