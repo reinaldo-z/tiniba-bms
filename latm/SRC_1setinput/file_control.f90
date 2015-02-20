@@ -28,7 +28,7 @@ CONTAINS
           if(debug)WRITE(6,*) "Trying to open: ", spectrum_info(i)%integrand_filename
           OPEN(UNIT = spectrum_info(i)%integrand_filename_unit,&
                FILE = spectrum_info(i)%integrand_filename, &
-               IOSTAT = istat)
+               IOSTAT = istat, FORM="unformatted")
           IF (istat/=0) THEN
              WRITE(6,*) ' '
              WRITE(6,*) 'Error opening', spectrum_info(i)%integrand_filename

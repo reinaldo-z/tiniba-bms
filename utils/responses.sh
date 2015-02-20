@@ -380,15 +380,14 @@ TIMESTARTALLI=`date`
     echo "acellz= ${acellz}," >> tmp_$pfix 
         
 ### added 10 de diciembre de 2008 at 15:30
-        if [  "$ESPINsetUp" -eq "1" ];then 
-        echo withSO= .false., >> tmp_$pfix
-        fi 
-        if [  "$ESPINsetUp" -eq "2" ];then 
-	echo withSO= .true., >> tmp_$pfix        
-      fi
+    if [  "$ESPINsetUp" -eq "1" ]; then 
+        echo withSO= .false., >> tmp_$pfix 
+    elif [  "$ESPINsetUp" -eq "2" ]; then 
+	   echo withSO= .true., >> tmp_$pfix        
+	   printf "\twith ${RED}Spin-Orbit${NC}\n"
+    fi
 ### added 10 de diciembre de 2008 at 15:30
-#	Line
-	printf "\twith ${RED}Spin-Orbit${NC}\n"
+#   Line
 #BMSVer3.0d set value of vnlkss so is read by 
 	if [ $vnlkss == true ]
 	then
