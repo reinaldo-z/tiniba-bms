@@ -718,12 +718,12 @@ TIMESTARTALLI=`date`
 	    if [ "$vnlkss" == "false" ]
 	    then
 		file3=$sname.kk$ap$am$ultimo
-		file4=$sname.sm_${smearvalue}_$ap$am$ultimo
+		file4=$sname.sm_${smearvalue}$ap$am$ultimo
 	    fi
 	    if [ "$vnlkss" == "true" ]
 	    then
 		file3=$sname-vnl.kk$ap$am$ultimo
-		file4=$sname-vnl.sm_${smearvalue}_$ap$am$ultimo
+		file4=$sname-vnl.sm_${smearvalue}$ap$am$ultimo
 	    fi
 	    if [ "$response" -ne "25" ];then
 		mv $file1  res/$file3
