@@ -710,19 +710,20 @@ TIMESTARTALLI=`date`
                 printf "\t $where_smear/rsmear2_$exec \n"
                 printf "\t Ctrl C to Stop\n"
                 read -p ""
-            fi  
-	    $where_smear/rsmear2_$exec 1 $file1 $file2 > hoy     #smearing
+            fi
+        smearvalue=0.15  # just in case
+	    $where_smear/rsmear2_$exec 1 $file1 $file2 $smearvalue > hoy     #smearing
 #	    file3=$sname.kk$label$label2
 #	    file4=$file2$label2
 	    if [ "$vnlkss" == "false" ]
 	    then
 		file3=$sname.kk$ap$am$ultimo
-		file4=$sname.sm$ap$am$ultimo
+		file4=$sname.sm_${smearvalue}_$ap$am$ultimo
 	    fi
 	    if [ "$vnlkss" == "true" ]
 	    then
 		file3=$sname-vnl.kk$ap$am$ultimo
-		file4=$sname-vnl.sm$ap$am$ultimo
+		file4=$sname-vnl.sm_${smearvalue}_$ap$am$ultimo
 	    fi
 	    if [ "$response" -ne "25" ];then
 		mv $file1  res/$file3
