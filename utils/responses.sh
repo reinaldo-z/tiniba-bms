@@ -162,7 +162,7 @@ fi
 	exit 1
     fi
 # gets options
-while getopts ":w:m:s:o:v:c:r:t:n:" OPTION
+while getopts ":w:m:s:o:v:c:r:t:b:n:" OPTION
 do
      case $OPTION in
          w)
@@ -189,6 +189,9 @@ do
              ;;
          t)
              scases=($OPTARG) #the parenthesis () are so it reads an array 
+             ;;
+         b)
+             smearvalue=$OPTARG
              ;;
          n)
              vnlkss=$OPTARG
@@ -711,7 +714,6 @@ TIMESTARTALLI=`date`
                 printf "\t Ctrl C to Stop\n"
                 read -p ""
             fi
-        smearvalue=0.15  # just in case
 	    $where_smear/rsmear2_$exec 1 $file1 $file2 $smearvalue > hoy     #smearing
 #	    file3=$sname.kk$label$label2
 #	    file4=$file2$label2

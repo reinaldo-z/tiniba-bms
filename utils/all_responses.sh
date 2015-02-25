@@ -155,7 +155,7 @@ case=`echo $PWD | awk -F / '{print$NF}'`
 	echo -e "There are ${RED}$Nmax${NC} bands, so choose Nv=${RED}$Nvf${NC} and up to Nc=${RED}$Nct${NC} "
 ####################################################################
 	Line
-	printf "all_responses.sh -w [${red}layer${NC} or ${red}total${NC}] -m [_${red}case${NC}] -s [${red}scissors${NC}] -o [${red}1${NC}-full or ${red}2${NC}-vc] -v [${red}Nv${NC}] -c [${red}Nc${NC}] -r [response${red}#${NC}] -t [tensor ${red}\"ijk ...\" ${NC}] -n [${red}response with v^nl included${NC} ${blue} optional${NC}]\n"
+	printf "all_responses.sh -w [${red}layer${NC} or ${red}total${NC}] -m [_${red}case${NC}] -s [${red}scissors${NC}] -o [${red}1${NC}-full or ${red}2${NC}-vc] -v [${red}Nv${NC}] -c [${red}Nc${NC}] -r [response${red}#${NC}] -t [tensor ${red}\"ijk ...\" ${NC}] -b [${red}broadening in eV${NC} ${blue}optional, default = 0.15 eV${NC}] -n [${red}response with v^nl included${NC} ${blue} optional${NC}]\n"
 	Line
 	echo you have the following options:
 	ls me_pmn*
@@ -173,7 +173,7 @@ case=`echo $PWD | awk -F / '{print$NF}'`
     fi
 # gets options
     vnlkss=false
-    while getopts ":w:m:s:o:v:c:r:t:n" OPTION
+    while getopts ":w:m:s:o:v:c:r:t:b:n" OPTION
     do
 	case $OPTION in
             w)
@@ -201,6 +201,9 @@ case=`echo $PWD | awk -F / '{print$NF}'`
             t)
 		scases=($OPTARG) #the parenthesis () are so it reads an array 
 		;;
+		    b)
+		smearvalue=$OPTARG
+		;;
             n)
                 vnlkss="true"
                 ;;
@@ -210,6 +213,11 @@ case=`echo $PWD | awk -F / '{print$NF}'`
 		;;
 	esac
     done
+## Optional smearing argument
+if [[ -z $smearvalue ]]; then
+	smearvalue=0.15
+fi
+
 #BMSVer3.0d
     if [ "$vnlkss" == "true" ] 
     then
@@ -299,7 +307,7 @@ case=`echo $PWD | awk -F / '{print$NF}'`
 	    printf "\t${RED}shg1${NC}\n"
 	    Line
 	    response=21
-	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -n $vnlkss > mtita
+	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -b $smearvalue -n $vnlkss > mtita
 	    chmod +x mtita
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
@@ -317,7 +325,7 @@ case=`echo $PWD | awk -F / '{print$NF}'`
 	    printf "\t${RED}shg2${NC}\n"
 	    Line
 	    response=22
-	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -n $vnlkss > mtita
+	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -b $smearvalue -n $vnlkss > mtita
 	    chmod +x mtita
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
@@ -374,7 +382,7 @@ case=`echo $PWD | awk -F / '{print$NF}'`
 	    printf "\t${RED}shg1${NC}\n"
 	    Line
 	    response=44
-	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -n $vnlkss > mtita
+	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -b $smearvalue -n $vnlkss > mtita
 	    chmod +x mtita
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
@@ -394,7 +402,7 @@ case=`echo $PWD | awk -F / '{print$NF}'`
 	    printf "\t${RED}shg2${NC}\n"
 	    Line
 	    response=45
-	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -n $vnlkss > mtita
+	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -b $smearvalue -n $vnlkss > mtita
 	    chmod +x mtita
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
@@ -452,7 +460,7 @@ case=`echo $PWD | awk -F / '{print$NF}'`
 	    printf "\t${RED}shg1${NC}\n"
 	    Line
 	    response=42
-	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -n $vnlkss > mtita
+	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -b $smearvalue -n $vnlkss > mtita
 	    chmod +x mtita
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
@@ -470,7 +478,7 @@ case=`echo $PWD | awk -F / '{print$NF}'`
 	    printf "\t${RED}shg2${NC}\n"
 	    Line
 	    response=43
-	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -n $vnlkss > mtita
+	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -b $smearvalue -n $vnlkss > mtita
 	    chmod +x mtita
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
@@ -567,7 +575,7 @@ case=`echo $PWD | awk -F / '{print$NF}'`
 	fi
 #	exit 1
 #BMSVer3.0u
-	echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -n $vnlkss > mtita
+	echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response -t \"${scases[@]}\" -b $smearvalue -n $vnlkss > mtita
 	chmod +x mtita
 	./mtita
 #despulga
