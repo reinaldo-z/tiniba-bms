@@ -67,6 +67,7 @@ MODULE inparams
   CHARACTER(LEN=80) ::  rmn_data_filename     ! position me output file
   CHARACTER(LEN=80) ::  der_data_filename     ! derivative me output file
   CHARACTER(LEN=80) ::  smn_data_filename     ! spin me output file
+!!CHARACTER(LEN=80) ::  snn_data_filename     ! layered Snn output file
   CHARACTER(LEN=80) ::  rhomm_data_filename   ! layered rhomm output file
   
   REAL(DP) :: spin_factor = 0.d0
