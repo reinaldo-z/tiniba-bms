@@ -30,7 +30,6 @@ source version-tiniba.txt
 	else
             IIBBZZ=$WHERE/ibz."`hostname  | sed 's/[0-9]//g'`"
 	fi
-     #### great idea jl jajaja Marzo 17 2010
 ##==============================
 declare -a malla
 ###<><><>><><><><><><><><><><><><><><><><><>

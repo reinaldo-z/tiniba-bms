@@ -42,24 +42,32 @@ This project was built by the PRONASIS group of the Centro de Investigaciones en
 
 To-do List and WIP
 -------------------
+### rho
+* pmn.f90: lines 354 - 367
+* ndotccp: calrho is seriously FUBAR
+* sub_pmn_ascii.f90: lines 1145 - 1150
 
-1. Correcting SHG via shg-notes (07/13/14)
+### calZeta
+* seems to not be layered, does not recognize layered spin elements
 
-    The work branch of TINIBA contains some preliminary work with calpmn. The next stage is working on integrands.f90. First, take a look at Eq. I15 and compare to Eq. G2 that is already coded. These two can be placed in the same subroutine and may be readily completed.
+### calEta2:
+* not finding me_cpnn*
+* see lpmm from sub_pmn_ascii.f90
 
-    What needs to be done: code Eqs. I15, and I17 and verify that I17 yields the same result as G2.
+### Not working
+* 29 : calZeta : layer spin injection
+* 25 : calEta2 : layer injection current
+* 26 : ndotccp : layer carrier injection
 
-2. `latm/SRC_1setinput`
 
+### `latm/SRC_1setinput`
 * `integrands.f90`:
     - [ ] add new case => new number and new subroutine
-
 * `inparams.f90`:
     - [ ] add new case at the top of the program 
     - [ ] change: number_of_known_spectrum_types
     - [ ] add spectrum_factor() at the end of it
     - [ ] add new case so one knows what's calculated
-
 * `symmetry_operations.f90`:
     - [ ] add new case at the top of the program
     - [ ] add new case for the correct transformation
