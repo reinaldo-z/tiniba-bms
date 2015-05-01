@@ -10,6 +10,7 @@ This is the official 3.0 release. New features and fixes are added all the time 
 To clone the repo simple run:
 ```
 git clone --recursive git@github.com:roguephysicist/tiniba.git
+git submodule update --init --recursive
 ```
 
 I suggest adding these lines to the appropriate shell file:
