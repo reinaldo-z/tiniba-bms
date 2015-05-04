@@ -352,8 +352,11 @@ TIMESTARTALLI=`date`
 	  echo $a > hoy
 ## changes x->1, y->2, z->3 and adds space for each tensor component
 	  xyz123=`sed s/x/' 1'/g hoy | sed s/y/' 2'/g | sed s/z/' 3'/g `
-	  j=`expr $j + 1`
-	  file=`expr $j + 50`
+      j=`expr $j + 1`
+      file=`expr $j + 50`
+      echo $a
+      echo $file
+      echo $xyz123
 ## writes to screen
 	  printf "\t$sname.$a.dat_$pfix\n"
 #	  echo $xyz123 
