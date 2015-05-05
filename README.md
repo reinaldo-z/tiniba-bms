@@ -64,7 +64,7 @@ A PSP warning for spin/vnl would be supremely useful. Remember that `pspnc` is N
 * seems to not be layered, does not recognize layered spin elements
 
 ### calEta2:
-* not finding me_cpnn*
+* WARNING NO me_cpnn_31_half-slab_03-nospin for layer injection current
 * see lpmm from sub_pmn_ascii.f90
 
 ### `latm/SRC_1setinput`

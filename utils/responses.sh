@@ -486,7 +486,7 @@ TIMESTARTALLI=`date`
 			Line
 			echo WARNING NO $cur$pfix for layer injection current
 			Line
-			exit 1
+			#exit 1
 		    fi
 		    echo cur_data_filename= \""$cur$pfix"\", >> tmp_$pfix
 #BMSVer3.0d 
