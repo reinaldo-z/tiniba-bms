@@ -48,6 +48,8 @@ This project was built by the PRONASIS group of the Centro de Investigaciones en
 
 To-do List and WIP
 -------------------
+A PSP warning for spin/vnl would be supremely useful. Remember that `pspnc` is NO spin, good for Vnl. `hgh` is spin enabled, and unusable for Vnl.
+
 ### Not working
 * 29 : calZeta : layer spin injection
 * 25 : calEta2 : layer injection current
