@@ -49,14 +49,9 @@ This project was built by the PRONASIS group of the Centro de Investigaciones en
 To-do List and WIP
 -------------------
 ### Not working
-* 24 : calChi1 : layer chi1
 * 29 : calZeta : layer spin injection
 * 25 : calEta2 : layer injection current
 * 26 : ndotccp : layer carrier injection
-
-### calChi1
-* Works with 1 or 2 tensor components, but not three
-* Marks error from unit 53, which is cfmn
 
 ### rho
 * pmn.f90: lines 354 - 367
