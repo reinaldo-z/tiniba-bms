@@ -424,7 +424,7 @@ TIMESTARTALLI=`date`
 	echo rmn_data_filename= \""rmn.d_$pfix"\", >> tmp_$pfix
 # for spin-related calculations
 #
-		if [[ $response == '41' || $response == '29' ]]
+		if [[ $response == '41' ]]
 		then
 		    if [ ! -r $spin$pfix ] 
 		    then
