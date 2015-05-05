@@ -52,7 +52,6 @@ A PSP warning for spin/vnl would be supremely useful. Remember that `pspnc` is N
 
 ### Not working
 * 29 : calZeta : layer spin injection
-* 25 : calEta2 : layer injection current
 * 26 : ndotccp : layer carrier injection
 
 ### rho
@@ -62,10 +61,6 @@ A PSP warning for spin/vnl would be supremely useful. Remember that `pspnc` is N
 
 ### calZeta
 * seems to not be layered, does not recognize layered spin elements
-
-### calEta2:
-* WARNING NO me_cpnn_31_half-slab_03-nospin for layer injection current
-* see lpmm from sub_pmn_ascii.f90
 
 ### `latm/SRC_1setinput`
 * `integrands.f90`:
