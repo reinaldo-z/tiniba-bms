@@ -51,16 +51,12 @@ To-do List and WIP
 A PSP warning for spin/vnl would be supremely useful. Remember that `pspnc` is NO spin, good for Vnl. `hgh` is spin enabled, and unusable for Vnl.
 
 ### Not working
-* 29 : calZeta : layer spin injection
 * 26 : ndotccp : layer carrier injection
 
 ### rho
 * pmn.f90: lines 354 - 367
 * ndotccp: calrho is seriously FUBAR
 * sub_pmn_ascii.f90: lines 1145 - 1150
-
-### calZeta
-* seems to not be layered, does not recognize layered spin elements
 
 ### `latm/SRC_1setinput`
 * `integrands.f90`:
