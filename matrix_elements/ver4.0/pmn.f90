@@ -146,6 +146,9 @@ PROGRAM matrixElements
   b2(:)=b(2,:)
   b3(:)=b(3,:)
 
+write(*,*) "chonito chon chon"
+write(*,*) b3(3)
+
 !!! READ FROM the wavefunction file END
 !!! OPEN NEW FILES
   u_mme=29 !momentum matrix elements

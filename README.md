@@ -1,29 +1,11 @@
 TINIBA
 ===========================
-TINIBA is a tool written in bash, perl, and fortran to do ab initio calculations of optical responses based on the popular ABINIT.
+TINIBA is a program to do ab-initio calculations of optical responses of crystalline solids, based on the popular ABINIT.
 
 Introduction
 -------------------
 
 This is the official 3.0 release. New features and fixes are added all the time via different branches, and then merged into the master branch. Full documentation for the project is located in the tiniba-manual repository. It is a work in progress but will allow the average user to get up and running without too many problems.
-
-To clone the repo simple run:
-```
-git clone --recursive git@github.com:roguephysicist/tiniba.git
-git submodule update --init --recursive
-```
-
-I suggest adding these lines to the appropriate shell file:
-
-```bash
-export TINIBA=$HOME/tiniba
-export PATH="$TINIBA/clustering/itaxeo:$TINIBA/utils:$PATH"
-```
-
-For more information you can contact me at sma@cio.mx and I will be happy to answer any questions.
-
-References and Acknowlegdements
---------------
 
 This project was built by the PRONASIS group of the Centro de Investigaciones en Óptica, A.C. in Mexico. It has been a collaborative project spanning almost a decade. TINIBA has been used in (at least) the following articles:
 * J Opt Soc Am B 28 1882 (2011)
@@ -46,7 +28,30 @@ This project was built by the PRONASIS group of the Centro de Investigaciones en
 * Phys Status Solidi C 9, 1378 (2012)
 * Surf Sci 605, 941 (2011)
 
-To-do List and WIP
+
+Installation
+-------------------
+
+To clone the repo simple run:
+```
+git clone --recursive git@github.com:roguephysicist/tiniba.git
+git submodule update --init --recursive
+```
+
+To update submodules:
+```
+git submodule foreach git pull
+```
+
+I suggest adding these lines to the appropriate shell file:
+
+```bash
+export TINIBA=$HOME/tiniba
+export PATH="$TINIBA/clustering/itaxeo:$TINIBA/utils:$PATH"
+```
+
+
+Work in Progress
 -------------------
 A PSP warning for spin/vnl would be supremely useful. Remember that `pspnc` is NO spin, good for Vnl. `hgh` is spin enabled, and unusable for Vnl.
 
@@ -58,6 +63,9 @@ A PSP warning for spin/vnl would be supremely useful. Remember that `pspnc` is N
 * ndotccp: calrho is seriously FUBAR
 * sub_pmn_ascii.f90: lines 1145 - 1150
 
+
+Adding Responses
+-----------------------
 ### `latm/SRC_1setinput`
 * `integrands.f90`:
     - [ ] add new case => new number and new subroutine
