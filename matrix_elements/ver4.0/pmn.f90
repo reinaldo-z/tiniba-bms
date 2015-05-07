@@ -146,7 +146,7 @@ PROGRAM matrixElements
   b2(:)=b(2,:)
   b3(:)=b(3,:)
 
-OPEN(UNIT=593, FILE="chonito", STATUS="new")
+OPEN(UNIT=593, FILE="chonito", STATUS="unknown")
   write(593,*) "chonito chon chon"
   write(593,*) b3(3)
 CLOSE(593)
