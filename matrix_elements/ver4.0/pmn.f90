@@ -146,10 +146,6 @@ PROGRAM matrixElements
   b2(:)=b(2,:)
   b3(:)=b(3,:)
 
-OPEN(UNIT=593, FILE="chonito", STATUS="unknown")
-  write(593,*) "chonito chon chon"
-  write(593,*) b3(3)
-CLOSE(593)
 
 !!! READ FROM the wavefunction file END
 !!! OPEN NEW FILES
@@ -258,6 +254,7 @@ CLOSE(593)
 !!!     
         IF (layered) THEN
 !!! reads layered info from file
+           OPEN(unit=97,file="fort.97", STATUS="unknown")
            OPEN(unit=98,file="fort.98")
            OPEN(unit=99,file="fort.99")
            read(98,*)Lslab,Nlayers,zmin,ifrho
@@ -266,6 +263,8 @@ CLOSE(593)
               do i=1,Nlayers
                  read(99,*)zeta(i),deltaf(i),deltab(i)
               end do
+              write(97,*) b3(3)
+              CLOSE(97)
               CLOSE(98)
               CLOSE(99)
 !!!
