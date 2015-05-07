@@ -146,8 +146,10 @@ PROGRAM matrixElements
   b2(:)=b(2,:)
   b3(:)=b(3,:)
 
-write(*,*) "chonito chon chon"
-write(*,*) b3(3)
+OPEN(UNIT=593, FILE="chonito", STATUS="new")
+  write(593,*) "chonito chon chon"
+  write(593,*) b3(3)
+CLOSE(593)
 
 !!! READ FROM the wavefunction file END
 !!! OPEN NEW FILES
