@@ -301,7 +301,7 @@ SUBROUTINE lpmn(unitS,u_log,ik,nbandk,nspinor,npw&
      if ( iz > maxz ) maxz = iz
      if ( ( iz < 0 ) .and. ( -iz > minz ) ) minz = -iz
   end do
-  write(u_log,*)-minx,maxx,-miny,maxy,-minz,maxz
+!  write(u_log,*)-minx,maxx,-miny,maxy,-minz,maxz
   allocate(arr(-minx:maxx,-miny:maxy,-minz:maxz))
   arr = 0
   do ipw=1,npw
