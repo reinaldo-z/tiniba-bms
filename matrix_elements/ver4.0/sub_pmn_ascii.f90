@@ -293,7 +293,7 @@ SUBROUTINE lpmn(unitS,u_log,ik,nbandk,nspinor,npw&
   ! indexing G vectors
   do ipw=1,npw
      ix = kg(1,ipw) ; iy = kg(2,ipw) ; iz = kg(3,ipw) 
-!     write(u_log,*)ik,ix,iy,iz
+     write(u_log,*)ik,ix,iy,iz
      if ( ix > maxx ) maxx = ix
      if ( ( ix < 0 ) .and. ( -ix > minx ) ) minx = -ix
      if ( iy > maxy ) maxy = iy
@@ -301,7 +301,7 @@ SUBROUTINE lpmn(unitS,u_log,ik,nbandk,nspinor,npw&
      if ( iz > maxz ) maxz = iz
      if ( ( iz < 0 ) .and. ( -iz > minz ) ) minz = -iz
   end do
-!  write(u_log,*)-minx,maxx,-miny,maxy,-minz,maxz
+  write(u_log,*)-minx,maxx,-miny,maxy,-minz,maxz
   allocate(arr(-minx:maxx,-miny:maxy,-minz:maxz))
   arr = 0
   do ipw=1,npw
