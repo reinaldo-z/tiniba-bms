@@ -21,20 +21,21 @@ function Line {
 host=`hostname`
 case=`echo $PWD | awk -F / '{print$NF}'`
 dir=$PWD
-# reads abinit executables from version-abinit.txt
-source version-abinit.txt
-#
-# reads TINIBA version from version-tiniba.txt
-source version-tiniba.txt
-#
 where=$TINIBA/utils
 whereset=$TINIBA/clustering/itaxeo
+# reads abinit executables from version-abinit.txt
+source $where/version-abinit.txt
+#
+# reads TINIBA version from version-tiniba.txt
+source $where/version-tiniba.txt
+#
 if [[ ! -e .machines_pmn.original || ! -e .machines_scf.original ]]
     then
-    Line
-    printf "\t${RED}.machines_pmn.original or .machines_scf.original don't exist\n"
-    printf "\t${blue}               create both!\n"
-    Line
+	Line
+	echo -e "\t\033[33;5mERROR\033[0m"
+	printf "\t${RED}.machines_pmn.original or .machines_scf.original don't exist\n"
+	printf "\t${blue}               create both!\n"
+	Line
     exit 1
 else
     cp .machines_pmn.original .machines_pmn
@@ -60,7 +61,8 @@ if [ $1 == '1' ]
     if [ ! -e  setUpAbinit_$case.in ]
     then
 	Line
-	printf "\tsetUpAbinit_$case.in does not exist, creat one!\n"
+	echo -e "\t\033[33;5mERROR\033[0m"
+	printf "\tsetUpAbinit_$case.in does not exist, create one!\n"
 	Line
 	exit 1
     fi
@@ -68,6 +70,7 @@ if [ $1 == '1' ]
     if [ ! -e  $case.xyz ]
     then
 	Line
+	echo -e "\t\033[33;5mERROR\033[0m"
 	printf "\t$case.xyz does not exist, creat one!\n"
 	Line
 	exit 1
@@ -103,12 +106,18 @@ if [ $1 == '1' ]
     mv hoy $case.in
     nodin=`hostname`
     if [[ "$nodin" == "hexa"* || "$nodin" == "medusa" ]]
-	then
+    then
 	$ab_exec_hexa < $case.files > log
     fi
     if [[ "$nodin" == "quad"* ]]
 	then
 	$ab_exec_quad < $case.files > log
+    fi
+    # BMS 26/11/15 WARNING: with the across-platform abinit executable, may be
+    # there is no need for three different ab_exec_* versions.
+    if [[ "$nodin" == "fat"* ]]
+	then
+	$ab_exec_fat < $case.files > log
     fi
     cd ..
     if [ -e $case'_'scf_aux ]
@@ -181,17 +190,11 @@ then
 # looks for centrosymmetry
     rm -f .ifcentrosymmetric
     cp symmetries/sym.d fort.9
-# for nodes and itanium need to be implemented
-#    if [ "$host" == 'medusa' ]; then
-#    sim=`$where/inversion`
-#    fi
-    if [[ "$host" == 'medusa' || "$host" == 'hexa'* ]]
-    then
-	sim=`$where/inversion-hexa`
-    fi
-    if [ "$host" == 'quad01' ]; then
-    sim=`$where/inversion-quad`
-    fi
+    #compile inversion.f90 with cinversion
+    # rinversion eats fort.9 to determine if the unit cell
+    # is centrosymmetric or not
+    # The binary is universal for quad, hexa y fat
+    sim=`$where/rinversion`
     rm fort.9
     if [ $sim == 'scs' ]
 	then
@@ -261,5 +264,3 @@ then
     rm -f hoy*
     exit 1
 fi
-
-

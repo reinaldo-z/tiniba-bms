@@ -19,7 +19,7 @@ function Line {
 }
 ##
 
- declare -a MACHINESmn
+declare -a MACHINESmn
 #BMSVer3.0d
 # perhaps this ought to be changed: CHANGED sep/9/2014, paris
 # reads variable NUCLEOS
@@ -34,7 +34,7 @@ source .cores
  DIRSCF=$CASO'_scf'
  WFSCF=$CASO'o_DS1_DEN'
 ## reads abinit executables from version-abinit.txt
-source version-abinit.txt
+ source $TINIBA/utils/version-abinit.txt
 # ab_exec_quad=/homeib/prog/QUAD/abinit-7.0.5/abinit/bin/abinit
 # ab_exec_hexa=/home/prog/HEXA/abinit-7.0.5/abinit/bin/abinit
 ##
@@ -92,7 +92,7 @@ fi
           exit 1
          fi       
       mv tmpQ .trueMachines
-      cp .trueMachines  $DIRSCF/machinesQUAD 
+      cp .trueMachines  $DIRSCF/machines 
       cp .trueMachines  $DIRSCF/.trueMachines
       NMA=`wc .trueMachines | awk '{print$1}'`
       let "nPROC=$NMA * $NUCLEOS"
@@ -105,9 +105,9 @@ fi
 ######
 ######
 if [ $CORRE == "1" ];then 
-    if [[ "${MACHINESscf[00]}" != "quad"* && "${MACHINESscf[00]}" != "hexa"* ]]
+    if [[ "${MACHINESscf[00]}" != "quad"* && "${MACHINESscf[00]}" != "hexa"* && "${MACHINESscf[00]}" != "fat"*	]]
     then
-	printf "\t This FILE .machines_scf  is not a quad\n"
+	printf "\t FILE .machines_scf  needs a valid processor\n"
 	exit 1 
     fi 
         TIME=`date`
@@ -125,7 +125,7 @@ if [ $CORRE == "1" ];then
 	    printf  "\tOpening the socket \n"
 	    Line
 	    cd $DIR/$DIRSCF
-	     mpdboot -v -r ssh -f machinesQUAD -n $NMA
+	     mpdboot -v -r ssh -f machines -n $NMA
 	     mpdtrace
 #	     printf "\tmpiexec -ppn $NUCLEOS -n $nPROC -env I_MPI_DEVICE rdssm  $ab_exec_quad < $CASO.files >&log\n"
 #	     mpiexec -ppn $NUCLEOS -n $nPROC -env I_MPI_DEVICE rdssm  $ab_exec_quad < $CASO.files >&log
@@ -134,19 +134,22 @@ if [ $CORRE == "1" ];then
 	     Line
 	     printf  "\tClosing the ring\n"
 	     mpdallexit
-	elif [[ `hostname` == "hexa"* ]]
+	     # BMS 26/11/15
+	elif [[ `hostname` == "hexa"* || `hostname` == "medusa" || `hostname` == "fat"* ]]
 	then
-# We use the file name machinesQUAD although the nodes are hexas 
+# We use the file name machines although the nodes are hexas 
 	    rm -f $DIRSCF/$CASO.out*
 	    rm -f $DIRSCF/log
 # gets the first hexa to launch the ring of the Nibelungs
-	    hexa0=`head -1 $DIRSCF/machinesQUAD`
+	    hexa0=`head -1 $DIRSCF/machines`
 	    Line
 	    printf  "\tOpening the socket from $hexa0 \n"
-	    ssh $hexa0 "cd $DIR/$DIRSCF;mpdboot -v -r ssh -f machinesQUAD -n $NMA;mpdtrace"
+	    ssh $hexa0 "cd $DIR/$DIRSCF;mpdboot -v -r ssh -f machines -n $NMA;mpdtrace"
+	    #printf "\t ssh $hexa0 cd $DIR/$DIRSCF;mpdboot -v -r ssh -f machines -n $NMA;mpdtrace\n"
 	    Line
 	    printf  "\tAbinit for SCF is now runing\n"
-	    ssh $hexa0 "cd $DIR/$DIRSCF;mpiexec -ppn $NUCLEOS -n $nPROC -env I_MPI_DEVICE rdssm  $ab_exec_hexa < $CASO.files >&log" 
+	    ssh $hexa0 "cd $DIR/$DIRSCF;mpiexec -ppn $NUCLEOS -n $nPROC -env I_MPI_DEVICE rdssm  $ab_exec_hexa < $CASO.files >&log"
+	    #printf "\tssh $hexa0 cd $DIR/$DIRSCF;mpiexec -ppn $NUCLEOS -n $nPROC -env I_MPI_DEVICE rdssm  $ab_exec_hexa < $CASO.files >&log\n"
 	    Line
 	    printf  "\tClosing the ring from $hexa0 \n"
 	    ssh $hexa0 "cd $DIR/$DIRSCF;mpdallexit"
@@ -155,7 +158,7 @@ if [ $CORRE == "1" ];then
 	    rm -f $DIRSCF/$CASO.out*
 	    rm -f $DIRSCF/log
 	    printf  "\t Opening the socket \n"
-	    ssh quad01 "cd $DIR/$DIRSCF;mpdboot -v -r ssh -f machinesQUAD -n $NMA;mpdtrace"
+	    ssh quad01 "cd $DIR/$DIRSCF;mpdboot -v -r ssh -f machines -n $NMA;mpdtrace"
 	    ssh quad01 "cd $DIR/$DIRSCF;mpiexec -ppn $NUCLEOS -n $nPROC -env I_MPI_DEVICE rdssm  $ab_exec_quad < $CASO.files >&log" 
 	    Line
 	    printf  "\tClosing the ring\n"

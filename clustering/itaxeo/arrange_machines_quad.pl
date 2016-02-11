@@ -89,37 +89,42 @@
 
      open( MACHINESpmn, "<.machines_pmn") or die "Cannot open .machines_pmn";
 {
-     foreach $LINEA (<MACHINESpmn>) {
-      chomp($LINEA);
-     if($LINEA =~ m/^(itanium|node|quad|hexa)/) {  
-       push @MAQUINAS, $LINEA;
-       }
+  foreach $LINEA (<MACHINESpmn>) {
+    chomp($LINEA);
+    if($LINEA =~ m/^(itanium|node|quad|hexa|fat)/) {  
+      push @MAQUINAS, $LINEA;
+    }
     else{
-     printf "\t=============================\n";
-     printf "\tYou write something wrong in FILE: .machines_pmn\n ";
-     printf "\tADVICE: Look for blank lines at the end of file\n ";
-     print " $LINEA \n";
-     system("touch killme");
-     die "\tStoping right now ...\n";
-             } #end if
-             } #end foreach
-             } #end open MACHINESpmn
-     close(MACHINESpmn);
-     $NOMAQUINAS= @MAQUINAS;  
-     for ($ii=0; $ii<=$NOMAQUINAS-1; $ii++) {
-        if ( substr ( $MAQUINAS[$ii], 0 , 4 ) eq "node" ){
-         $NPXEON=$NPXEON+1;
-        }
-        if ( substr ( $MAQUINAS[$ii], 0 , 7 ) eq "itanium" ){
-        $NPITAN=$NPITAN+1;  
-        }
-        if ( substr ( $MAQUINAS[$ii], 0 , 4 ) eq "quad" ){
-        $NPQUAD=$NPQUAD+1;  
-        }
-        if ( substr ( $MAQUINAS[$ii], 0 , 4 ) eq "hexa" ){
-        $NPQUAD=$NPQUAD+1;  
-        }
-     } #end for
+      printf "\t=============================\n";
+      printf "\tYou write something wrong in FILE: .machines_pmn\n ";
+      printf "\tADVICE: Look for blank lines at the end of file\n ";
+      print " $LINEA \n";
+      system("touch killme");
+      die "\tStoping right now ...\n";
+    } #end if
+  } #end foreach
+} #end open MACHINESpmn
+close(MACHINESpmn);
+$NOMAQUINAS= @MAQUINAS;  
+# the 4,7,4,4,3 is the number of letters in the name of
+# the different architectures
+for ($ii=0; $ii<=$NOMAQUINAS-1; $ii++) {
+  if ( substr ( $MAQUINAS[$ii], 0 , 4 ) eq "node" ){
+    $NPXEON=$NPXEON+1;
+  }
+  if ( substr ( $MAQUINAS[$ii], 0 , 7 ) eq "itanium" ){
+    $NPITAN=$NPITAN+1;  
+  }
+  if ( substr ( $MAQUINAS[$ii], 0 , 4 ) eq "quad" ){
+    $NPQUAD=$NPQUAD+1;  
+  }
+  if ( substr ( $MAQUINAS[$ii], 0 , 4 ) eq "hexa" ){
+    $NPQUAD=$NPQUAD+1;  
+  }
+  if ( substr ( $MAQUINAS[$ii], 0 , 3 ) eq "fat" ){
+    $NPQUAD=$NPQUAD+1;
+  }
+} #end for
 #####################
 $SEEMSNPXEON=($NPXEON+.5);
 $SEEMSNPITAN=($NPITAN*$PESOI)+.5;
@@ -247,6 +252,10 @@ $QUETOCACPUXEON=floor($QUETOCACPUXEON);
            $IQUAD=$IQUAD+1;
          }
         if ( substr ( $MAQUINAS[$ii], 0 , 4 ) eq "hexa" ){
+           $KPOINTS[$ii]=$MAQUINASquad[$IQUAD];
+           $IQUAD=$IQUAD+1;
+         }
+        if ( substr ( $MAQUINAS[$ii], 0 , 3 ) eq "fat" ){
            $KPOINTS[$ii]=$MAQUINASquad[$IQUAD];
            $IQUAD=$IQUAD+1;
          }

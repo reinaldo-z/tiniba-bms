@@ -24,12 +24,8 @@ source version-tiniba.txt
           CASO=`basename $PWD`
         PARENT=`basename $BASEDIR`
 	yo=`hostname`
-	if [[ "$yo" == "hexa"* || "$yo" == "medusa" ]]
-	then
-            IIBBZZ=$WHERE/ibz.hexa
-	else
-            IIBBZZ=$WHERE/ibz."`hostname  | sed 's/[0-9]//g'`"
-	fi
+	# Binary for quads, hexas and fats
+        IIBBZZ=$WHERE/ibz
 ##==============================
 declare -a malla
 ###<><><>><><><><><><><><><><><><><><><><><>

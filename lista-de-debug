@@ -1,0 +1,4 @@
+1) createRemoteDir.sh@	   if [[ "$host" == "hexa"* ]] 
+
+2) all_nodes.sh@229,240,247,266,319,336             if [[ "$ontoy" == "hexa"* ]]
+

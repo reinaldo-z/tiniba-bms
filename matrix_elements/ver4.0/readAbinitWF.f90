@@ -57,7 +57,7 @@ CONTAINS
        CALL readwfv44
     CASE("4.6.5")
        CALL readwfv46
-    CASE("6.8.2","6.10.3","6.12.3","7.0.5")
+    CASE("6.8.2","6.10.3","6.12.3","7.0.5","7.10.5")
        CALL readwfv57
     CASE DEFAULT
        STOP "@readAbinitWF.f90: This version is not coded; just add it and recompile."

@@ -12,3 +12,5 @@
 45 : shg2C : Layer-Length gauge-2w 
 26 : ndotccp : layer carrier injection
 27 : ndotvv : carrier injection
+46 : sigma : shift current
+47 : calsigma : layer shift current 

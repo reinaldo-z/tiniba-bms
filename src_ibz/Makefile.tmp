@@ -1,0 +1,51 @@
+FC=/opt/intel/compilers_and_libraries_2016.1.150/linux/bin/intel64/ifort
+FFLAGS=-axCORE-AVX2,-axSSE4.2
+ABINITLOC=/home/bms/abinit_shells/ibz/abinit_subroutines_quad
+OBSFROMABINIT= hdr_io.o wrtout.o leave_new.o leave_myproc.o timab.o timein.o defs_time.o print_ij.o
+OBS = Sorting.o Global.o MyAllocateMod.o CommandLineArguments.o Symmetries.o Grid.o 3by3matrices.o DefaultInput.o  structFile.o abinitReader.o InitializeDataMod.o checkDimensions.o printIRpts.o printIRtet.o getDiag.o getIRtet.o NextPassMod.o
+
+ibz-hexa: IBZ.f90 ${OBS}
+	${FC} ${FFLAGS} -o ibz IBZ.f90 ${OBS} ${OBSFROMABINIT}
+MyAllocateMod.o: MyAllocateMod.f90
+	${FC} -c MyAllocateMod.f90
+Sorting.o: Sorting.f90
+	${FC} ${FFLAGS} -c Sorting.f90
+Global.o: Global.f90
+	${FC} ${FFLAGS} -c Global.f90
+CommandLineArguments.o:	CommandLineArguments.f90
+	${FC} ${FFLAGS} -c CommandLineArguments.f90
+Symmetries.o: Symmetries.f90
+	${FC} ${FFLAGS} -c Symmetries.f90
+Grid.o: Grid.f90
+	${FC} ${FFLAGS} -c Grid.f90
+structFile.o: structFile.f90
+	${FC} ${FFLAGS} -c structFile.f90
+abinitReader.o: abinitReader.f90
+	cp abinit_subroutines/* .
+	${FC} ${FFLAGS} -c abinitReader.f90
+DefaultInput.o:	DefaultInput.f90
+	${FC} ${FFLAGS} -c DefaultInput.f90
+InitializeDataMod.o: InitializeDataMod.f90
+	${FC} ${FFLAGS} -c InitializeDataMod.f90
+NextPassMod.o: NextPassMod.f90
+	${FC} ${FFLAGS} -c NextPassMod.f90
+3by3matrices.o: 3by3matrices.f90
+	${FC} ${FFLAGS} -c 3by3matrices.f90
+checkDimensions.o: checkDimensions.f90
+	${FC} ${FFLAGS} -c checkDimensions.f90
+printIRpts.o: printIRpts.f90
+	${FC} ${FFLAGS} -c printIRpts.f90
+printIRtet.o: printIRtet.f90
+	${FC} ${FFLAGS} -c printIRtet.f90
+getDiag.o: getDiag.f90
+	${FC} ${FFLAGS} -c getDiag.f90
+getIRtet.o: getIRtet.f90
+	${FC} ${FFLAGS} -c getIRtet.f90
+clean:
+	rm -f *.o
+	rm -f *.mod
+	rm -f *~
+help:
+	$(ECHO) "make         -Compila and link"
+	$(ECHO) "make help    -Show this info"
+	$(ECHO) "make clean   -clean all *.o *.mod"

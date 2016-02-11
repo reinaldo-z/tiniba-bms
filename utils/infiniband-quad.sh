@@ -24,35 +24,18 @@ ANFIBIO=`hostname`
 declare -a FALSEMACHINES
 declare -a VIVOS
 declare -a MUERTOS
-### hha this all the cluster jl
-MAQ501[1]="quad01"
-MAQ501[2]="quad02"
-MAQ501[3]="quad03"
-MAQ501[4]="quad04"
-MAQ501[5]="quad05"
-MAQ501[6]="quad06"
-MAQ501[7]="quad07"
-MAQ501[8]="quad08"
-MAQ501[9]="quad09"
-MAQ501[10]="quad10"
-MAQ501[11]="quad11"
-MAQ501[12]="quad12"
-MAQ501[13]="quad13"
-MAQ501[14]="quad14"                                      
-IPES[1]="172.17.1.37"
-IPES[2]="172.17.1.38"
-IPES[3]="172.17.1.39"
-IPES[4]="172.17.1.40"
-IPES[5]="172.17.1.41"
-IPES[6]="172.17.1.42"
-IPES[7]="172.17.1.43"
-IPES[8]="172.17.1.44"
-IPES[9]="172.17.1.45"
-IPES[10]="172.17.1.46"
-IPES[11]="172.17.1.47"
-IPES[12]="172.17.1.48"
-IPES[13]="172.17.1.49"
-IPES[14]="172.17.1.50"
+###################################################################
+#### List of Medusa's quad nodes taken from /etc/hosts
+###  6 quad(@4)
+###   IP                    host name 
+IPES[40]="172.17.1.40"	;MAQ501[40]="quad01"
+IPES[41]="172.17.1.41"	;MAQ501[41]="quad02"
+IPES[42]="172.17.1.42"	;MAQ501[42]="quad03"
+IPES[43]="172.17.1.43"	;MAQ501[43]="quad04"
+IPES[44]="172.17.1.44"	;MAQ501[44]="quad05"
+IPES[45]="172.17.1.45"	;MAQ501[45]="quad06"
+###################################################################
+
 function findMaq {
     ALLOWED="0"
     SALIDA="1000"

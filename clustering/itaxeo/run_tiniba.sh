@@ -15,7 +15,29 @@ NC='\e[0m' # No Color
 ## Functions
 # reads TINIBA version from version-tiniba.txt
 source version-tiniba.txt
-#
+###
+function Line {
+    printf "\t${BLUE}=============================${NC}\n"
+}
+###
+host=$HOSTNAME
+MACHINESscf=(`cat .machines_scf`)
+recommend=`echo ${MACHINESscf[0]}`
+# checking that the user is at either quad, hexa or fat
+if [[ "$host" == "hexa"* || "$host" == "quad"* || "$host" == "fat"* ]]
+then
+    Line
+    printf "\t${blue}$host${NC} ${RED}is a valid node to run${NC}\n"
+    Line
+else
+    Line
+    echo -e "\t\033[33;5mERROR\033[0m"
+    printf "\t${blue}$host${NC} ${RED}MUST${NC} be either ${BLUE}quad, hexa or fat${NC}\n"
+    printf "\tssh to an appropriate quadNN, hexaNN or fatNN to run\n"
+    printf "\tnode ${red}$recommend${NC} is recommended since is the first in .machines_scf\n"
+    Line
+    exit 1
+fi
 ## rho
 function lrho {
 	    Line
@@ -90,11 +112,7 @@ echo -e "${CYAN}run_tiniba.sh${NC} -r ${RED}erasescf${NC} To erase the SCF calcu
       exit 1
      fi
     }
-##
-function Line {
-    printf "\t${BLUE}=============================${NC}\n"
-}
-
+#
 function aqui {
 Line
 printf "\taqui\n"
@@ -109,7 +127,6 @@ rm -f finished*
 #
 where=$TINIBA/clustering/itaxeo
 cual=all_nodes.sh
-host=$HOSTNAME
 function depuranodos {
 #
 # checks that the nodes are working, otherwise it eliminates
@@ -137,6 +154,14 @@ then
     Line
     $TINIBA/utils/infiniband-hexa.sh .machines_scf.hexa
     mv .machines_scf.hexa .machines_scf.original
+elif [ "$nodin" == "fat" ]
+then
+    mv .machines_scf.original .machines_scf.fat
+    Line
+    printf "\tSCF  to be run on the Fats\n"
+    Line
+    $TINIBA/utils/infiniband-fat.sh .machines_scf.fat
+    mv .machines_scf.fat .machines_scf.original
 else
     Line
     printf "\tSCF not to be run on the Quads or Hexas\n"
@@ -436,6 +461,7 @@ then
     if [ "$layers" == "0" ]
     then
 	Line
+	echo -e "\t\033[33;5mERROR\033[0m"
 	printf "\t${RED}For a layered response choose -N > 0${NC}\n"
 	Line
 	exit 1
@@ -469,9 +495,9 @@ if [ $action == 'setkp' ]
     if [ $option == "2" ] 
 	then 
 #rm unecesary files
-	rm -f startpoint.txt
-	rm -f endpoint.txt
-	rm -f klist_length.txt
+#	rm -f startpoint.txt
+#	rm -f endpoint.txt
+#	rm -f klist_length.txt
 	rm -f hoy
 	exit 1
     fi
@@ -493,9 +519,9 @@ if [ $action == 'setkp' ]
 	fi
     done
 #rm unecesary files
-    rm -f startpoint.txt
-    rm -f endpoint.txt
-    rm -f klist_length.txt
+#    rm -f startpoint.txt
+#    rm -f endpoint.txt
+#    rm -f klist_length.txt
     rm -f hoy
     exit 1
 fi
@@ -786,9 +812,9 @@ then
     rm -fr $case'_bandstructure'
     rm $case.files
 #   rm latm.params
-    rm -f startpoint.txt
-    rm -f endpoint.txt
-    rm -f klist_length.txt
+#    rm -f startpoint.txt
+#    rm -f endpoint.txt
+#    rm -f klist_length.txt
 # run all-nodes.sh
     $where/$cual 1 $Nk $Nlayer $serialp $last_name $wf $rho $em $pmn $rhoccp $lpmn $lpmm $sccp $lsccp $vnlkss $calvnlkss $wfcheck
 #

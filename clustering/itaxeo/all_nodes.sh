@@ -166,8 +166,11 @@ source version-abinit.txt
 	    Line
 	    printf "\tSCF: $dirscf ${red}has finished${NC} at $time\n"
 	    Line
-#checking if SCF really produced a wavefunction
-	    if [ ! -e $dirscf/$wffile ];then
+	    #checking if SCF really produced a wavefunction
+	    #printf "\tACA:$dirscf/$wffile\n" #DEBUG
+	    #exit 1 #DEBUG
+	    if [ ! -e $dirscf/$wffile* ]
+	    then
 		Line
 		printf "\t${RED}ERROR $dirscf/$wffile DOES NOT EXISTS:${NC}check ${BLUE}$dirscf/$case.out${NC}\n"
 		printf "\t${blue} exiting the ${RED} all_nodes.sh ${BLUE}shell\n"
@@ -223,12 +226,18 @@ source version-abinit.txt
 	for node in `cat .machines_pmn`
 	do
 	    N=`expr $N + 1`
-	    wavefunction=/data/$USER/workspace/$parent/$case'_'$N/$wffilei
-	    EXISTEWF=`ssh $node 'test -e '$wavefunction'; echo $?'`
-    # perhaps this might not be required
-	    if [ "$ontoy" == "medusa" ]
+	    if [[ "$ontoy" == "hexa"* ]]
 	    then
-		dire=data/$quien/workspace/$parent 
+		wavefunction=/data/$USER/workspace/$parent/$case'_'$N/$wffilei
+		EXISTEWF=`ssh $node 'test -e '$wavefunction'; echo $?'`
+	    else
+		wavefunction=/data/$USER/workspace/$parent/$case'_'$N/$wffilei
+		EXISTEWF=`ssh $node 'test -e '$wavefunction'; echo $?'`
+	    fi
+    #### AQUI AQUI AQUI perhaps this might not be required
+	    if [[ "$ontoy" == "hexa"* ]]
+	    then
+		dire=/data/$quien/workspace/$parent 
 	    else
 		dire=/data/$quien/workspace/$parent 
 	    fi
@@ -236,14 +245,18 @@ source version-abinit.txt
 	    if [[ "$nodepmn" == "hexa"* ]] 
 	    then
 		dire=/data/$quien/workspace/$parent 
+	    else
+		dire=/data/$quien/workspace/$parent 
 	    fi
-    #
+	
+    #######################################################
 	    EXISTEDIR=`ssh $node 'test -d '$dire'; echo $?'`
 # to avoid poll: protocol failure in circuit setup
 	    sleep .05
 #
 	    if [ $EXISTEWF -ne 0 ] ;then
 		if [ $EXISTEDIR -ne 0 ] ;then
+		    printf "\tssh $node mkdir -p $dire\n"
 		    ssh $node "mkdir -p $dire"
 		fi
 		if [ "$ontoy" == "medusa" ]
@@ -253,21 +266,21 @@ source version-abinit.txt
 #			printf "\taquia:$ontoy $nodepmn $dire\n"
 			dire=/data/$quien/workspace/$parent 
 			caseN=$case'_'$N
-			rcp -r $caseN $node:$dire/.
+			scp -r $caseN $node:$dire/. >& /dev/null
 			printf "\tonly copying $caseN/${blue}$case.in${NC} -> $node:$dire/$caseN/${blue}.${NC}\n"
-			rcp  $caseN/$case.in $node:$dire/$caseN/.
+			scp  $caseN/$case.in $node:$dire/$caseN/. >& /dev/null
 		    else
-			dire=data/$quien/workspace/$parent 
+			dire=/data/$quien/workspace/$parent 
 			caseN=$case'_'$N
-			rcp -r $caseN /$node.$dire/.
+			scp -r $caseN /$node.$dire/. >& /dev/null
 			printf "only copying $caseN/${blue}$case.in${NC} -> /$node.$dire/$caseN/${blue}.${NC}\n"
-			rcp  $caseN/$case.in /$node.$dire/$caseN/.
+			scp  $caseN/$case.in /$node.$dire/$caseN/. >& /dev/null
 		    fi
 		else
-		    rcp -r $case'_'$N $node:$dire/.
+		    scp -r $case'_'$N $node:$dire/. >& /dev/null
 		    caseN=$case'_'$N
 		    printf "only copying $caseN/${blue}$case.in${NC} -> $node:$dire/$caseN/${blue}.${NC}\n"
-		    rcp  $case'_'$N/$case.in $node:$dire/$case'_'$N/.
+		    scp  $case'_'$N/$case.in $node:$dire/$case'_'$N/. >& /dev/null
 		fi
 #		exit 1
 	    fi
@@ -305,12 +318,12 @@ source version-abinit.txt
 		then
 		    if [[ "$nodepmn" == "hexa"* ]] 
 		    then
-			rcp $case.diff $node:$dire/$case'_'$N/.
+			scp $case.diff $node:$dire/$case'_'$N/. >& /dev/null
 		    else
-			rcp $case.diff /$node.$dire/$case'_'$N/.
+			scp $case.diff /$node.$dire/$case'_'$N/. >& /dev/null
 		    fi
 		else
-		    rcp $case.diff $node:$dire/$case'_'$N/.
+		    scp $case.diff $node:$dire/$case'_'$N/. >& /dev/null
 		fi
 #
 		rm -f tmp1 tmp2 $case.diff
@@ -320,12 +333,12 @@ source version-abinit.txt
 		then
 		    if [[ "$nodepmn" == "hexa"* ]] 
 		    then
-			rcp .ab_layers.d $node:$dire/$case'_'$N/fort.99
+			scp .ab_layers.d $node:$dire/$case'_'$N/fort.99 >& /dev/null
 		    else
-			rcp .ab_layers.d /$node.$dire/$case'_'$N/fort.99
+			scp .ab_layers.d /$node.$dire/$case'_'$N/fort.99 >& /dev/null
 		    fi
 		else
-		    rcp .ab_layers.d $node:$dire/$case'_'$N/fort.99
+		    scp .ab_layers.d $node:$dire/$case'_'$N/fort.99 >& /dev/null
 		fi
 	    fi
 	done
@@ -426,19 +439,24 @@ source version-abinit.txt
 	    fi
 #
 	    cual_one=$allexec/one_node.sh
-	    dirnode=/data/$USER/workspace/$parent/$case'_'$N/
-# copy the number of valence bands fnval to each working node
+	    if [[ "$ontoy" == "hexa"* ]]
+	    then
+		dirnode=/data/$USER/workspace/$parent/$case'_'$N/
+	    else
+		dirnode=/data/$USER/workspace/$parent/$case'_'$N/
+	    fi
+	    # copy the number of valence bands fnval to each working node
 # to be used by S_{cc'}
 	    if [ "$ontoy" == "medusa" ]
 	    then
 		if [[ "$nodepmn" == "hexa"* ]] 
 		then
-		    rcp -r .fnval $node:/data/$USER/workspace/$parent/$case'_'$N/
+		    scp -r .fnval $node:/data/$USER/workspace/$parent/$case'_'$N/ >& /dev/null
 		else
-		    rcp -r .fnval /$node.data/$USER/workspace/$parent/$case'_'$N/
+		    scp -r .fnval /$node.data/$USER/workspace/$parent/$case'_'$N/ >& /dev/null
 		fi
 	    else
-		rcp -r .fnval $node:$dirnode
+		scp -r .fnval $node:$dirnode >& /dev/null
 	    fi
 #BMSVer3.0d
 # copy dp-vnl-case.in and fort.69 to each working directory
@@ -450,15 +468,15 @@ source version-abinit.txt
 		then
 		    if [[ "$nodepmn" == "hexa"* ]] 
 		    then
-			rcp -r $aux $node:/data/$USER/workspace/$parent/$case'_'$N/
-			rcp -r fort.69 $node:/data/$USER/workspace/$parent/$case'_'$N/
+			scp -r $aux $node:/data/$USER/workspace/$parent/$case'_'$N/ >& /dev/null
+			scp -r fort.69 $node:/data/$USER/workspace/$parent/$case'_'$N/ >& /dev/null
 		    else
-			rcp -r $aux /$node.data/$USER/workspace/$parent/$case'_'$N/
-			rcp -r fort.69 /$node.data/$USER/workspace/$parent/$case'_'$N/
+			scp -r $aux /$node.data/$USER/workspace/$parent/$case'_'$N/ >& /dev/null
+			scp -r fort.69 /$node.data/$USER/workspace/$parent/$case'_'$N/ >& /dev/null
 		    fi
 		else
-		    rcp -r $aux $node:$dirnode
-		    rcp -r fort.69 $node:$dirnode
+		    scp -r $aux $node:$dirnode >& /dev/null
+		    scp -r fort.69 $node:$dirnode >& /dev/null
 		fi
 	    fi
 #BMSVer3.0u
@@ -468,12 +486,12 @@ source version-abinit.txt
 		then
 		    if [[ "$nodepmn" == "hexa"* ]] 
 		    then
-			rcp -r .lista_layers $node:/data/$USER/workspace/$parent/$case'_'$N/
+			scp -r .lista_layers $node:/data/$USER/workspace/$parent/$case'_'$N/ >& /dev/null
 		    else
-			rcp -r .lista_layers /$node.data/$USER/workspace/$parent/$case'_'$N/
+			scp -r .lista_layers /$node.data/$USER/workspace/$parent/$case'_'$N/ >& /dev/null
 		    fi
 		else
-		    rcp -r .lista_layers $node:$dirnode
+		    scp -r .lista_layers $node:$dirnode >& /dev/null
 		fi
 	    fi
 ##
@@ -491,13 +509,19 @@ source version-abinit.txt
 ##
 	    if [ $nodo = 'quad' ]
 	    then
-		ssh $node "$cual_one $node $dirnode $ab_exec_quad $case $dir $N $output $Nlayers $Nk $last_name $options $dp_exec_quad" &
+		ssh $node "$cual_one $node $dirnode $ab_exec_quad $case $dir $N $output $Nlayers $Nk $last_name $options $dp_exec_hexa" &
 	    fi
 ##
 	    if [ $nodo = 'hexa' ]
 	    then
 		ssh $node "$cual_one $node $dirnode $ab_exec_hexa $case $dir $N $output $Nlayers $Nk $last_name $options $dp_exec_hexa" &
 	    fi
+##
+	    if [ $nodo = 'fat' ]
+	    then
+		ssh $node "$cual_one $node $dirnode $ab_exec_hexa $case $dir $N $output $Nlayers $Nk $last_name $options $dp_exec_hexa" &
+	    fi
+###
 	done
 #
 	Line
@@ -517,10 +541,10 @@ then
 	for node in `cat .machines_pmn`
 	do
 	    N=`expr $N + 1`
-	    if [ "$ontoy" == "medusa" ]
+	    if [[ "$ontoy" == "hexa"* ]]
 	    then
-		ADONDEBORRO=data
-		printf "\tdeleting directory /$node.$ADONDEBORRO/$USER/workspace/$parent/$case'_'$N\n"
+		ADONDEBORRO=/data
+		echo deleting directory $node:$ADONDEBORRO/$USER/workspace/$parent/$case'_'$N
 		ssh $node "rm -rf /$ADONDEBORRO/$USER/workspace/$parent/$case'_'$N"
 	    else
 		ADONDEBORRO=/data

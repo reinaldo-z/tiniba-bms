@@ -61,7 +61,7 @@ if [ $serialp == '2' ]
 	dir_scf=$PWD
 	ssh itanium01 "cd $dir_scf;$mpich_dir_itanium/mpirun -np $np  -machinefile .machines_scf $abp_exec_itanium < $case.files > log"
     fi
-    if [[ $nodo = 'quad' || $nodo = 'hexa' ]]
+    if [[ $nodo = 'quad' || $nodo = 'hexa' || $nodo = 'fat' ]]
     then
 	cd $diro
 	rm -f finished_scf       

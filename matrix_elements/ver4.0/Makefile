@@ -3,13 +3,17 @@
 CWD=$(shell pwd)
 PLATAFORM=$(shell hostname)
 PRINTF=@printf
-ab=ascii
+#ab=ascii
+ab=bin
 OBJS= sub_pmn_${ab}.o readAbinitWF.o geometry.o
 
 	ifeq  ($(PLATAFORM),medusa)
-	F90=/opt/intel/fc/10.1.008/bin/ifort
-	FFLAGS= -O3 -xW -static -tune pn4
-	NAME=rpmns.xeon
+	F90=/opt/intel/bin/ifort	
+	#F90=/opt/intel/fc/10.1.008/bin/ifort
+	#FFLAGS= -O3 -xW -static -tune pn4
+	FFLAGS= -O3 -axCORE-AVX2,-axSSE4.2
+	NAME=rpmns
+	#NAME=rpmns.xeon
 	WHATPL=XEON
 	endif
 

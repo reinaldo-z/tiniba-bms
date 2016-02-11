@@ -27,6 +27,11 @@ function Line {
 printf "\t${cyan}--------------------${NC}\n"
 }
 ##
+##
+function ERROR {
+printf "\t${cyan}--------------------${NC}\n"
+}
+##
 exec=`$TINIBA/utils/cual_node.sh`
 ## input at will
 eminw=0
@@ -273,33 +278,40 @@ TIMESTARTALLI=`date`
 	if [[ ${#scases[@]} == 0 ]]
 	then
 	    Line
-	    echo -e "No tensor componentss were provided please provide at least one"
+	    echo -e "\t\033[33;5mERROR\033[0m"
+	    printf "\tNo tensor componentss were provided please provide at least one\n"
 	    Line
 	    exit 1
 	fi
 #
 	if [ $lt == 'total' ]
 	then
-	    if [[ $response = 24 || $response = 25 || $response = 29 || $response = 44 || $response = 45 ]]
+	    #BMSd
+	    if [[ $response = 24 || $response = 25 || $response = 29 || $response = 44 || $response = 45 || $response = 47 ]]
 	    then
 		Line
+		echo -e "\t\033[33;5mERROR\033[0m"
 		printf "\t${BLUE}$sname${NC} is not total, chose a ${RED} total response${NC}\n"
 		Line
 		exit 1
 	    fi
+	    #BMSu
 	fi
 #
 #
 	if [ $lt == 'layer' ]
 	    then
-	    if [[ $response != 24 && $response != 25 && $response != 29 && $response != 44 && $response != 45 ]]
+	    #BMSd
+	    if [[ $response != 24 && $response != 25 && $response != 29 && $response != 44 && $response != 45 && $response != 47 ]]
 		then
 		Line
+		echo -e "\t\033[33;5mERROR\033[0m"
 		printf "\t${BLUE}$sname${NC} is not layered, chose a ${RED} layered response${NC}\n"
 		touch fallo
 		Line
 		exit 1
 	    fi
+	    #BMSu
 	fi
 
 #
@@ -451,7 +463,8 @@ TIMESTARTALLI=`date`
 		fi
 		
 	    fi
-### layered calculation
+	    ### layered calculation
+	    ### calsigma????
 	    if [ $lt == 'layer' ] 
 	    then
 #
@@ -550,29 +563,27 @@ TIMESTARTALLI=`date`
 	printf "\tRUNING: $where_latm/set_input_32b [$latm_node]\n"
 	echo ssh $latm_node "cd $dir; $where_latm/set_input_32b tmp_$pfix spectra.params_$pfix "
 	ssh $latm_node "cd $dir; $where_latm/set_input_32b tmp_$pfix spectra.params_$pfix "
-    elif [[ $used_node  == 'medusa' || $used_node  == 'hexa' ]]
+    elif [[ $used_node  == 'medusa' || $used_node  == 'hexa' || $used_node  == 'fat' ]]
     then
-	printf "\tRUNING: $where_latm/set_input_hexa [$latm_node]\n"
-#	ssh $latm_node "cd $dir; $where_latm/set_input_64b tmp_$pfix spectra.params_$pfix "
-	$where_latm/set_input_hexa tmp_$pfix spectra.params_$pfix 
+	printf "\tRUNING: $where_latm/set_input_all [$latm_node]\n"
+	$where_latm/set_input_all tmp_$pfix spectra.params_$pfix 
    elif [ $used_node  == 'itanium' ]
     then
 	printf "\tRUNING: $where_latm/set_input_64b [$latm_node]\n"
 	ssh $latm_node "cd $dir; $where_latm/set_input_64b tmp_$pfix spectra.params_$pfix "
     elif [ $used_node  == 'quad' ];then
-	CORRE="$where_latm/set_input_quad"
+	CORRE="$where_latm/set_input_all"
 	if [ ! -e $CORRE ];then 
 	    printf "\t $CORRE \n"
 	    printf "\t Does not exits ... press any key to continue... \n"
 	    read -p ""
 	fi  
 	Line
-#	printf "\t $where_latm/set_input_quad tmp_$pfix  spectra.params_$pfix [$latm_node]\n"
-	printf "\tRUNING: $where_latm/set_input_quad [$latm_node]\n"
+	printf "\tRUNING: $where_latm/set_input_all [$latm_node]\n"
 	Line
         cp  tmp_$pfix input1set
         cp  spectra.params_$pfix input2set
-	ssh $latm_node "cd $dir; $where_latm/set_input_quad tmp_$pfix spectra.params_$pfix "
+	ssh $latm_node "cd $dir; $where_latm/set_input_all tmp_$pfix spectra.params_$pfix "
     else
 	echo -e "$RED  $used_node $NC is not a valid option "
 	echo  Please run again
@@ -612,16 +623,15 @@ TIMESTARTALLI=`date`
 	if [ $used_node == 'node' ]
 	then
 	    ssh ${nodes[$i]} "cd $dir;$laheylib  $where_latm/tetra_method_32b int_$ij'_'$pfix > hoy_$ij'_'$pfix" &
-	elif [[ $used_node == 'medusa' ||  $used_node == 'hexa' ]]
+	elif [[ $used_node == 'medusa' ||  $used_node == 'hexa' ||  $used_node == 'fat' ]]
 	then
-	    $where_latm/tetra_method_hexa int_$ij'_'$pfix > hoy_$ij'_'$pfix &
+	    $where_latm/tetra_method_all int_$ij'_'$pfix > hoy_$ij'_'$pfix &
 	elif [ $used_node == 'itanium' ]
 	then
 	    ssh ${nodes[$i]} "cd $dir;$laheylib  $where_latm/tetra_method_64b int_$ij'_'$pfix > hoy_$ij'_'$pfix" &
 	elif [ $used_node == 'quad' ]
 	then
-#	    printf "\t$where_latm/tetra_method_quad int_$ij_$pfix > hoy_$ij_$pfix\n"
-	    ssh ${nodes[$i]} "cd $dir;$laheylib  $where_latm/tetra_method_quad int_$ij'_'$pfix > hoy_$ij'_'$pfix" &
+	    ssh ${nodes[$i]} "cd $dir;$laheylib  $where_latm/tetra_method_all int_$ij'_'$pfix > hoy_$ij'_'$pfix" &
 	else
 	    echo -e "$RED ${nodes[$i]} $NC is not a valid option in .machines_res "
 	    echo please run again
@@ -663,18 +673,20 @@ TIMESTARTALLI=`date`
 ## kk
 	for ij in ${scases[@]}
 	do
-            if [[ $response == '17' || $response == '25' || $response == '3' || $response == '41' || $response == '29' || $response == '26' || $response == '27' ]]
+            if [[ $response == '17' || $response == '25' || $response == '3' || $response == '41' || $response == '29' || $response == '26' || $response == '27' || $response == '46' ]]
 	    then
-# ndot is  real => no need for KK
-# zeta is purely imaginary => no need for KK
+		# ndot is  real => no need for KK
+		# sigma is  real => no need for KK
+		# zeta is purely imaginary => no need for KK
 		printf "\t${red}no need for KK $ij${NC}\n"
 		awk '{print $1}' $sname.$ij.$spe'_'$pfix > bc1_$pfix
 		awk '{print $2,$3}' $sname.$ij.$spe'_'$pfix > bc$ij'_'$pfix
 		echo bc$ij'_'$pfix >> chido 
 	    else
 		printf "\t${red}KK for $ij${NC}\n"
-#                      printf "\t Doing kk \n" 
-		$TINIBA/kk/rkramer_$exec 1 $sname.$ij.$spe'_'$pfix $sname.$ij.kk.$spe'_'$pfix >> hoy_$ij'_'$pfix
+		# binary for hexas, quads, fats
+		$TINIBA/kk/rkramer 1 $sname.$ij.$spe'_'$pfix $sname.$ij.kk.$spe'_'$pfix >> hoy_$ij'_'$pfix
+#		$TINIBA/kk/rkramer_$exec 1 $sname.$ij.$spe'_'$pfix $sname.$ij.kk.$spe'_'$pfix >> hoy_$ij'_'$pfix
 		awk '{print $1}' $sname.$ij.kk.$spe'_'$pfix > bc1_$pfix
 		awk '{print $2,$3}' $sname.$ij.kk.$spe'_'$pfix > bc$ij'_'$pfix
 		echo bc$ij'_'$pfix >> chido 
@@ -710,11 +722,14 @@ TIMESTARTALLI=`date`
 #                 printf "$where_smear/rsmear2_$exec 1 $file1 $file2\n"
             if [ ! -e $where_smear ];then 
                 printf "\t I could find this file: \n"
-                printf "\t $where_smear/rsmear2_$exec \n"
+#                printf "\t $where_smear/rsmear2_$exec \n"
+                printf "\t $where_smear/rsmear2 \n"
                 printf "\t Ctrl C to Stop\n"
                 read -p ""
             fi
-	    $where_smear/rsmear2_$exec 1 $file1 $file2 $smearvalue > hoy     #smearing
+	    # binary for quads, hexas, fats 
+	    $where_smear/rsmear2 1 $file1 $file2 $smearvalue > hoy     #smearing
+#	    $where_smear/rsmear2_$exec 1 $file1 $file2 $smearvalue > hoy     #smearing
 #	    file3=$sname.kk$label$label2
 #	    file4=$file2$label2
 	    if [ "$vnlkss" == "false" ]

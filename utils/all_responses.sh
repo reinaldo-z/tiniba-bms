@@ -285,15 +285,16 @@ fi
 	    aqui=`pwd`
 # creates the working directory 
 	    ssh $adondi "mkdir -p /data/$quien/workspace/$parent/$case"
-# copies all the required files
-	    rcp $case.xyz $adondi"ib":/data/$quien/workspace/$parent/$case/.
-	    rcp setUpAbinit_$case.in $adondi"ib":/data/$quien/workspace/$parent/$case/.
-	    rcp .machines_res $adondi"ib":/data/$quien/workspace/$parent/$case/.
-	    rcp .machines_latm $adondi"ib":/data/$quien/workspace/$parent/$case/.
-	    rcp -r symmetries $adondi"ib":/data/$quien/workspace/$parent/$case/.
-	    rcp -r $case"_check" $adondi"ib":/data/$quien/workspace/$parent/$case/.
-	    rcp eigen_* $adondi"ib":/data/$quien/workspace/$parent/$case/.
-	    rcp me*_* $adondi"ib":/data/$quien/workspace/$parent/$case/.
+	    # copies all the required files
+	    scp $case.xyz $adondi"ib":/data/$quien/workspace/$parent/$case/. >& /dev/null 
+	    scp setUpAbinit_$case.in $adondi"ib":/data/$quien/workspace/$parent/$case/. >& /dev/null 
+	    scp .machines_res $adondi"ib":/data/$quien/workspace/$parent/$case/. >& /dev/null 
+	    scp .machines_latm $adondi"ib":/data/$quien/workspace/$parent/$case/. >& /dev/null 
+	    scp -r symmetries $adondi"ib":/data/$quien/workspace/$parent/$case/. >& /dev/null 
+	    scp -r $case"_check" $adondi"ib":/data/$quien/workspace/$parent/$case/. >& /dev/null 
+	    scp eigen_* $adondi"ib":/data/$quien/workspace/$parent/$case/. >& /dev/null 
+	    scp me*_* $adondi"ib":/data/$quien/workspace/$parent/$case/. >& /dev/null 
+	    #printf "\t scp me*_* $adondi ib:/data/$quien/workspace/$parent/$case/.\n" #DEBUG
 	else
 	    printf "\tLocal calculation, no copying required\n"
 	fi
@@ -313,10 +314,10 @@ fi
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
 	    then
-		rcp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
+		scp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
 		qui=$ontoi"ib"
-		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;rcp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
-		ssh $adondi "rcp /data/$quien/workspace/$parent/$case/21* $qui:$aqui/."
+		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;scp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
+		ssh $adondi "scp /data/$quien/workspace/$parent/$case/21* $qui:$aqui/."
 	    else
 		./mtita
 		rm mtita
@@ -331,10 +332,10 @@ fi
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
 	    then
-		rcp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
+		scp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
 		qui=$ontoi"ib"
-		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;rcp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
-		ssh $adondi "rcp /data/$quien/workspace/$parent/$case/22* $qui:$aqui/."
+		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;scp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
+		ssh $adondi "scp /data/$quien/workspace/$parent/$case/22* $qui:$aqui/."
 	    else
 		./mtita
 		rm mtita
@@ -388,10 +389,10 @@ fi
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
 	    then
-		rcp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
+		scp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
 		qui=$ontoi"ib"
-		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;rcp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
-		ssh $adondi "rcp /data/$quien/workspace/$parent/$case/44* $qui:$aqui/."
+		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;scp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
+		ssh $adondi "scp /data/$quien/workspace/$parent/$case/44* $qui:$aqui/."
 #		./mtita
 #		rm mtita
 	    else
@@ -408,10 +409,10 @@ fi
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
 	    then
-		rcp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
+		scp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
 		qui=$ontoi"ib"
-		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;rcp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
-		ssh $adondi "rcp /data/$quien/workspace/$parent/$case/45* $qui:$aqui/."
+		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;scp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
+		ssh $adondi "scp /data/$quien/workspace/$parent/$case/45* $qui:$aqui/."
 #		./mtita
 #		rm mtita
 	    else
@@ -466,10 +467,10 @@ fi
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
 	    then
-		rcp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
+		scp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
 		qui=$ontoi"ib"
-		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;rcp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
-		ssh $adondi "rcp /data/$quien/workspace/$parent/$case/42* $qui:$aqui/."
+		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;scp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
+		ssh $adondi "scp /data/$quien/workspace/$parent/$case/42* $qui:$aqui/."
 	    else
 		./mtita
 		rm mtita
@@ -484,10 +485,10 @@ fi
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
 	    then
-		rcp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
+		scp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
 		qui=$ontoi"ib"
-		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;rcp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
-		ssh $adondi "rcp /data/$quien/workspace/$parent/$case/43* $qui:$aqui/."
+		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;scp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
+		ssh $adondi "scp /data/$quien/workspace/$parent/$case/43* $qui:$aqui/."
 	    else
 		./mtita
 		rm mtita
@@ -631,4 +632,3 @@ fi
 	gracias
 	Line
     fi
-    

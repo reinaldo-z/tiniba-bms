@@ -5,99 +5,155 @@
 ## AUTHOR            :  J.L. Cabellos 
 ## REPORTING BUGS    :  Report bugs to <sollebac@gmail.com>.
 
-      RED='\e[0;31m'
-     BLUE='\e[0;34m'
-      BLU='\e[1;34m'
-     CYAN='\e[0;36m'
-    GREEN='\e[0;32m'
-      GRE='\e[1;32m'
-   YELLOW='\e[1;33m'
-       NC='\e[0m' # No Color
+RED='\e[0;31m'
+BLUE='\e[0;34m'
+BLU='\e[1;34m'
+CYAN='\e[0;36m'
+GREEN='\e[0;32m'
+GRE='\e[1;32m'
+YELLOW='\e[1;33m'
+NC='\e[0m' # No Color
 
-        WORKZPACE="workspace" 
-          BASEDIR=`dirname $PWD`
-           PARENT=`basename $BASEDIR`
-             CASO=`basename $PWD`
- function Line {
-      printf "\t${BLUE}=============================${NC}\n"
-       }
-     
-
+WORKZPACE="workspace" 
+BASEDIR=`dirname $PWD`
+PARENT=`basename $BASEDIR`
+CASO=`basename $PWD`
+host=`hostname`
+function Line {
+    printf "\t${BLUE}=============================${NC}\n"
+}
 
  declare -a FALSEMACHINESpmn
  declare -a VIVOS
  declare -a MUERTOS
+ 
+###################################################################
+ #### List of Medusa's nodes taken from /etc/hosts
+ ###  36 hexa(@12)=432 + 3 fat(@64)=192 + 6 quad(@4)=24 Total=648 nuclei  
+ ###   IP                    host name 
+IPES[1]="172.17.1.1"	;MAQ501[1]="hexa01"
+IPES[2]="172.17.1.2"	;MAQ501[2]="hexa02"
+IPES[3]="172.17.1.3"	;MAQ501[3]="hexa03"
+IPES[4]="172.17.1.4"	;MAQ501[4]="hexa04"
+IPES[5]="172.17.1.5"	;MAQ501[5]="hexa05"
+IPES[6]="172.17.1.6"	;MAQ501[6]="hexa06"
+IPES[7]="172.17.1.7"	;MAQ501[7]="hexa07"
+IPES[8]="172.17.1.8"	;MAQ501[8]="hexa08"
+IPES[9]="172.17.1.9"	;MAQ501[9]="hexa09"
+IPES[10]="172.17.1.10"	;MAQ501[10]="hexa10"
+IPES[11]="172.17.1.11"	;MAQ501[11]="hexa11"
+IPES[12]="172.17.1.12"	;MAQ501[12]="hexa12"
+IPES[13]="172.17.1.13"	;MAQ501[13]="hexa13"
+IPES[14]="172.17.1.14"	;MAQ501[14]="hexa14"
+IPES[15]="172.17.1.15"	;MAQ501[15]="hexa15"
+IPES[16]="172.17.1.16"	;MAQ501[16]="hexa16"
+IPES[17]="172.17.1.17"	;MAQ501[17]="hexa17"
+IPES[18]="172.17.1.18"	;MAQ501[18]="hexa18"
+IPES[19]="172.17.1.19"	;MAQ501[19]="hexa19"
+IPES[20]="172.17.1.20"	;MAQ501[20]="hexa20"
+IPES[21]="172.17.1.21"	;MAQ501[21]="hexa21"
+IPES[22]="172.17.1.22"	;MAQ501[22]="hexa22"
+IPES[23]="172.17.1.23"	;MAQ501[23]="hexa23"
+IPES[24]="172.17.1.24"	;MAQ501[24]="hexa24"
+IPES[25]="172.17.1.25"	;MAQ501[25]="hexa25"
+IPES[26]="172.17.1.26"	;MAQ501[26]="hexa26"
+IPES[27]="172.17.1.27"	;MAQ501[27]="hexa27"
+IPES[28]="172.17.1.28"	;MAQ501[28]="hexa28"
+IPES[29]="172.17.1.29"	;MAQ501[29]="hexa29"
+IPES[30]="172.17.1.30"	;MAQ501[30]="hexa30"
+IPES[31]="172.17.1.31"	;MAQ501[31]="hexa31"
+IPES[32]="172.17.1.32"	;MAQ501[32]="hexa32"
+IPES[33]="172.17.1.33"	;MAQ501[33]="hexa33"
+IPES[34]="172.17.1.34"	;MAQ501[34]="hexa34"
+IPES[35]="172.17.1.35"	;MAQ501[35]="hexa35"
+IPES[36]="172.17.1.36"	;MAQ501[36]="hexa36"
+IPES[37]="172.17.1.37"	;MAQ501[37]="fat01"
+IPES[38]="172.17.1.38"	;MAQ501[38]="fat02"
+IPES[39]="172.17.1.39"	;MAQ501[39]="fat03"
+IPES[40]="172.17.1.40"	;MAQ501[40]="quad01"
+IPES[41]="172.17.1.41"	;MAQ501[41]="quad02"
+IPES[42]="172.17.1.42"	;MAQ501[42]="quad03"
+IPES[43]="172.17.1.43"	;MAQ501[43]="quad04"
+IPES[44]="172.17.1.44"	;MAQ501[44]="quad05"
+IPES[45]="172.17.1.45"	;MAQ501[45]="quad06"
+###################################################################
+###################################################################
 ### hha this all the cluster jl
-MAQ501[1]="node01";MAQ501[12]="node12";MAQ501[23]="quad04"
-MAQ501[2]="node02";MAQ501[13]="node13";MAQ501[24]="quad05"
-MAQ501[3]="node03";MAQ501[14]="node14";MAQ501[25]="quad06"
-MAQ501[4]="node04";MAQ501[15]="node15";MAQ501[26]="quad07"
-MAQ501[5]="node05";MAQ501[16]="itanium01";MAQ501[27]="quad08"
-MAQ501[6]="node06";MAQ501[17]="itanium02";MAQ501[28]="quad09"
-MAQ501[7]="node07";MAQ501[18]="itanium03";MAQ501[29]="quad10"
-MAQ501[8]="node08";MAQ501[19]="itanium04";MAQ501[30]="quad11"
-MAQ501[9]="node09";MAQ501[20]="quad01";MAQ501[31]="quad12"
-MAQ501[10]="node10";MAQ501[21]="quad02";MAQ501[32]="quad13"
-MAQ501[11]="node11";MAQ501[22]="quad03";MAQ501[33]="quad14"
-MAQ501[34]="hexa1";MAQ501[35]="hexa2";MAQ501[36]="hexa3"
-MAQ501[37]="hexa4";MAQ501[38]="hexa5";MAQ501[39]="hexa6"
-MAQ501[40]="hexa7";MAQ501[41]="hexa8";MAQ501[42]="hexa9"
-MAQ501[43]="hexa10";MAQ501[44]="hexa11";MAQ501[45]="hexa12"
-MAQ501[46]="hexa13";MAQ501[47]="hexa14";MAQ501[48]="hexa15"
-MAQ501[49]="hexa16";MAQ501[50]="hexa17";MAQ501[51]="hexa18"
-MAQ501[52]="hexa19";MAQ501[53]="hexa20";MAQ501[54]="hexa21"
-MAQ501[55]="hexa22";MAQ501[56]="hexa23";MAQ501[57]="hexa24"
-MAQ501[58]="hexa25";MAQ501[59]="hexa26";MAQ501[60]="hexa27"
-MAQ501[61]="hexa28";MAQ501[62]="hexa29";MAQ501[63]="hexa30"
-MAQ501[64]="hexa31";MAQ501[65]="hexa32";MAQ501[66]="hexa33"
-MAQ501[67]="hexa34";MAQ501[68]="hexa35";MAQ501[69]="hexa36"
-IPES[1]="192.168.1.1";IPES[12]="192.168.1.12";IPES[23]="172.17.1.40"
-IPES[2]="192.168.1.2";IPES[13]="192.168.1.13";IPES[24]="172.17.1.41"
-IPES[3]="192.168.1.3";IPES[14]="192.168.1.14";IPES[25]="172.17.1.42"
-IPES[4]="192.168.1.4";IPES[15]="192.168.1.15";IPES[26]="172.17.1.43"
-IPES[5]="192.168.1.5";IPES[16]="192.168.1.16";IPES[27]="172.17.1.44"
-IPES[6]="192.168.1.6";IPES[17]="192.168.1.17";IPES[28]="172.17.1.45"
-IPES[7]="192.168.1.7";IPES[18]="192.168.1.18";IPES[29]="172.17.1.46"
-IPES[8]="192.168.1.8";IPES[19]="192.168.1.19";IPES[30]="172.17.1.47"
-IPES[9]="192.168.1.9";IPES[20]="172.17.1.37";IPES[31]="172.17.1.48"
-IPES[10]="192.168.1.10";IPES[21]="172.17.1.38";IPES[32]="172.17.1.49"
-IPES[11]="192.168.1.11";IPES[22]="172.17.1.39";IPES[33]="172.17.1.50"
-IPES[34]="172.17.1.1"
-IPES[35]="172.17.1.2"
-IPES[36]="172.17.1.3"
-IPES[37]="172.17.1.4"
-IPES[38]="172.17.1.5"
-IPES[39]="172.17.1.6"
-IPES[40]="172.17.1.7"
-IPES[41]="172.17.1.8"
-IPES[42]="172.17.1.9"
-IPES[43]="172.17.1.10"
-IPES[44]="172.17.1.11"
-IPES[45]="172.17.1.12"
-IPES[46]="172.17.1.13"
-IPES[47]="172.17.1.14"
-IPES[48]="172.17.1.15"
-IPES[49]="172.17.1.16"
-IPES[50]="172.17.1.17"
-IPES[51]="172.17.1.18"
-IPES[52]="172.17.1.19"
-IPES[53]="172.17.1.20"
-IPES[54]="172.17.1.21"
-IPES[55]="172.17.1.22"
-IPES[56]="172.17.1.23"
-IPES[57]="172.17.1.24"
-IPES[58]="172.17.1.25"
-IPES[59]="172.17.1.26"
-IPES[60]="172.17.1.27"
-IPES[61]="172.17.1.28"
-IPES[62]="172.17.1.29"
-IPES[63]="172.17.1.30"
-IPES[64]="172.17.1.31"
-IPES[65]="172.17.1.32"
-IPES[66]="172.17.1.33"
-IPES[67]="172.17.1.34"
-IPES[68]="172.17.1.35"
-IPES[69]="172.17.1.36"
+ ### These are the good old nodes, left here as a evolutionary
+ ### stamp of DNA's inability to get rid of the junk it carries
+ ### as natural selection shapes them through the eons.
+ ###
+#MAQ501[1]="node01";MAQ501[12]="node12";MAQ501[23]="quad04"
+#MAQ501[2]="node02";MAQ501[13]="node13";MAQ501[24]="quad05"
+#MAQ501[3]="node03";MAQ501[14]="node14";MAQ501[25]="quad06"
+#MAQ501[4]="node04";MAQ501[15]="node15";MAQ501[26]="quad07"
+#MAQ501[5]="node05";MAQ501[16]="itanium01";MAQ501[27]="quad08"
+#MAQ501[6]="node06";MAQ501[17]="itanium02";MAQ501[28]="quad09"
+#MAQ501[7]="node07";MAQ501[18]="itanium03";MAQ501[29]="quad10"
+#MAQ501[8]="node08";MAQ501[19]="itanium04";MAQ501[30]="quad11"
+#MAQ501[9]="node09";MAQ501[20]="quad01";MAQ501[31]="quad12"
+#MAQ501[10]="node10";MAQ501[21]="quad02";MAQ501[32]="quad13"
+#MAQ501[11]="node11";MAQ501[22]="quad03";MAQ501[33]="quad14"
+#MAQ501[34]="hexa1";MAQ501[35]="hexa2";MAQ501[36]="hexa3"
+#MAQ501[37]="hexa4";MAQ501[38]="hexa5";MAQ501[39]="hexa6"
+#MAQ501[40]="hexa7";MAQ501[41]="hexa8";MAQ501[42]="hexa9"
+#MAQ501[43]="hexa10";MAQ501[44]="hexa11";MAQ501[45]="hexa12"
+#MAQ501[46]="hexa13";MAQ501[47]="hexa14";MAQ501[48]="hexa15"
+#MAQ501[49]="hexa16";MAQ501[50]="hexa17";MAQ501[51]="hexa18"
+#MAQ501[52]="hexa19";MAQ501[53]="hexa20";MAQ501[54]="hexa21"
+#MAQ501[55]="hexa22";MAQ501[56]="hexa23";MAQ501[57]="hexa24"
+#MAQ501[58]="hexa25";MAQ501[59]="hexa26";MAQ501[60]="hexa27"
+#MAQ501[61]="hexa28";MAQ501[62]="hexa29";MAQ501[63]="hexa30"
+#MAQ501[64]="hexa31";MAQ501[65]="hexa32";MAQ501[66]="hexa33"
+#MAQ501[67]="hexa34";MAQ501[68]="hexa35";MAQ501[69]="hexa36"
+#IPES[1]="192.168.1.1";IPES[12]="192.168.1.12";IPES[23]="172.17.1.40"
+#IPES[2]="192.168.1.2";IPES[13]="192.168.1.13";IPES[24]="172.17.1.41"
+#IPES[3]="192.168.1.3";IPES[14]="192.168.1.14";IPES[25]="172.17.1.42"
+#IPES[4]="192.168.1.4";IPES[15]="192.168.1.15";IPES[26]="172.17.1.43"
+#IPES[5]="192.168.1.5";IPES[16]="192.168.1.16";IPES[27]="172.17.1.44"
+#IPES[6]="192.168.1.6";IPES[17]="192.168.1.17";IPES[28]="172.17.1.45"
+#IPES[7]="192.168.1.7";IPES[18]="192.168.1.18";IPES[29]="172.17.1.46"
+#IPES[8]="192.168.1.8";IPES[19]="192.168.1.19";IPES[30]="172.17.1.47"
+#IPES[9]="192.168.1.9";IPES[20]="172.17.1.37";IPES[31]="172.17.1.48"
+#IPES[10]="192.168.1.10";IPES[21]="172.17.1.38";IPES[32]="172.17.1.49"
+#IPES[11]="192.168.1.11";IPES[22]="172.17.1.39";IPES[33]="172.17.1.50"
+#IPES[34]="172.17.1.1"
+#IPES[35]="172.17.1.2"
+#IPES[36]="172.17.1.3"
+#IPES[37]="172.17.1.4"
+#IPES[38]="172.17.1.5"
+#IPES[39]="172.17.1.6"
+#IPES[40]="172.17.1.7"
+#IPES[41]="172.17.1.8"
+#IPES[42]="172.17.1.9"
+#IPES[43]="172.17.1.10"
+#IPES[44]="172.17.1.11"
+#IPES[45]="172.17.1.12"
+#IPES[46]="172.17.1.13"
+#IPES[47]="172.17.1.14"
+#IPES[48]="172.17.1.15"
+#IPES[49]="172.17.1.16"
+#IPES[50]="172.17.1.17"
+#IPES[51]="172.17.1.18"
+#IPES[52]="172.17.1.19"
+#IPES[53]="172.17.1.20"
+#IPES[54]="172.17.1.21"
+#IPES[55]="172.17.1.22"
+#IPES[56]="172.17.1.23"
+#IPES[57]="172.17.1.24"
+#IPES[58]="172.17.1.25"
+#IPES[59]="172.17.1.26"
+#IPES[60]="172.17.1.27"
+#IPES[61]="172.17.1.28"
+#IPES[62]="172.17.1.29"
+#IPES[63]="172.17.1.30"
+#IPES[64]="172.17.1.31"
+#IPES[65]="172.17.1.32"
+#IPES[66]="172.17.1.33"
+#IPES[67]="172.17.1.34"
+#IPES[68]="172.17.1.35"
+#IPES[69]="172.17.1.36"
+###################################################################
 function Line {
     printf "\t${BLUE}=============================${NC}\n"
 }
@@ -266,8 +322,14 @@ fi
    for ((hh=0;hh<=($NOMACHINESpmn-1); hh++));do        
            let kk++  
            CAZO=$CASO"_"$kk
-           WHEREWORKREMOTE[$hh]="/data/$USER/$WORKZPACE/$PARENT/$CAZO"
-            WHEREWORKLOCAL[$hh]="$PWD/$CAZO"      
+	   ##### AQUI AQUI AQUI tal vez haya que agregar a los fats 
+	   if [[ "$host" == "hexa"* ]] 
+	   then
+	       WHEREWORKREMOTE[$hh]="/data/$USER/$WORKZPACE/$PARENT/$CAZO"
+	   else
+	       WHEREWORKREMOTE[$hh]="/data/$USER/$WORKZPACE/$PARENT/$CAZO"
+	   fi    
+	   WHEREWORKLOCAL[$hh]="$PWD/$CAZO"      
    done
 
 ##################################################
@@ -286,6 +348,7 @@ fi
            printf " [${GREEN}exist${NC}]\n"
           else
            printf " [${GREEN}making${NC}]\n"
+           #printf "\tssh $REMOTESERVER mkdir -p $DIRQ\n"#DEBUG
            ssh $REMOTESERVER "mkdir -p $DIRQ"
           fi
          sleep .1

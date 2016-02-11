@@ -9,6 +9,8 @@
 !!$ 44 : shg : Layer-Length gauge
 !!$ 26 : ndotccp : layer carrier injection
 !!$ 27 : ndotvv : carrier injection
+!!$ 46 : sigma : shift current
+!!$ 47 : calsigma : layer shift current
 !!! Module containing symmetry operations
 MODULE symmetryOperations
   USE inparams, ONLY : DP, spectrum, nSym
@@ -64,7 +66,7 @@ CONTAINS
           CALL transformationLinearResponse(i_spectra)
 ! BMS march-27-07 The old way of calculating the LbL (Layer-by-Layer) injection current \eta_2^{abc}
 !                 needs the SecondOrderResponse kind-of-transformation 
-       CASE(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,25)
+       CASE(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,25,46,47)
           CALL transformationSecondOrderResponse(i_spectra)
 ! BMS march-27-07 However, the new way of calculating the Layer-by-Layer injection current \eta_2^{abc}
 !                 only needs the LinearResponse kind-of-transformation, that we treat 

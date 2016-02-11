@@ -17,4 +17,4 @@
     MAG='\e[0;35m'
      NC='\e[0m' # No Color
 ##
-rcp eigen_1661_20-nospin hexa1ib:/data/bms/workspace/gaas/.
+scp eigen_1661_20-nospin hexa1ib:/data/bms/workspace/gaas/.

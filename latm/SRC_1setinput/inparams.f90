@@ -9,6 +9,8 @@
 !!$ 44 : shg : Layer-Length gauge
 !!$ 26 : ndotccp : layer carrier injection
 !!$ 27 : ndotvv : carrier injection
+!!$ 46 : sigma :  shift current
+!!$ 47 : calsigma : layer shift current
 !!!############
 MODULE inparams
 !!!############
@@ -109,6 +111,11 @@ MODULE inparams
   ! surface differs from bulk by a factor of 2, since we use the Im[rr] in the surface
   ! term instead of [r,r] for the bulk term, and Im[rr]=[r,r]/2
   REAL(DP), PARAMETER :: caleta_factor = -pi*(27.21d0)**3*(9.985d25)*3.7037d-15
+  !#BMSd
+  ! sigma factor to be worked out by Reinaldo
+  REAL(DP), PARAMETER :: sigma_factor = -pi*(27.21d0)**3*(9.985d25)*3.7037d-15
+  REAL(DP), PARAMETER :: calsigma_factor = -pi*(27.21d0)**3*(9.985d25)*3.7037d-15
+  !#BMSu
   !!!!!!!!!!!&&&&&&
   ! Rectification_factor -- used for rectification coefficients
   REAL(DP), PARAMETER :: rec_factor = -pi*(27.21d0)**4*(1.5875d-6)
@@ -157,7 +164,9 @@ MODULE inparams
 !in principle above should be below term that appears in Cabellos tiniba version
 !(pi*(4.803d-10)**3*(4.189d8) &
 !  /((1.0546d-27)**2*(9.109d-28)**3*(1.519d15)**5*(5.291d-9)**3*(1.993d-19)**3))/2.
-
+  !!#BMSd
+  
+  !!#BMSu
 !!!
   REAL(DP), PARAMETER :: leo_factor = 0.d0  !! LEO not implemented
   
@@ -194,7 +203,7 @@ MODULE inparams
        ! 41                            42          43          44          45
        spin_injection_factor_bulk ,shg1_factor,shg2_factor,shg1_factor,shg2_factor, &
        !46  47   48   49   50 
-       uno, uno, uno, uno, uno/)
+       sigma_factor, calsigma_factor, uno, uno, uno/)
 !!!FN
   
 CONTAINS
@@ -262,7 +271,18 @@ CONTAINS
     NAMELIST/INDATA/integrand_filename
     NAMELIST/INDATA/spectrum_filename
     NAMELIST/INDATA/energy_min, energy_max, energy_steps
-    
+!!! Initializes the names of the data files
+!!! whose existence is checked in set_input_bin.f90
+!!! when paramFile, these variables could obtain the
+!!! actual name of the corresponding data file, and
+!!! those that remain as nonexistent will couse no problem
+!!! with the INQUIRE statement in set_input_bin.f90    
+    smn_data_filename='nonexistent'
+    cal_data_filename='nonexistent'
+    cfmn_data_filename='nonexistent'
+    cur_data_filename='nonexistent'
+    rhomm_data_filename='nonexistent'
+!!!    
     OPEN(UNIT=1, FILE=paramFile, FORM='FORMATTED', STATUS='OLD', IOSTAT=ios)
     IF (ios.NE.0) THEN
        WRITE(6,*) "Error opening file: ", TRIM(paramFile)
@@ -281,7 +301,7 @@ CONTAINS
        STOP 'inparams.f90:STOPPING'
     END IF
     CLOSE(1)
-    
+
     crystal_class = "blank"
     nTetra = 99999999
     nSym = 0
@@ -453,7 +473,7 @@ CONTAINS
           WRITE(*,*) '       inparams.f90:imaginary part of Chi1'
           dims = 2
           length = 9
-       CASE(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,25)
+       CASE(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,25,46,47)
           WRITE(6,*) '       inparams.f90:second order response'
           dims = 3
           length = 27

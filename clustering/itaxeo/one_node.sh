@@ -10,6 +10,7 @@ GREEN='\e[0;32m'
 MAG='\e[0;35m'
 NC='\e[0m' # No Color
 #
+ontoi=`hostname`
 # reads TINIBA version from version-tiniba.txt
 source version-tiniba.txt
 #
@@ -119,26 +120,25 @@ nodo=`$trunc_dir/trunc.sh $node`
 ##
 ## choses the correct executable for the matrix elements
 ##
-if [ $nodo = 'node' ]
-then
-    rpmns_exec=$TINIBA/matrix_elements/rpmns.xeon
-fi
-if [ $nodo = 'itanium' ]
-then
-    rpmns_exec=$TINIBA/matrix_elements/rpmns.itanium
-fi
 if [ $nodo = 'quad' ]
 then
-    rpmns_exec=$TINIBA/matrix_elements/rpmns.quad
+#   rpmns_exec=$TINIBA/matrix_elements/rpmns.quad
+    rpmns_exec=$TINIBA/matrix_elements/rpmns
 fi
 if [ $nodo = 'hexa' ]
 then
-    rpmns_exec=$TINIBA/matrix_elements/rpmns.hexa
+    #    rpmns_exec=$TINIBA/matrix_elements/rpmns.hexa
+        rpmns_exec=$TINIBA/matrix_elements/rpmns
+fi
+if [ $nodo = 'fat' ]
+then
+    #    rpmns_exec=$TINIBA/matrix_elements/rpmns.hexa
+        rpmns_exec=$TINIBA/matrix_elements/rpmns
 fi
 ##
 if [ ! -d $input ]
 then
-    echo "$input on $node does not exist, creating."
+    echo "ACA: $input on $node does not exist, creating."
     exit 1
 fi
 #
@@ -183,14 +183,19 @@ then
 	printf "\t${RED}**** $caseo.in at node $node for case $dime has changed: **** ${NC}\n"
 	printf "\t${BLUE}    copying:${NC}\n"
 	printf "\t$diro/$caseo_$No/$caseo.in $node:/data/$quien/workspace/$parent/$caseo_$No/.\n"
-	rcp $diro/$caseo'_'$No/$caseo.in $node:/data/$quien/workspace/$parent/$caseo'_'$No/.
+	if [[ "$ontoi" == "hexa"* ]]
+	then
+	    scp $diro/$caseo'_'$No/$caseo.in $node:/data/$quien/workspace/$parent/$caseo'_'$No/.
+	else
+	    scp $diro/$caseo'_'$No/$caseo.in $node:/data/$quien/workspace/$parent/$caseo'_'$No/.
+	fi
 	Line
     fi
     Line
     printf "\tcode is constructing the wavefunctions in node $node for case $dime\n"    Line
 ## starts the overall time
     TIMESTARTALL=`date`
-#    printf "\t$abiexec < $caseo.files > log\n"
+    #printf "\t$abiexec < $caseo.files > log\n"
     $abiexec < $caseo.files > log
 # 
     TIMEEND=`date`
@@ -295,9 +300,14 @@ then
     mv spinmn.d $diro/$caseo'_'$No/spinmn.d
 fi
 #
-ondi=/data/$USER/workspace/$parent/$caseo'_'$No/logfile 
+    if [[ "$ontoi" == "hexa"* ]]
+    then
+	ondi=/data/$USER/workspace/$parent/$caseo'_'$No/logfile 
+	else
+	ondi=$node:/data/$USER/workspace/$parent/$caseo'_'$No/logfile 
+    fi
 onde=$diro/logfiles/log'_'$caseo'_'$Nko'_'$Nlayers'_'$No
-rcp $ondi $node:$onde
+scp $ondi $node:$onde
 #
 unitS1='39'
 unitS2=`expr $unitS1 + 2 \* $Nlayers`

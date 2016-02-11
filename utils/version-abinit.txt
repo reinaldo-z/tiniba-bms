@@ -1,4 +1,20 @@
-ab_exec_xeon=/home/narzate/share_new/abinit-4.6.5/abinis
-ab_exec_itanium=/home/narzate/share_new/abinit-4.6.5/abinis.itanium
-ab_exec_quad=/homeib/prog/QUAD/abinit-7.0.5/abinit/bin/abinit
-ab_exec_hexa=/home/prog/HEXA/abinit-7.0.5/abinit/bin/abinit 
+# old working version
+# Chonito's version
+ab_exec_hexa=/home/sma/bin/abinit-7.10.5-MPI/bin/abinit 
+ab_exec_quad=/home/sma/bin/abinit-7.10.5-MPI/bin/abinit 
+ab_exec_fat=/home/sma/bin/abinit-7.10.5-MPI/bin/abinit 
+#ab_exec_hexa=/home/bms/abinit/abinit-7.0.5/abinit/bin/abinit 
+# New version, one executable for all platforms
+#ab_exec_quad=/opt/bin/abinit-7.10.5-MPI/bin/abinit 
+#ab_exec_hexa=/opt/bin/abinit-7.10.5-MPI/bin/abinit 
+#ab_exec_fat=/opt/bin/abinit-7.10.5-MPI/bin/abinit 
+##############################################################
+# Older working versions
+# WRONG ab_exec_quad =/homeib/prog/QUAD/abinit-7.0.5/abinit/bin/abinit 
+#ab_exec_hexa=/home/prog/HEXA/abinit-7.0.5/abinit/bin/abinit 
+#ab_exec_hexa=/home/prog/HEXA/abinit-7.0.5/abinit/bin/abinit 
+# these architectures are not longer working
+#ab_exec_xeon=/home/narzate/share_new/abinit-4.6.5/abinis 
+#ab_exec_itanium=/home/narzate/share_new/abinit-4.6.5/abinis.itanium 
+##############################################################
+

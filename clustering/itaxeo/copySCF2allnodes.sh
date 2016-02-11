@@ -15,7 +15,7 @@ NC='\e[0m' # No Color
 ## global
 ontoy=`hostname`
 # reads TINIBA version from version-tiniba.txt
-source version-tiniba.txt
+source $TINIBA/utils/version-tiniba.txt
 #
 ##=========FUNCTIONS===============
 function Line {
@@ -73,9 +73,9 @@ fi
 for ((hh=0;hh<=($NOMACHINESpmn-1); hh++));do
     let "kk=hh+1"
     CAZO=$CASO"_"$kk
-    if [ "$ontoy" == "medusa" ]
+    if [[ "$ontoy" == "hexa"* ]]
     then
-	WHEREWORKREMOTE[$hh]="data/$USER/$WORKZPACE/$PARENT/$CAZO"
+	WHEREWORKREMOTE[$hh]="/data/$USER/$WORKZPACE/$PARENT/$CAZO"
     else
 	WHEREWORKREMOTE[$hh]="/data/$USER/$WORKZPACE/$PARENT/$CAZO"
     fi
@@ -97,7 +97,7 @@ for ((hh=0;hh<=($NOMACHINESpmn-1); hh++));do
     if [ $EXISTE -eq 0 ] ;then
         printf " [${GREEN}exist${NC}]\n"
     else
-        printf " [${GREEN}making${NC}]\n"
+        printf " [${GREEN}JJJmaking${NC}]\n"
         ssh $REMOTESERVER "mkdir -p $DIRQ"
     fi
     sleep .1
@@ -242,14 +242,26 @@ for ((hh=0;hh<=($NOMACHINESpmn-1); hh++));do
             MAQUINA501=$REMOTESERVER"ib"
             MAQUINA500=$anterior"ib"
             SWITCHNAME="Using infiniband"
-#	    exit 1
         else
             MAQUINA501=$REMOTESERVER
             MAQUINA500=$anterior
             SWITCHNAME="Not using infiniband"
         fi        
-#	printf "\taqui: $MAQUINA501 $MAQUINA500\n"
     fi 
+    #
+    #
+    if [[ "$REMOTESERVER" == "fat"* ]]; then
+        if [[ $ANFITRION == "fat"* ]];then
+            MAQUINA501=$REMOTESERVER"ib"
+            MAQUINA500=$anterior"ib"
+            SWITCHNAME="Using infiniband"
+        else
+            MAQUINA501=$REMOTESERVER
+            MAQUINA500=$anterior
+            SWITCHNAME="Not using infiniband"
+        fi        
+    fi 
+    #
     ##---------------------------
     SALIDAeq=1
     SALIDAneq=1
@@ -346,14 +358,14 @@ for ((hh=0;hh<=($NOMACHINESpmn-1); hh++));do
 	    fi
       #-------------
 	    rm -f tmp1
-	    if [ "$ontoy" == "medusa" ]
+	    if [[ "$ontoy" == "hexa"* ]]
 	    then
 #		printf "\tssh $REMOTESERVER 'md5sum '/$ADONDECOPY/$WFSCFREMOTE''\n"
 		TMP1=`ssh $REMOTESERVER 'md5sum '/$ADONDECOPY/$WFSCFREMOTE''`
 	    else
 		TMP1=`ssh $REMOTESERVER 'md5sum '$ADONDECOPY/$WFSCFREMOTE''`
 	    fi
-	    echo $TMP1>>tmp1
+	    echo $TMP1>tmp1
 	    MD5REMOTE=`awk '{print $1}' tmp1`
 	    rm -f tmp1  
       #-------------
@@ -361,9 +373,9 @@ for ((hh=0;hh<=($NOMACHINESpmn-1); hh++));do
 ##################
 	if [ "$MD5REMOTE" == "$MD5LOCAL" ];then
 	    SALIDAeq=2
-	    if [ "$ontoy" == "medusa" ]
+	    if [[ "$ontoy" == "hexa"* ]]
 	    then
-		printf "\t/$MAQUINA501.$ADONDECOPY/$WFSCFREMOTE\n"
+		printf "\t$MAQUINA501:$ADONDECOPY/$WFSCFREMOTE\n"
 	    else
 		printf "\t$MAQUINA501:$ADONDECOPY/$WFSCFREMOTE\n"
 	    fi
@@ -371,11 +383,11 @@ for ((hh=0;hh<=($NOMACHINESpmn-1); hh++));do
 	    
 	else
       ## I need to copy again but first erase
-	    if [ "$ontoy" == "medusa" ]
+	    if [[ "$ontoy" == "hexa"* ]]
 	    then
 		printf "\t/$MAQUINA501.$ADONDECOPY/$WFSCFREMOTE\n"
 	    else
-		printf "\t$MAQUINA501:$ADONDECOPY/$WFSCFREMOTE\n"
+		printf "\tMMM $MAQUINA501:$ADONDECOPY/$WFSCFREMOTE\n"
 	    fi
 	    printf "\t[${RED}Not Identical${NC}] $SALIDAneq\n" 
 	    let "INTEN=INTENTOS-2"

@@ -53,7 +53,7 @@ foreach $i ( 0 .. $n-1 )
     print $options[$i];
 
     $length = length( $options[$i] );
-    foreach $j ( 0 .. 7-$length)
+    foreach $j ( 0 .. 8-$length)
     {                                      # Format:
 	if ( $descriptions[$i] eq "" )
 	{

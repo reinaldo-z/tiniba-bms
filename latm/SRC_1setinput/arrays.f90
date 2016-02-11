@@ -522,7 +522,7 @@ CONTAINS
        WRITE(6,*) "Stopping"
        STOP
     ELSE
-       WRITE(6,*) '@arrays.f9:Opened file: ', TRIM(energy_data_filename)
+       WRITE(6,*) '@arrays.f90:Opened file: ', TRIM(energy_data_filename)
     END IF
     
     DO ik = 1, kMax

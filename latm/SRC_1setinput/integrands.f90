@@ -1,6 +1,6 @@
 !################
 MODULE integrands
-  !################
+!################
   USE constants, ONLY : DP, DPC
   USE inparams, ONLY : nVal, nMax, nSym
   USE inparams, ONLY : tol
@@ -33,7 +33,7 @@ MODULE integrands
   !    INTEGER :: spectrum_type
 
   !!  1 : chi1                (W)       
-  !!  2 :  Lambda       
+  !!  2 : Lambda       
   !!  3 : eta2        
   !!  4 : S
   !!  5 : C 
@@ -68,6 +68,10 @@ MODULE integrands
   !! 39 :
   !! 40 : zeta_cabellos       (W)
   !! 41 : zeta_abs            (W)
+  !!#BMSd feb/09/16
+  !! 46 : sigma    (bulk)
+  !! 47 : calsigma (layered)
+  !!#BMSu feb/09/16
   !    LOGICAL :: compute_integrand
   !    INTEGER, POINTER :: spectrum_tensor_component(:)
   !    REAL(DP), POINTER :: transformation_elements(:)
@@ -179,6 +183,14 @@ CONTAINS
           CASE(41)
              CALL zeta_bulk  !!! esta como en las notas y usamos esta  
                              !!! para el calculo de spin bulk 
+             !!#BMSd feb/09/16
+             !! Bulk Shift current
+          CASE(46)
+             CALL sigma
+             !! Layer Shift current
+!!          CASE(47)
+!!             CALL calsigma
+             !!#BMSu feb/09/16
           CASE DEFAULT
              STOP 'Error in calculateIntegrands: spectrum_type not available'
           END SELECT
@@ -1818,6 +1830,7 @@ CONTAINS
           DO da=1,3
              DO db=1,3
                 DO dc=1,3
+!!! this is for interband 1w contributions
                    do l=1,nMax
                       if((l.ne.v).and.(l.ne.c))then
                          omegacl=band(c)-band(l)
@@ -1834,8 +1847,7 @@ CONTAINS
                                                -real(-omegalv*posMatElem(da,v,l)*psym2)/(omegacv*omegacvlv)) 
                       end if
                    end do
-
-!!! 
+!!! this is for intraband 1w contributions
                    psym1=( posMatElem(db,c,v)*derMatElem(da,dc,v,c) &
                           +posMatElem(dc,c,v)*derMatElem(da,db,v,c) )/2.
                    psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
@@ -1894,6 +1906,7 @@ CONTAINS
           DO da=1,3
              DO db=1,3
                 DO dc=1,3
+!!! this is for interband 2w contributions
 !!!  virtual-hole 
                    do vp=1,nVal
                       if((vp.ne.v).and.(vp.ne.c))then
@@ -1916,7 +1929,7 @@ CONTAINS
                          tmp=tmp-4.*T3(da,db,dc)*real(posMatElem(da,v,c)*psym)/omegacpvcv                          
                       end if
                    end do
-!!! 
+!!! this is for intraband 2w contributions 
                    psym=(derMatElem(db,dc,c,v)+derMatElem(dc,db,c,v))/2.
                    psym1=(posMatElem(db,c,v)*delta(dc,c,v)+posMatElem(dc,c,v)*delta(db,c,v))/2.
                    tmp=tmp+4.*(T3(da,db,dc)/omegacv)&
@@ -1964,7 +1977,6 @@ CONTAINS
 !    write(*,*)'@intergands.f90-shg1C: Layer-Length gauge'
 !    write(*,*)'*********'
 
-!!!
     T3(1:3,1:3,1:3) = reshape( spectrum_info(i_spectra)%transformation_elements(1:27), (/3,3,3/))    
     tol = 0.03  !agrege
 
@@ -1975,7 +1987,7 @@ CONTAINS
           DO da=1,3
              DO db=1,3
                 DO dc=1,3
-!!! this is for interband 1w contributions
+!!! this is for interband 1w contributions Eq. (28a) Anderson et al. PRB 91, 075302 (2015)
                    do l=1,nMax
                       if((l.ne.v).and.(l.ne.c))then
                          omegacl=band(c)-band(l)
@@ -1992,7 +2004,7 @@ CONTAINS
                               -aimag(calVsig(da,v,l)*psym2)/(omegacv*omegacvlv)) 
                       end if
                    end do
-!!! this is for intraband 1w contributions
+!!! this is for intraband 1w contributions Eq. (28b) Anderson et al. PRB 91, 075302 (2015)
                    psym1=( posMatElem(db,c,v)*gdcalVsig(da,dc,v,c) &
                           +posMatElem(dc,c,v)*gdcalVsig(da,db,v,c) )/2.
                    psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
@@ -2025,9 +2037,6 @@ CONTAINS
 !!!##################
   END SUBROUTINE shg1C
 !!!##################
-!!!#BMSVer3.0u
-
-!!!#BMSVer3.0d
 !!!##############
   SUBROUTINE shg2C
 !!!##############
@@ -2036,7 +2045,7 @@ CONTAINS
 !!! the nonlinear response tensor for the 2-omega term
 !!! using the length-gauge correctly scissored according to
 !!! shg-layer.tex Eqs. calvimchie2wn and calvimchi2wn
-!!!
+!!! 
 
     IMPLICIT NONE
 
@@ -2050,7 +2059,6 @@ CONTAINS
 !    write(*,*)'@intergands.f90-shg2C: Layer-Length gauge'
 !    write(*,*)'*********'
 
-!!!
     T3(1:3,1:3,1:3) = reshape( spectrum_info(i_spectra)%transformation_elements(1:27), (/3,3,3/))    
     tol = 0.03 ! agrege
 
@@ -2061,7 +2069,7 @@ CONTAINS
           DO da=1,3
              DO db=1,3
                 DO dc=1,3
-!!! this is for interband 2w contributions
+!!! this is for interband 2w contributions Eq. (28c) Anderson et al. PRB 91, 075302 (2015)
 !!!  virtual-hole 
                    do vp=1,nVal
                       if((vp.ne.v).and.(vp.ne.c))then
@@ -2086,7 +2094,7 @@ CONTAINS
                               /(omegacv*omegacpvcv)
                       end if
                    end do
-!!! this is for intraband 2w contributions 
+!!! this is for intraband 2w contributions Eq. (28d) Anderson et al. PRB 91, 075302 (2015)
                    psym=(derMatElem(db,dc,c,v)+derMatElem(dc,db,c,v))/2.
                    psym1=(posMatElem(db,c,v)*delta(dc,c,v)+posMatElem(dc,c,v)*delta(db,c,v))/2.
                    tmp=tmp+4.*(T3(da,db,dc)/(omegacv)**2)&
@@ -2117,7 +2125,59 @@ CONTAINS
   END SUBROUTINE shg2C
 !!!######################
 !!!#BMSVer3.0u
+!!!#BMSVer3.1u
+!!!##################
+  SUBROUTINE sigma
+!!!##################
+!!!
+!!! This computes the integrand of 
+!!! the nonlinear response tensor for the shift-current
+!!! \sigma^{abc}_2
+!!! according to the notes of BMS
+!!! that come from the notes of Benjamin M. Fregoso
+!!! which correct Eq. (57) of
+!!! J. E. Sipe and A. I. Shkrebtii, Phys. Rev. B 61, 5337 (2000).
+!!!
+    IMPLICIT NONE
+    
+    INTEGER :: v,c
+    INTEGER :: da, db, dc
+    REAL(DP) :: T3(3,3,3),tmp
+!    write(*,*)'*********'
+!    write(*,*)'@intergands.f90:sigma'
+!    write(*,*)'*********'
 
+    T3(1:3,1:3,1:3) = reshape( spectrum_info(i_spectra)%transformation_elements(1:27), (/3,3,3/))    
+
+    DO v = 1, nVal
+       DO c = nVal+1, nMax
+          tmp = 0.d0
+          DO da=1,3
+             DO db=1,3
+                DO dc=1,3
+                   tmp=tmp+T3(da,db,dc)*aimag(posMatElem(db,c,v)*derMatElem(dc,da,v,c) &
+                   - posMatElem(dc,v,c)*derMatElem(db,da,c,v))
+                END DO
+             END DO
+          END DO
+          
+          IF (c==nMax) THEN
+             WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
+                  FMT=104,ADVANCE="YES") tmp
+          ELSE
+             WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
+                  FMT=104,ADVANCE="NO") tmp
+          END IF
+          
+       END DO
+    END DO
+104 FORMAT(E15.7)
+    
+!!!##################
+  END SUBROUTINE sigma
+!!!##################
+
+!!!#BMSVer3.1d
 !!!##################
     COMPLEX FUNCTION efe(c,v,i,j)
 !!!##################

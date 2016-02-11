@@ -28,33 +28,10 @@ then
     cp $case.xyz $case.xyz.original
 fi
 #sort -n -r -k3  $case.xyz.original > $case.xyz
-## selects executables according to architecture
-ANFITRION=`hostname`
-if [[ "$ANFITRION" == "quad"* ]] ;then 
-exec=quad
-operations=$where/roperations_$exec
-prom_layer=$where/rprom_layer_$exec
-rslab=$where/rrslab_$exec
-fi
-# needs to be checked
-if [ "$ANFITRION" == "node01" ] ;then 
-exec=xeon
-operations=$where/roperations_$exec
-prom_layer=$where/rprom_layer_$exec
-rslab=$where/rrslab_$exec
-fi
-if [[ "$ANFITRION" == "medusa" || "$ANFITRION" == "hexa"* ]] ;then 
-exec=hexa
-operations=$where/roperations_$exec
-prom_layer=$where/rprom_layer_$exec
-rslab=$where/rrslab_$exec
-fi
-if [[ "$ANFITRION" == "itanium"* ]] ;then 
-exec=itanium
-operations=$where/roperations_$exec
-prom_layer=$where/rprom_layer_$exec
-rslab=$where/rrslab_$exec
-fi
+# same binaries for hexas, quads and fats
+operations=$where/roperations
+prom_layer=$where/rprom_layer
+rslab=$where/rslab
 ##
 if [[ -z $xredcart && -z $xcartjl ]]
     then
