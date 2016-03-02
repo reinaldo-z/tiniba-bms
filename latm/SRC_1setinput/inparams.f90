@@ -99,6 +99,7 @@ MODULE inparams
   ! Lambda -- used for shift currents
   REAL(DP), PARAMETER :: Lambda_factor = -pi*(27.21d0)**4*(2.4085d9)
   !!!!!!!!!!!&&&&&&
+  ! injection current factor (see Sec. 8.5.2 in tiniba-manual.pdf)
   ! Gamma -- used for bulk injection currents
   ! (\pi e^3/2\hbar^2) * (1/a_0^3) *   v    *    r     *     r     *   (1/w)
   ! prefactor          *  volume   *velocity* position *  position *delta-function
@@ -111,10 +112,10 @@ MODULE inparams
   ! surface differs from bulk by a factor of 2, since we use the Im[rr] in the surface
   ! term instead of [r,r] for the bulk term, and Im[rr]=[r,r]/2
   REAL(DP), PARAMETER :: caleta_factor = -pi*(27.21d0)**3*(9.985d25)*3.7037d-15
-  !#BMSd
-  ! sigma factor to be worked out by Reinaldo
-  REAL(DP), PARAMETER :: sigma_factor = -pi*(27.21d0)**3*(9.985d25)*3.7037d-15
-  REAL(DP), PARAMETER :: calsigma_factor = -pi*(27.21d0)**3*(9.985d25)*3.7037d-15
+  !#BMSd feb/11/16
+  ! sigma factor (see Sec. 8.5.3 in tiniba-manual.pdf) [sigma]=A/V^2
+  REAL(DP), PARAMETER :: sigma_factor = -pi*(2.4085102d9)*(27.21d0)**4*3.7037d-15
+  REAL(DP), PARAMETER :: calsigma_factor = -pi*(2.4085102d9)*(27.21d0)**4*3.7037d-15 !IS THIS CORRECT??
   !#BMSu
   !!!!!!!!!!!&&&&&&
   ! Rectification_factor -- used for rectification coefficients

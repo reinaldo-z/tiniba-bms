@@ -685,6 +685,7 @@ TIMESTARTALLI=`date`
 	    else
 		printf "\t${red}KK for $ij${NC}\n"
 		# binary for hexas, quads, fats
+		# MODIFICACION DE KK
 		$TINIBA/kk/rkramer 1 $sname.$ij.$spe'_'$pfix $sname.$ij.kk.$spe'_'$pfix >> hoy_$ij'_'$pfix
 #		$TINIBA/kk/rkramer_$exec 1 $sname.$ij.$spe'_'$pfix $sname.$ij.kk.$spe'_'$pfix >> hoy_$ij'_'$pfix
 		awk '{print $1}' $sname.$ij.kk.$spe'_'$pfix > bc1_$pfix
@@ -763,6 +764,45 @@ TIMESTARTALLI=`date`
 		fi 
 		Line
 	    fi
+	    #BMSVer3.0d
+	    # For response 24, i.e. layered linear chi, the 1/V is rescaled with the
+	    # size of the slab thickness: (L/Ls)(1/V)=(L/Ls)(1/AL)=1/ALs=1/Vs
+	    # where L is the supercell thickness= acell->z
+	    #      Ls is the slab thickness=case.xyz->(ztop-zbottom) 
+	    #      Vs=1/ALs the volume of the slab without the vacuum
+	    #       A is the area of the unit cell
+	    if [ "$response" == "24" ];then
+		echo -e "\t\033[33;5mWARNING\033[0m"
+		printf "\t${red}Layered linear response${NC}\n"
+		printf "\t${red}Scaling with material-slab volume Vhs=A*Lhs${NC}\n"
+		zztop=`head -1 $case.xyz | awk '{print $3}'`
+		zzbottom=`tail -1 $case.xyz | awk '{print $3}'`
+		# bc doesnt't read scientific notation, thus we convert into readable input
+		zztop=`echo $zztop | sed -e 's/[eE]+*/\\*10\\^/'`
+		zzbottom=`echo $zzbottom | sed -e 's/[eE]+*/\\*10\\^/'`
+		Ls=`echo "scale=4; $zztop - $zzbottom" | bc -l`
+		L=`grep acell setUpAbinit_$case.in | awk '{print $4}'`
+		factor=`echo "scale=4; $L/$Ls" | bc -l`
+		printf "\t${red}slab Ls=($zztop) - ($zzbottom)=$Ls supercell L=$L${NC}\n"
+		printf "\t${red}scale factor L/Ls=$factor${NC}\n"
+		# rescaling kk file
+		printf "\t${GREEN}scaling res/$file3${NC}\n"
+		ntot=`wc res/$file3 | awk '{print $1}'` #number of energies
+		am=`wc res/$file3 | awk '{print $2}'`   #value for columns
+		cp res/$file3 fort.1
+		echo $ntot $am $factor | $TINIBA/utils/rescala
+		mv fort.2 res/$file3
+		printf "\t${blue}DONE!${NC}\n"
+		# rescaling sm file
+		printf "\t${GREEN}scaling res/$file4${NC}\n"
+		ntot=`wc res/$file4 | awk '{print $1}'` #number of energies
+		am=`wc res/$file4 | awk '{print $2}'`   #value for columns
+		cp res/$file4 fort.1
+		echo $ntot $am $factor | $TINIBA/utils/rescala
+		mv fort.2 res/$file4
+		printf "\t${blue}DONE!${NC}\n"
+	    fi
+	    #BMSVer3.0u
 ######
 ###### if the response is 25  do this any other case jump 
 #BMSVer3.0d
