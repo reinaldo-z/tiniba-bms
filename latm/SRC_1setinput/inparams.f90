@@ -203,7 +203,7 @@ MODULE inparams
        uno,  uno,  uno,  uno, uno,  uno, uno, uno, uno, Chi1_factor, Chi1_factor, &
        ! 41                            42          43          44          45
        spin_injection_factor_bulk ,shg1_factor,shg2_factor,shg1_factor,shg2_factor, &
-       !46  47   48   49   50 
+       !46                47           48   49   50 
        sigma_factor, calsigma_factor, uno, uno, uno/)
 !!!FN
   
