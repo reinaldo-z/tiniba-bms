@@ -188,8 +188,8 @@ CONTAINS
           CASE(46)
              CALL sigma
              !! Layer Shift current
-!!          CASE(47)
-!!             CALL calsigma
+         CASE(47)
+            CALL calsigma
              !!#BMSu feb/09/16
           CASE DEFAULT
              STOP 'Error in calculateIntegrands: spectrum_type not available'
@@ -2176,6 +2176,57 @@ CONTAINS
 !!!##################
   END SUBROUTINE sigma
 !!!##################
+
+  SUBROUTINE calsigma
+!!!##################
+!!!
+!!! This computes the integrand of 
+!!! the nonlinear response tensor for the shift-current
+!!! \mathcal{\sigma}^{abc}_2
+!!!  in a similar way to the notes of BMS
+!!! that come from the notes of Benjamin M. Fregoso
+!!! which correct Eq. (57) of
+!!! J. E. Sipe and A. I. Shkrebtii, Phys. Rev. B 61, 5337 (2000).
+!!!
+    IMPLICIT NONE
+    
+    INTEGER :: v,c
+    INTEGER :: da, db, dc
+    REAL(DP) :: T3(3,3,3),tmp
+!    write(*,*)'*********'
+!    write(*,*)'@intergands.f90:sigma'
+!    write(*,*)'*********'
+
+    T3(1:3,1:3,1:3) = reshape( spectrum_info(i_spectra)%transformation_elements(1:27), (/3,3,3/))    
+
+    DO v = 1, nVal
+       DO c = nVal+1, nMax
+          tmp = 0.d0
+          DO da=1,3
+             DO db=1,3
+                DO dc=1,3
+                   tmp=tmp+T3(da,db,dc)*aimag(calposMatElem(db,c,v)*GenDerCalPosition(dc,da,v,c) &
+                   - calposMatElem(dc,v,c)*GenDerCalPosition(db,da,c,v))
+                END DO
+             END DO
+          END DO
+          
+          IF (c==nMax) THEN
+             WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
+                  FMT=104,ADVANCE="YES") tmp
+          ELSE
+             WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
+                  FMT=104,ADVANCE="NO") tmp
+          END IF
+          
+       END DO
+    END DO
+104 FORMAT(E15.7)
+    
+!!!##################
+  END SUBROUTINE calsigma
+!!!##################
+
 
 !!!#BMSVer3.1d
 !!!##################
