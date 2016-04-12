@@ -1,8 +1,8 @@
 # old working version
 # Chonito's version
-ab_exec_hexa=/home/sma/bin/abinit-7.10.5-MPI/bin/abinit 
-ab_exec_quad=/home/sma/bin/abinit-7.10.5-MPI/bin/abinit 
-ab_exec_fat=/home/sma/bin/abinit-7.10.5-MPI/bin/abinit 
+ab_exec_hexa=/home/sma/bin/abinit-7.10.5/bin/abinit 
+ab_exec_quad=/home/sma/bin/abinit-7.10.5/bin/abinit 
+ab_exec_fat=/home/sma/bin/abinit-7.10.5/bin/abinit 
 #ab_exec_hexa=/home/bms/abinit/abinit-7.0.5/abinit/bin/abinit 
 # New version, one executable for all platforms
 #ab_exec_quad=/opt/bin/abinit-7.10.5-MPI/bin/abinit 
