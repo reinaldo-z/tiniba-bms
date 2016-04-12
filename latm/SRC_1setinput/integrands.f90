@@ -72,6 +72,9 @@ MODULE integrands
   !! 46 : sigma    (bulk)
   !! 47 : calsigma (layered)
   !!#BMSu feb/09/16
+  !!#RZPd mar/03/16
+  !! 48 : eta^acdf
+  !!#RZPu mar/03/16
   !    LOGICAL :: compute_integrand
   !    INTEGER, POINTER :: spectrum_tensor_component(:)
   !    REAL(DP), POINTER :: transformation_elements(:)
@@ -191,6 +194,10 @@ CONTAINS
          CASE(47)
             CALL calsigma
              !!#BMSu feb/09/16
+             !!#RZPd mar/03/16
+         CASE(48)
+            CALL eta^acdf
+             !!#RZPu mar/03/16
           CASE DEFAULT
              STOP 'Error in calculateIntegrands: spectrum_type not available'
           END SELECT
