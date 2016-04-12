@@ -43,7 +43,7 @@ MODULE inparams
   CHARACTER(LEN=80) :: paramFile
   CHARACTER(LEN=80) :: spectrumFile
   
-  INTEGER :: number_of_spectra_to_calculate
+  INTEGER :: number_of_spectra_to_calculate,static
   TYPE spectrum
      CHARACTER(LEN=80) :: integrand_filename
      INTEGER :: integrand_filename_unit
@@ -83,7 +83,10 @@ MODULE inparams
   CHARACTER(LEN=80) :: tet_list_filename
   CHARACTER(LEN=80) :: integrand_filename
   CHARACTER(LEN=80) :: spectrum_filename
-  
+  !BMSVer3.1d mar-30-16
+  CHARACTER(LEN=80) :: integrand_filename_w_0
+  CHARACTER(LEN=80) :: spectrum_filename_w_0
+  !BMSVer3.1u mar-30-16
   ! ENERGY MESH
   REAL(DP) :: energy_Min
   REAL(DP) :: energy_Max
@@ -203,7 +206,7 @@ MODULE inparams
        uno,  uno,  uno,  uno, uno,  uno, uno, uno, uno, Chi1_factor, Chi1_factor, &
        ! 41                            42          43          44          45
        spin_injection_factor_bulk ,shg1_factor,shg2_factor,shg1_factor,shg2_factor, &
-       !46                47           48   49   50 
+       !46  47   48   49   50 
        sigma_factor, calsigma_factor, uno, uno, uno/)
 !!!FN
   
@@ -271,6 +274,10 @@ CONTAINS
     NAMELIST/INDATA/tet_list_filename
     NAMELIST/INDATA/integrand_filename
     NAMELIST/INDATA/spectrum_filename
+!!!BMSVer3.1d mar-30-16
+    NAMELIST/INDATA/integrand_filename_w_0
+    NAMELIST/INDATA/spectrum_filename_w_0
+!!!BMSVer3.1u
     NAMELIST/INDATA/energy_min, energy_max, energy_steps
 !!! Initializes the names of the data files
 !!! whose existence is checked in set_input_bin.f90
@@ -434,7 +441,7 @@ CONTAINS
        STOP
     END IF
     
-    READ(1,*) number_of_spectra_to_calculate
+    READ(1,*) number_of_spectra_to_calculate,static
     if(debug) WRITE(6,*) "Number of spectra to calculate", number_of_spectra_to_calculate
     
     ALLOCATE (spectrum_info(number_of_spectra_to_calculate), STAT=istat)
@@ -471,7 +478,8 @@ CONTAINS
        
        SELECT CASE(spectrum_info(i)%spectrum_type)
        CASE(1)
-          WRITE(*,*) '       inparams.f90:imaginary part of Chi1'
+          if(static.eq.1) WRITE(*,*) '       inparams.f90:imaginary part of Chi1'
+          if(static.eq.0) WRITE(*,*) '       inparams.f90:static Chi1'
           dims = 2
           length = 9
        CASE(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,25,46,47)

@@ -576,22 +576,22 @@ PROGRAM set_input
         end do
      end do
 
-!#BMSVer3.0d
-!This is not longer required
-! Calculate the generalized derivative of the layered position matrix elements
-! Eq (97), i.e. \eqref{rgkcal} shg-layer.tex
-     IF ( layeredCalculation ) then
-        DO iv = 1, nMax
-           DO ic = 1, nMax
-              DO ii=1,3
-                 DO iii=1,3
-                    GenDerCalPosition(iii,ii,iv,ic) = GenDerCalPositionf(iii,ii,iv,ic,ik)
-                 END DO
-              END DO
-           END DO
-        END DO
-     END IF
-!#BMSVer3.0u
+!!!#BMSVer3.0d
+!!!This is not longer required
+!!! Calculate the generalized derivative of the layered position matrix elements
+!!! Eq (97), i.e. \eqref{rgkcal} shg-layer.tex
+!!$     IF ( layeredCalculation ) then
+!!$        DO iv = 1, nMax
+!!$           DO ic = 1, nMax
+!!$              DO ii=1,3
+!!$                 DO iii=1,3
+!!$                    GenDerCalPosition(iii,ii,iv,ic) = GenDerCalPositionf(iii,ii,iv,ic,ik)
+!!$                 END DO
+!!$              END DO
+!!$           END DO
+!!$        END DO
+!!$     END IF
+!!!#BMSVer3.0u
      !#BMSVer3.0d
      ! v^\lda diagonal terms before scissors correction
      ! is implemented in momMatElem

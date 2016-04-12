@@ -1,12 +1,12 @@
 !################
 MODULE integrands
 !################
-  USE constants, ONLY : DP, DPC
+  USE constants, ONLY : DP, DPC, pi
   USE inparams, ONLY : nVal, nMax, nSym
   USE inparams, ONLY : tol
   USE inparams, ONLY : acellz
   USE inparams, ONLY : crystal_class
-  USE inparams, ONLY : number_of_spectra_to_calculate
+  USE inparams, ONLY : number_of_spectra_to_calculate,static
   USE inparams, ONLY : spectrum_info
   USE arrays, ONLY: momMatElem, posMatElem, derMatElem, Delta, energy, band
   USE arrays, ONLY: calMomMatElem
@@ -72,9 +72,6 @@ MODULE integrands
   !! 46 : sigma    (bulk)
   !! 47 : calsigma (layered)
   !!#BMSu feb/09/16
-  !!#RZPd mar/03/16
-  !! 48 : eta^acdf
-  !!#RZPu mar/03/16
   !    LOGICAL :: compute_integrand
   !    INTEGER, POINTER :: spectrum_tensor_component(:)
   !    REAL(DP), POINTER :: transformation_elements(:)
@@ -191,13 +188,9 @@ CONTAINS
           CASE(46)
              CALL sigma
              !! Layer Shift current
-         CASE(47)
-            CALL calsigma
+!!          CASE(47)
+!!             CALL calsigma
              !!#BMSu feb/09/16
-             !!#RZPd mar/03/16
-         CASE(48)
-            CALL eta^acdf
-             !!#RZPu mar/03/16
           CASE DEFAULT
              STOP 'Error in calculateIntegrands: spectrum_type not available'
           END SELECT
@@ -419,7 +412,9 @@ CONTAINS
     ! the linear response Chi1
     IMPLICIT NONE
     COMPLEX(DPC) :: ctmp
-    REAL(DP) :: omegamn,omeganm,fsc,Delta
+    !REAL(DP) :: omegamn,omeganm
+    REAL(DP) :: omegacv
+    REAL(DP) :: fsc,Delta
     REAL(DP) :: T2(3,3)
     
     T2(1:3,1:3) = reshape( spectrum_info(i_spectra)%transformation_elements(1:9), (/3,3/) )
@@ -446,6 +441,7 @@ CONTAINS
           ctmp = (0.d0, 0.d0)
 !!!          omegamn = band(iv) - band(ic)
 !!!          omeganm = band(ic) - band(iv)
+          omegacv = band(ic) - band(iv) !for w=0 response
 !!!          fsc=1.
 !!!          IF (DABS(omeganm).LT.tol) THEN
 !!!             ! NOTE: the position operator matrix elements are set to
@@ -463,10 +459,17 @@ CONTAINS
 !!!
           DO ix=1,3
              DO iy=1,3
-! written in terms of the position matrix elements => length-gauge
-                ctmp = ctmp + T2(ix,iy)*posMatElem(ix,ic,iv)*posMatElem(iy,iv,ic)
-! written in terms of the momentum matrix elements => velocity-gauge (uncomment omega... above)
-!       ctmp = ctmp - fsc*T2(ix,iy)*momMatElem(ix,ic,iv)*momMatElem(iy,iv,ic)/(omegamn*omeganm)
+                ! written in terms of the position matrix elements => length-gauge
+                if(static.eq.1) then
+                   ctmp = ctmp + T2(ix,iy)*posMatElem(ix,ic,iv)*posMatElem(iy,iv,ic)
+                   ! written in terms of the momentum matrix elements => velocity-gauge (uncomment omega... above)
+                   ! ctmp = ctmp - fsc*T2(ix,iy)*momMatElem(ix,ic,iv)*momMatElem(iy,iv,ic)/(omegamn*omeganm)
+                end if
+                if(static.eq.0) then
+                   ! w=0 (static-value) length-gauge
+                   ! PF[\chi(0;0)]=(1/PI)PF[Im[\chi(-w;w)]] where PF=prefactor
+                   ctmp = ctmp + (2.d0/PI)*T2(ix,iy)*posMatElem(ix,iv,ic)*posMatElem(iy,ic,iv)/omegacv
+                end if
              END DO
           END DO
           
@@ -480,7 +483,16 @@ CONTAINS
        END DO
     END DO
 104 FORMAT(E15.7)
-  END SUBROUTINE ImChi1
+!!$    if(ik.eq.0) then
+!!$       if(static.eq.0) then
+!!$          WRITE(*,*)'@integrands.f90 static unit:',spectrum_info(i_spectra)%integrand_filename_unit
+!!$       end if
+!!$       if(static.eq.1) then
+!!$          WRITE(*,*)'@integrands.f90 vs w unit:',spectrum_info(i_spectra)%integrand_filename_unit
+!!$       end if
+!!$    end if
+  
+     END SUBROUTINE ImChi1
 !!! <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 !!! <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 !!! <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
@@ -501,8 +513,8 @@ CONTAINS
     
     read(69,*)Delta
     close(69)
-!    write(*,*)'Delta=',Delta
-!    stop
+    !    write(*,*)'Delta=',Delta
+    !    stop
     DO iv = 1, nVal
        DO ic = nVal+1, nMax
           ctmp = (0.d0, 0.d0)
@@ -525,9 +537,9 @@ CONTAINS
 !!!
           DO ix=1,3
              DO iy=1,3
-! written in terms of the position matrix elements
-!                ctmp = ctmp + T2(ix,iy)*posMatElem(ix,ic,iv)*posMatElem(iy,iv,ic)
-! written in terms of the momentum matrix elements
+                ! written in terms of the position matrix elements
+                !                ctmp = ctmp + T2(ix,iy)*posMatElem(ix,ic,iv)*posMatElem(iy,iv,ic)
+                ! written in terms of the momentum matrix elements
        ctmp = ctmp - fsc*T2(ix,iy)*momMatElem(ix,ic,iv)*momMatElem(iy,iv,ic)/(omegamn*omeganm)
              END DO
           END DO
@@ -562,6 +574,7 @@ CONTAINS
     COMPLEX(DPC) :: ctmp, ctmp1
     REAL(DP) :: omegamn
     REAL(DP) :: T2(3,3)
+    REAL(DP) :: omegacv
     
     T2(1:3,1:3) = reshape( spectrum_info(i_spectra)%transformation_elements(1:9), (/3,3/) )
     
@@ -570,15 +583,22 @@ CONTAINS
           ctmp = (0.d0, 0.d0)
           
           omegamn = band(iv) - band(ic)
+          omegacv = band(ic) - band(iv) !for w=0 response
           
           DO ix=1,3
              DO iy=1,3
-     ctmp1 = posMatElem(ix,ic,iv)*calMomMatElem(iy,iv,ic)/(0.d0,1.d0)/omegamn
-                ctmp = ctmp + T2(ix,iy)*ctmp1
+                if(static.eq.1) then
+                   ctmp1 = posMatElem(ix,ic,iv)*calMomMatElem(iy,iv,ic)/(0.d0,1.d0)/omegamn
+                   ctmp = ctmp + T2(ix,iy)*ctmp1
+                end if
+                if(static.eq.0) then
+                   ! w=0 (static-value) length-gauge
+                   ! PF[\chi(0;0)]=(1/PI)PF[Im[\chi(-w;w)]] where PF=prefactor
+                   ctmp1 = posMatElem(ix,ic,iv)*calMomMatElem(iy,iv,ic)/(0.d0,1.d0)/omegamn
+                   ctmp = ctmp + (2.d0/PI)*T2(ix,iy)*ctmp1/omegacv
+                end if
              END DO
           END DO
-!          write(94,92)iv,ic,real(ctmp),aimag(ctmp)
-!92 format(2i5,6e14.5)     
 
           IF (ic==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
@@ -1994,11 +2014,7 @@ CONTAINS
           DO da=1,3
              DO db=1,3
                 DO dc=1,3
-<<<<<<< HEAD
 !!! this is for interband 1w contributions Eq. (28a) Anderson et al. PRB 91, 075302 (2015)
-=======
-!!! this is for interband 1w contributions
->>>>>>> 85a590d2f98da6895ad3b9d818ea7d9ac184d0bd
                    do l=1,nMax
                       if((l.ne.v).and.(l.ne.c))then
                          omegacl=band(c)-band(l)
@@ -2015,15 +2031,9 @@ CONTAINS
                               -aimag(calVsig(da,v,l)*psym2)/(omegacv*omegacvlv)) 
                       end if
                    end do
-<<<<<<< HEAD
 !!! this is for intraband 1w contributions Eq. (28b) Anderson et al. PRB 91, 075302 (2015)
                    psym1=( posMatElem(db,c,v)*gdcalVsig(da,dc,v,c) &
                           +posMatElem(dc,c,v)*gdcalVsig(da,db,v,c) )/2.
-=======
-!!! this is for intraband 1w contributions
-                   psym1=( posMatElem(db,c,v)*GenDerCalPosition(da,dc,v,c) &
-                          +posMatElem(dc,c,v)*GenDerCalPosition(da,db,v,c) )/2.
->>>>>>> 85a590d2f98da6895ad3b9d818ea7d9ac184d0bd
                    psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
                           +posMatElem(dc,c,v)*delta(db,c,v) )/2.
                    tmp=tmp+(T3(da,db,dc)/(omegacv)**2)&
@@ -2086,11 +2096,7 @@ CONTAINS
           DO da=1,3
              DO db=1,3
                 DO dc=1,3
-<<<<<<< HEAD
 !!! this is for interband 2w contributions Eq. (28c) Anderson et al. PRB 91, 075302 (2015)
-=======
-!!! this is for interband 2w contributions
->>>>>>> 85a590d2f98da6895ad3b9d818ea7d9ac184d0bd
 !!!  virtual-hole 
                    do vp=1,nVal
                       if((vp.ne.v).and.(vp.ne.c))then
@@ -2115,11 +2121,7 @@ CONTAINS
                               /(omegacv*omegacpvcv)
                       end if
                    end do
-<<<<<<< HEAD
 !!! this is for intraband 2w contributions Eq. (28d) Anderson et al. PRB 91, 075302 (2015)
-=======
-!!! this is for intraband 2w contributions 
->>>>>>> 85a590d2f98da6895ad3b9d818ea7d9ac184d0bd
                    psym=(derMatElem(db,dc,c,v)+derMatElem(dc,db,c,v))/2.
                    psym1=(posMatElem(db,c,v)*delta(dc,c,v)+posMatElem(dc,c,v)*delta(db,c,v))/2.
                    tmp=tmp+4.*(T3(da,db,dc)/(omegacv)**2)&
@@ -2201,57 +2203,6 @@ CONTAINS
 !!!##################
   END SUBROUTINE sigma
 !!!##################
-
-  SUBROUTINE calsigma
-!!!##################
-!!!
-!!! This computes the integrand of 
-!!! the nonlinear response tensor for the shift-current
-!!! \mathcal{\sigma}^{abc}_2
-!!!  in a similar way to the notes of BMS
-!!! that come from the notes of Benjamin M. Fregoso
-!!! which correct Eq. (57) of
-!!! J. E. Sipe and A. I. Shkrebtii, Phys. Rev. B 61, 5337 (2000).
-!!!
-    IMPLICIT NONE
-    
-    INTEGER :: v,c
-    INTEGER :: da, db, dc
-    REAL(DP) :: T3(3,3,3),tmp
-!    write(*,*)'*********'
-!    write(*,*)'@intergands.f90:sigma'
-!    write(*,*)'*********'
-
-    T3(1:3,1:3,1:3) = reshape( spectrum_info(i_spectra)%transformation_elements(1:27), (/3,3,3/))    
-
-    DO v = 1, nVal
-       DO c = nVal+1, nMax
-          tmp = 0.d0
-          DO da=1,3
-             DO db=1,3
-                DO dc=1,3
-                   tmp=tmp+T3(da,db,dc)*aimag(calposMatElem(db,c,v)*GenDerCalPosition(dc,da,v,c) &
-                   - calposMatElem(dc,v,c)*GenDerCalPosition(db,da,c,v))
-                END DO
-             END DO
-          END DO
-          
-          IF (c==nMax) THEN
-             WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
-                  FMT=104,ADVANCE="YES") tmp
-          ELSE
-             WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
-                  FMT=104,ADVANCE="NO") tmp
-          END IF
-          
-       END DO
-    END DO
-104 FORMAT(E15.7)
-    
-!!!##################
-  END SUBROUTINE calsigma
-!!!##################
-
 
 !!!#BMSVer3.1d
 !!!##################

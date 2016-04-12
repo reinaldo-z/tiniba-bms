@@ -260,9 +260,9 @@ TIMESTARTALLI=`date`
 	rm cthoy
 	fi
 #
-	rm -f chido
+	rm -f chido*
 	rm -f tmp*
-	rm -f hoy* halfe* spectra.params* fort* 
+	#rm -f hoy* halfe* spectra.params* fort* 
 	rm -f bc*
 	rm -f Symmetries.Cartesian* kpoints.reciprocal_$Nk kpoints.cartesian_$Nk tetrahedra_$Nk
 	if [ -z $sname ] 
@@ -345,35 +345,60 @@ TIMESTARTALLI=`date`
 #	Line
 	Delta=$sicw
 	echo $Delta > fort.69
-##### spectra.params file
-## number of tensor components
+	##### spectra.params file
+	#static=1 => full w-dependence
+	static=1
+	## number of tensor components
 	num=${#scases[@]}
-	echo $num                                  > spectra.params_$pfix
+	echo $num $static                              > spectra.params_$pfix
 	j='0'
-#	Line
-#	echo -e pfix for eigenvalues and pmn: $pfixe
-#	if [ $lt == 'layer' ]
-#	then
-#	    echo -e pfix for caligraphic matrix elements: $pfix
-#	fi
 	Line
-	printf "\trunning respone num=${RED}$response${NC} for the following cases:\n"
+	printf "\trunning response num=${RED}$response${NC} for the following cases:\n"
 	for i in ${scases[@]}
 	  do
-	  a=${scases[$j]}
-	  echo $a > hoy
-## changes x->1, y->2, z->3 and adds space for each tensor component
-	  xyz123=`sed s/x/' 1'/g hoy | sed s/y/' 2'/g | sed s/z/' 3'/g `
-      j=`expr $j + 1`
-      file=`expr $j + 500`
-## writes to screen
-	  printf "\t$sname.$a.dat_$pfix\n"
-#	  echo $xyz123 
-## writes to file
-	  echo $response "$sname.$a.dat_$pfix" $file T   >> spectra.params_$pfix
-	  echo $xyz123 >> spectra.params_$pfix
+	      a=${scases[$j]}
+	      echo $a > hoy
+	      ## changes x->1, y->2, z->3 and adds space for each tensor component
+	      xyz123=`sed s/x/' 1'/g hoy | sed s/y/' 2'/g | sed s/z/' 3'/g `
+	      j=`expr $j + 1`
+	      file=`expr $j + 500`
+	      ## writes to screen
+	      printf "\t$sname.$a.dat_$pfix\n"
+	      #	  echo $xyz123 
+	      ## writes to file
+	      echo $response "$sname.$a.dat_$pfix" $file T   >> spectra.params_$pfix
+	      echo $xyz123 >> spectra.params_$pfix
 	done
-#####
+##### spectra.params file for static response w=0
+	#we use the last read unit, so it continues with the read unit progressively
+	ultimo=$file
+	#static=0 => w=0
+	static=0
+	#tag for static w=0 response
+	pfix0=$pfix'_'w_0
+	## number of tensor components
+	num=${#scases[@]}
+	echo $num $static                             > spectra.params_$pfix0
+	j='0'
+	Line
+	printf "\trunning Static response num=${RED}$response${NC} for the following cases:\n"
+	for i in ${scases[@]}
+	  do
+	      a=${scases[$j]}
+	      echo $a > hoy
+	      ## changes x->1, y->2, z->3 and adds space for each tensor component
+	      xyz123=`sed s/x/' 1'/g hoy | sed s/y/' 2'/g | sed s/z/' 3'/g `
+	      j=`expr $j + 1`
+	      file=`expr $j + $ultimo`
+	      ## writes to screen
+	      printf "\t$sname.$a.dat_$pfix\n"
+	      #	  echo $xyz123 
+	      ## writes to file
+	      echo $response "$sname.$a.dat_$pfix0" $file T   >> spectra.params_$pfix0
+	      echo $xyz123 >> spectra.params_$pfix0
+	done
+	#exit 1
+	#####
 	echo \&INDATA > tmp_$pfix
 ##### We use $Nvf for the total number of valence bands!!!
 	echo nVal= $Nvf, >> tmp_$pfix
@@ -391,80 +416,80 @@ TIMESTARTALLI=`date`
 	echo scissor= $sicw, >> tmp_$pfix
 	echo tol= $toldef, >> tmp_$pfix
 ##
-    echo nSpinor= $ESPINsetUp, >> tmp_$pfix
-    echo "acellz= ${acellz}," >> tmp_$pfix 
+	echo nSpinor= $ESPINsetUp, >> tmp_$pfix
+	echo "acellz= ${acellz}," >> tmp_$pfix 
         
 ### added 10 de diciembre de 2008 at 15:30
-    if [  "$ESPINsetUp" -eq "1" ]; then 
-        echo withSO= .false., >> tmp_$pfix 
-    elif [  "$ESPINsetUp" -eq "2" ]; then 
-	   echo withSO= .true., >> tmp_$pfix        
-	   printf "\twith ${RED}Spin-Orbit${NC}\n"
-    fi
-### added 10 de diciembre de 2008 at 15:30
-#   Line
-#BMSVer3.0d set value of vnlkss so is read by 
+	if [  "$ESPINsetUp" -eq "1" ]; then 
+            echo withSO= .false., >> tmp_$pfix 
+	elif [  "$ESPINsetUp" -eq "2" ]; then 
+	    echo withSO= .true., >> tmp_$pfix        
+	    printf "\twith ${RED}Spin-Orbit${NC}\n"
+	fi
+	### added 10 de diciembre de 2008 at 15:30
+	#   Line
+	#BMSVer3.0d set value of vnlkss so is read by 
 	if [ $vnlkss == true ]
 	then
-	echo vnlkss= .true., >> tmp_$pfix        
+	    echo vnlkss= .true., >> tmp_$pfix        
 	fi
 	if [ $vnlkss == false ]
 	then
-	echo vnlkss= .false., >> tmp_$pfix        
+	    echo vnlkss= .false., >> tmp_$pfix        
 	fi
-#BMSVer3.0u
+	#BMSVer3.0u
 	if [ ! -r  $ene$pfixe ] 
-	    then
+	then
 	    Line
 	    echo WARNING NO $ene$pfixe
 	    Line
 	    exit 1
 	fi
 	echo  energy_data_filename= \""$ene$pfixe"\", >> tmp_$pfix
-#
+	#
 	echo energys_data_filename= \""energys.d_$pfix"\", >> tmp_$pfix
 	echo half_energys_data_filename= \""halfenergys.d_$pfix"\", >> tmp_$pfix
-#
-	    if [ ! -r $mme$pfixe ] 
-		then
+	#
+	if [ ! -r $mme$pfixe ] 
+	then
+	    Line
+	    echo WARNING NO $mme$pfixe
+	    Line
+	    exit 1
+	fi
+	echo pmn_data_filename= \""$mme$pfixe"\", >> tmp_$pfix
+	echo rmn_data_filename= \""rmn.d_$pfix"\", >> tmp_$pfix
+	# for spin-related calculations
+	#
+	if [[ $response == '41' ]]
+	then
+	    if [ ! -r $spin$pfix ] 
+	    then
 		Line
-		echo WARNING NO $mme$pfixe
+		echo WARNING NO $spin$pfix for bulk spin injection 
 		Line
 		exit 1
 	    fi
-	echo pmn_data_filename= \""$mme$pfixe"\", >> tmp_$pfix
-	echo rmn_data_filename= \""rmn.d_$pfix"\", >> tmp_$pfix
-# for spin-related calculations
-#
-		if [[ $response == '41' ]]
-		then
-		    if [ ! -r $spin$pfix ] 
-		    then
-			Line
-			echo WARNING NO $spin$pfix for bulk spin injection 
-			Line
-			exit 1
-		    fi
-# the smn_data_filename file is the same for bulk or layer
-		    echo smn_data_filename= \""$spin$pfix"\", >> tmp_$pfix
-		fi
-# ndot calculation
-	    if [ $lt == 'layer' ] 
+	    # the smn_data_filename file is the same for bulk or layer
+	    echo smn_data_filename= \""$spin$pfix"\", >> tmp_$pfix
+	fi
+	# ndot calculation
+	if [ $lt == 'layer' ] 
+	then
+	    if [ $response == '26' ]
 	    then
-		if [ $response == '26' ]
+		if [ -e $rhomm$pfix ]
 		then
-		    if [ -e $rhomm$pfix ]
-		    then
-			echo rhomm_data_filename= \""$rhomm$pfix"\", >> tmp_$pfix
-		    else
-			printf "\t$rhomm$pfix does not exists\nl"
-			exit 1
-		    fi
+		    echo rhomm_data_filename= \""$rhomm$pfix"\", >> tmp_$pfix
+		else
+		    printf "\t$rhomm$pfix does not exists\nl"
+		    exit 1
 		fi
-		
 	    fi
-	    ### layered calculation
-	    ### calsigma????
+	    
+	fi
+	### layered calculation
+	### calsigma????
 	    if [ $lt == 'layer' ] 
 	    then
 #
@@ -530,14 +555,17 @@ TIMESTARTALLI=`date`
 	    echo tet_list_filename= \""tetrahedra_$Nk"\", >> tmp_$pfix
 	    echo integrand_filename= \""Integrand_$pfix"\", >> tmp_$pfix
 	    echo spectrum_filename= \""Spectrum_$pfix"\", >> tmp_$pfix
-#####################
+###BMSVer3.1d mar-30-16
+	    echo integrand_filename_w_0= \""Integrand_$pfix0"\", >> tmp_$pfix
+	    echo spectrum_filename_w_0= \""Spectrum_$pfix0"\", >> tmp_$pfix
+###BMSVer3.1u
 	    energy_min=$eminw
 	    energy_max=$emaxw
 	    energy_steps=$stepsw
 	    echo energy_min= $energy_min,  >> tmp_$pfix
 	    echo energy_max= $energy_max, >> tmp_$pfix
 	    echo energy_steps= $energy_steps >> tmp_$pfix
-#####################
+##################### Finish writing tmp_$pfix
 	    echo  / >> tmp_$pfix
 #####################
 	    echo \&INDATA > tmp3_$pfix
@@ -561,12 +589,18 @@ TIMESTARTALLI=`date`
     if [ $used_node  == 'node' ]
     then
 	printf "\tRUNING: $where_latm/set_input_32b [$latm_node]\n"
-	echo ssh $latm_node "cd $dir; $where_latm/set_input_32b tmp_$pfix spectra.params_$pfix "
+	#echo ssh $latm_node "cd $dir; $where_latm/set_input_32b tmp_$pfix spectra.params_$pfix "
 	ssh $latm_node "cd $dir; $where_latm/set_input_32b tmp_$pfix spectra.params_$pfix "
     elif [[ $used_node  == 'medusa' || $used_node  == 'hexa' || $used_node  == 'fat' ]]
     then
-	printf "\tRUNING: $where_latm/set_input_all [$latm_node]\n"
+	Line
+	printf "\tRUNING: ${RED}full-w${NC} $where_latm/set_input_all [$latm_node]\n"
+	Line
 	$where_latm/set_input_all tmp_$pfix spectra.params_$pfix 
+	Line
+	printf "\tRUNING: ${RED}static${NC} $where_latm/set_input_all [$latm_node]\n"
+	Line
+	$where_latm/set_input_all tmp_$pfix spectra.params_$pfix0
    elif [ $used_node  == 'itanium' ]
     then
 	printf "\tRUNING: $where_latm/set_input_64b [$latm_node]\n"
@@ -625,7 +659,12 @@ TIMESTARTALLI=`date`
 	    ssh ${nodes[$i]} "cd $dir;$laheylib  $where_latm/tetra_method_32b int_$ij'_'$pfix > hoy_$ij'_'$pfix" &
 	elif [[ $used_node == 'medusa' ||  $used_node == 'hexa' ||  $used_node == 'fat' ]]
 	then
+	    printf "\tFor Full w-respones\n"
 	    $where_latm/tetra_method_all int_$ij'_'$pfix > hoy_$ij'_'$pfix &
+	    # static response
+	    printf "\tFor w=0->static respones\n"
+	    #printf "\tPERRO$where_latm/tetra_method_all_w_0 int_$ij'_'$pfix > hoy_$ij'_'$pfix &\n"
+	    $where_latm/tetra_method_all_w_0 int_$ij'_'$pfix > hoy_$ij'_'$pfix &
 	elif [ $used_node == 'itanium' ]
 	then
 	    ssh ${nodes[$i]} "cd $dir;$laheylib  $where_latm/tetra_method_64b int_$ij'_'$pfix > hoy_$ij'_'$pfix" &
@@ -642,8 +681,6 @@ TIMESTARTALLI=`date`
 	label=$label'_'$ij
     done
     printf "\t${RED}waiting for $case at each node to finish for $pfix${NC}\n"
-    Line
-#exit 1
 ########
     for ij in ${scases[@]}
     do
@@ -669,7 +706,18 @@ TIMESTARTALLI=`date`
     Line
     printf  "\t${blue}all $case nodes done for $pfix${NC}\n"
     Line
-#exit 1
+    #extracting the static value
+    printf "\tStatic values from\n"
+    for ij in ${scases[@]}
+    do
+	nombre=int_$ij'_'$pfix
+	estatico=`grep spectrum_filename_w_0 $nombre | awk -F\" '{print $2}'`
+	val_w_0=`awk '{print $0}' $estatico`
+	echo $ij $val_w_0 >> festatico
+	printf "\t$estatico -> $val_w_0\n"
+    done
+    Line
+#    exit 1 #AQUI
 ## kk
 	for ij in ${scases[@]}
 	do
@@ -687,19 +735,42 @@ TIMESTARTALLI=`date`
 		# binary for hexas, quads, fats
 		# MODIFICACION DE KK
 		$TINIBA/kk/rkramer 1 $sname.$ij.$spe'_'$pfix $sname.$ij.kk.$spe'_'$pfix >> hoy_$ij'_'$pfix
+		#printf "\t$TINIBA/kk/rkramer 1 $sname.$ij.$spe'_'$pfix $sname.$ij.kk.$spe'_'$pfix >> hoy_$ij'_'$pfix\n"
 #		$TINIBA/kk/rkramer_$exec 1 $sname.$ij.$spe'_'$pfix $sname.$ij.kk.$spe'_'$pfix >> hoy_$ij'_'$pfix
 		awk '{print $1}' $sname.$ij.kk.$spe'_'$pfix > bc1_$pfix
 		awk '{print $2,$3}' $sname.$ij.kk.$spe'_'$pfix > bc$ij'_'$pfix
-		echo bc$ij'_'$pfix >> chido 
+		nom=bc$ij'_'$pfix #name for KK results
+		nomkks=bc$ij'_'$pfix'_kks' #name for KK-shifted results
+		#echo bc$ij'_'$pfix >> chido 
+		echo $nom >> chido
+		echo $nomkks >> chidokks
+		# shifting the real part so the KK at w=0 coincides with
+		# the static value, Re[response(w=0)]=response-evaluated at w=0
+		cvm=$sname.$ij.kk.$spe'_'$pfix
+		rew0=`head -1 $cvm | awk '{print $2}'`
+		w0=`grep $ij festatico | awk '{print $2}'`
+		w0=`echo $w0 | sed -e 's/[eE]+*/\\*10\\^/'`
+		diff=`echo "scale=5;( $w0 - $rew0 ) " | bc -l`
+		printf "\tKK-shift: $w0 - $rew0 = $diff\n"
+		nw=`wc $nom | awk '{print $1}'` #number of frequencies
+		ln -fs $nom fort.1
+		#printf "\t$nw\n"
+		echo $nw $diff | rkkshift # kkshift
+		mv fort.2 $nomkks #data with real part shifted by diff
 	    fi
 	done
-#exit 1
-## pasting
+	#exit 1
+	## pasting
 	filename=chido
+	filenamekks=chidokks
 	declare -a array1
 	array1=(`cat "$filename"`)
+	declare -a array1kks
+	array1kks=(`cat "$filenamekks"`)
 	file1=$sname.$label
+	file69=$sname.$label.kss
 	paste bc1_$pfix `echo ${array1[@]}` > $file1
+	paste bc1_$pfix `echo ${array1kks[@]}` > $file69
 ################# Smearing a la Fred ##################		
 ###%%%###@@@@ I bet the daring young soul to get the files names to a modicum minimum 
 	if [ 1 == 1 ];then
@@ -716,6 +787,7 @@ TIMESTARTALLI=`date`
 	    fi
 #
 	    file2=$sname.sm$label
+	    file70=$sname.sm$label.kks
 	    label2='_scissor_'$tijera
 #		$where_smear/smear 1 $file1 $file2 > hoy                     #smearing
 	    Line
@@ -730,39 +802,46 @@ TIMESTARTALLI=`date`
             fi
 	    # binary for quads, hexas, fats 
 	    $where_smear/rsmear2 1 $file1 $file2 $smearvalue > hoy     #smearing
-#	    $where_smear/rsmear2_$exec 1 $file1 $file2 $smearvalue > hoy     #smearing
-#	    file3=$sname.kk$label$label2
-#	    file4=$file2$label2
+	    $where_smear/rsmear2 1 $file69 $file70 $smearvalue > hoykks     #smearing
 	    if [ "$vnlkss" == "false" ]
 	    then
 		file3=$sname.kk$ap$am$ultimo
 		file4=$sname.sm_${smearvalue}$ap$am$ultimo
+		file5=$sname$ap$am$ultimo'_w_0'
+		file6=$sname.sm_${smearvalue}$ap$am$ultimo'_kks'
 	    fi
 	    if [ "$vnlkss" == "true" ]
 	    then
 		file3=$sname-vnl.kk$ap$am$ultimo
 		file4=$sname-vnl.sm_${smearvalue}$ap$am$ultimo
+		file5=$sname-vnl$ap$am$ultimo'_w_0'
+		file6=$sname-vnl.sm_${smearvalue}$ap$am$ultimo'_kks'
 	    fi
+	    #rename static file
+	    mv festatico res/$file5
 	    if [ "$response" -ne "25" ];then
 		mv $file1  res/$file3
 		mv $file2  res/$file4
+		mv $file70  res/$file6
 		Line
-		printf "\tOutput:\n"
-		if [ -e  "res/$file3" ];then
-		    printf "\t${BLUE}res/${GREEN}$file3${NC}\n"
-		    if [[ $response -eq "21" || $response -eq "22" || $response -eq "42" || $response -eq "43" || $response -eq "44" || $response -eq "45" ]]
-		    then
-			echo $file3 > $response.kk.dat
+		printf "\tOutput: (_kks -> Kramers-Kronig Real-part shifted)\n"
+		    Line
+		    printf "\t${BLUE}res/${GREEN}$file5 -> static${NC}\n"
+		    if [ -e  "res/$file3" ];then
+			printf "\t${BLUE}res/${GREEN}$file3${NC}(_kks)\n"
+			if [[ $response -eq "21" || $response -eq "22" || $response -eq "42" || $response -eq "43" || $response -eq "44" || $response -eq "45" ]]
+			then
+			    echo $file3 > $response.kk.dat
+			fi
 		    fi
-		fi
-		if [ -e "res/$file4" ];then
-		    printf "\t${BLUE}res/${GREEN}$file4${NC}\n"
-		    if [[ $response -eq "21" || $response -eq "22" || $response -eq "42" || $response -eq "43" || $response -eq "44" || $response -eq "45" ]]
-		    then
-			echo $file4 > $response.sm.dat
-		    fi
-		fi 
-		Line
+		    if [ -e "res/$file4" ];then
+			printf "\t${BLUE}res/${GREEN}$file4${NC}(_kks)\n"
+			if [[ $response -eq "21" || $response -eq "22" || $response -eq "42" || $response -eq "43" || $response -eq "44" || $response -eq "45" ]]
+			then
+			    echo $file4 > $response.sm.dat
+			fi
+		    fi 
+		    Line
 	    fi
 	    #BMSVer3.0d
 	    # For response 24, i.e. layered linear chi, the 1/V is rescaled with the
@@ -800,6 +879,13 @@ TIMESTARTALLI=`date`
 		cp res/$file4 fort.1
 		echo $ntot $am $factor | $TINIBA/utils/rescala
 		mv fort.2 res/$file4
+		# rescaling kks file
+		printf "\t${GREEN}scaling res/$file6${NC}\n"
+		ntot=`wc res/$file6 | awk '{print $1}'` #number of energies
+		am=`wc res/$file6 | awk '{print $2}'`   #value for columns
+		cp res/$file6 fort.1
+		echo $ntot $am $factor | $TINIBA/utils/rescala
+		mv fort.2 res/$file6
 		printf "\t${blue}DONE!${NC}\n"
 	    fi
 	    #BMSVer3.0u
@@ -867,7 +953,7 @@ TIMESTARTALLI=`date`
 #BMSVer3.0u
 	    fi 
 	fi		
-	rm -f chido
+	rm -f chido*
 	if [ -z $sname ] 
 	then
 	    Line
@@ -876,6 +962,7 @@ TIMESTARTALLI=`date`
 	else
 	    rm -f $sname* 
 	fi
+
 	rm -f bc*
 	rm -f Symmetries.Cartesian* kpoints.reciprocal_$Nk kpoints.cartesian_$Nk tetrahedra_$Nk
         rm -rf tmp* 
@@ -885,3 +972,5 @@ TIMESTARTALLI=`date`
 	rm -f input*set  tijeras spectra*
 	rm -f  response_type 
 	rm -f int_*
+
+	
