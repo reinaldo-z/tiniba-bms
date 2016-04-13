@@ -1,7 +1,7 @@
 #module load 
 # old working version
 # Chonito's version
-ab_exec_hexa=/home/sma/bin/abinit-7.10.5/bin/abinit 
+ab_exec_hexa=/home//sma/bin/abinit-7.10.5/bin/abinit
 #ab_exec_hexa=/home/sma/tempbin2/abinit-7.10.5-MPI/bin/abinit 
 #ab_exec_quad=/home/sma/tempbin2/abinit-7.10.5-MPI/bin/abinit 
 #ab_exec_fat=/home/sma/tempbin2/abinit-7.10.5-MPI/bin/abinit 
