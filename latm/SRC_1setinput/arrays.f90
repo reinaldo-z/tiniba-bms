@@ -93,8 +93,37 @@ CONTAINS
        STOP
     END IF
 !#BMSVer3.0u
-    
-!!!FN
+!!!#BMSd-sep/12/2015
+!!! The following two arrays are declared for both bulk and layer calculation
+!!! according to /Users/bms/research/austin/shg/shg-notes/shg-layer-nonlocal.pdf 
+!!! see "Layer or Bulk calculation"
+!!! this way in integrands.f90 we use
+!!! calVsig=momMatElem => \calv^\gs     -> v^\gs
+!!! and
+!!! gdcalVsig=gdVsig =>   (\calv^\gs);k -> (v^\gs);k
+!!! for coding either a bulk or a layer response 
+    if(debug)WRITE(*,*) "Allocating gdcalVsig(3,3",nMax,",",nMax,")"
+    ALLOCATE (gdcalVsig(3,3,nMax,nMax), STAT=istat)
+    IF (istat.EQ.0) THEN
+       istat=0
+       if(debug) WRITE(*,*) 'Allocated array gdcalVsig'
+    ELSE
+       WRITE(6,*) 'Could not allocate gdcalVsig'
+       WRITE(6,*) 'Stopping'
+       STOP
+    END IF
+    if(debug)WRITE(*,*) "Allocating calVsig(3",nMax,",",nMax,")"
+    ALLOCATE (calVsig(3,nMax,nMax), STAT=istat)
+    IF (istat.EQ.0) THEN
+       istat=0
+       if(debug) WRITE(*,*) 'Allocated array calVsig'
+    ELSE
+       WRITE(6,*) 'Could not allocate calVsig'
+       WRITE(6,*) 'Stopping'
+       STOP
+    END IF
+!#BMSu
+!!!    
     IF (layeredCalculation) THEN
        if(debug)WRITE(*,*) "Allocating calMomMatELem(3,",nMax,",",nMax,")"
        ALLOCATE (calMomMatElem(3,nMax,nMax), STAT=istat)
@@ -111,7 +140,6 @@ CONTAINS
 !If you want to check calVsig=curMatElem for layered injection current
 !uncomment the following line and comment the next to it
     IF (layeredCalculation.or.layeredInjectionCurrent) THEN
-!    IF (layeredCalculation) THEN
        if(debug)WRITE(*,*) "Allocating cfMatElem(",nMax,",",nMax,")"
        ALLOCATE (cfMatElem(nMax,nMax), STAT=istat)
        IF (istat.EQ.0) THEN
@@ -176,26 +204,6 @@ CONTAINS
           if(debug) WRITE(*,*) 'Allocated array gdcalVS'
        ELSE
           WRITE(6,*) 'Could not allocate gdcalVS'
-          WRITE(6,*) 'Stopping'
-          STOP
-       END IF
-       if(debug)WRITE(*,*) "Allocating gdcalVsig(3,3",nMax,",",nMax,")"
-       ALLOCATE (gdcalVsig(3,3,nMax,nMax), STAT=istat)
-       IF (istat.EQ.0) THEN
-          istat=0
-          if(debug) WRITE(*,*) 'Allocated array gdcalVsig'
-       ELSE
-          WRITE(6,*) 'Could not allocate gdcalVsig'
-          WRITE(6,*) 'Stopping'
-          STOP
-       END IF
-       if(debug)WRITE(*,*) "Allocating calVsig(3",nMax,",",nMax,")"
-       ALLOCATE (calVsig(3,nMax,nMax), STAT=istat)
-       IF (istat.EQ.0) THEN
-          istat=0
-          if(debug) WRITE(*,*) 'Allocated array calVsig'
-       ELSE
-          WRITE(6,*) 'Could not allocate calVsig'
           WRITE(6,*) 'Stopping'
           STOP
        END IF
@@ -328,9 +336,29 @@ CONTAINS
        WRITE(6,*) 'Stopping'
        STOP
     END IF
-    
-!!!FN
-    IF (layeredCalculation) THEN
+!!!#BMSd-sep/12/2015
+!!! The following two arrays are declared for both bulk and layer calculation
+!!! according to /Users/bms/research/austin/shg/shg-notes/shg-layer-nonlocal.pdf 
+!!! see "Layer or Bulk calculation".
+!!! This way in integrands.f90 we use
+!!! calVsig=momMatElem => \calv^\gS    -> v^\gS
+!!! and
+!!! gdcalVsig=gdVsig =>   (\calv^\gS);k -> (v^\gS);k
+!!! for coding either a bulk or a layer response 
+    DEALLOCATE (calVsig, STAT=istat)
+    IF (istat.NE.0) THEN
+       WRITE(6,*) 'Could not deallocate calVsig'
+       WRITE(6,*) 'Stopping'
+       STOP
+    END IF
+    DEALLOCATE (gdcalVsig, STAT=istat)
+    IF (istat.NE.0) THEN
+       WRITE(6,*) 'Could not deallocate gdcalVsig'
+       WRITE(6,*) 'Stopping'
+       STOP
+    END IF
+!!!#BMSu
+       IF (layeredCalculation) THEN
        DEALLOCATE (calMomMatElem, STAT=istat)
        IF (istat.NE.0) THEN
           WRITE(6,*) 'Could not deallocate calMomMatElem'
@@ -371,18 +399,6 @@ CONTAINS
        DEALLOCATE (gdcalVS, STAT=istat)
        IF (istat.NE.0) THEN
           WRITE(6,*) 'Could not deallocate gdcalVS'
-          WRITE(6,*) 'Stopping'
-          STOP
-       END IF
-       DEALLOCATE (gdcalVsig, STAT=istat)
-       IF (istat.NE.0) THEN
-          WRITE(6,*) 'Could not deallocate gdcalVsig'
-          WRITE(6,*) 'Stopping'
-          STOP
-       END IF
-       DEALLOCATE (calVsig, STAT=istat)
-       IF (istat.NE.0) THEN
-          WRITE(6,*) 'Could not deallocate calVsig'
           WRITE(6,*) 'Stopping'
           STOP
        END IF

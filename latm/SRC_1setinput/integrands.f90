@@ -13,7 +13,7 @@ MODULE integrands
   USE arrays, ONLY: spiMatElem
   USE arrays, ONLY: calDelta
   !#BMSVer3.0d
-  USE arrays, ONLY: calVsig,gdcalVsig
+  USE arrays, ONLY: calVsig,gdcalVsig,gdVsig
   !#BMSVer3.0u
 !  USE arrays, ONLY: genderiv
   USE arrays, ONLY: curMatElem
@@ -67,11 +67,15 @@ MODULE integrands
   !! 29 : calZeta1 (layered)  (W)
   !! 39 :
   !! 40 : zeta_cabellos       (W)
-  !! 41 : zeta_abs            (W)
+  !! 41 : zeta_bulk            (W)
   !!#BMSd feb/09/16
   !! 46 : sigma    (bulk)
   !! 47 : calsigma (layered)
   !!#BMSu feb/09/16
+  !!#BMSd sep/09/16
+  !! 48 : mu    (bulk)
+  !! 49 : calmu (layered)
+  !!#BMSu sep/09/16
   !    LOGICAL :: compute_integrand
   !    INTEGER, POINTER :: spectrum_tensor_component(:)
   !    REAL(DP), POINTER :: transformation_elements(:)
@@ -84,7 +88,6 @@ MODULE integrands
 
 CONTAINS
 !!!#############################
-!!! SUBROUTINE calculateintegrands
   SUBROUTINE calculateintegrands
 !!!###########################
     IMPLICIT NONE
@@ -191,6 +194,23 @@ CONTAINS
 !!          CASE(47)
 !!             CALL calsigma
              !!#BMSu feb/09/16
+!!!
+             !!#BMSd sep/09/16
+             !! Bulk spin injection current
+          CASE(48)
+             CALL mu
+             !! layer spin injection current
+!!          CASE(49)
+!!             CALL calmu
+             !!#BMSu sep/09/16
+             !!#BMSd sep/13/16
+             !! Bulk electric current 
+          CASE(32)
+             CALL eta_ec
+             !! layer electric current 
+!!          CASE(33)
+!!             CALL calmu
+             !!#BMSu sep/13/16
           CASE DEFAULT
              STOP 'Error in calculateIntegrands: spectrum_type not available'
           END SELECT
@@ -460,13 +480,14 @@ CONTAINS
           DO ix=1,3
              DO iy=1,3
                 ! written in terms of the position matrix elements => length-gauge
+                !vs omega
                 if(static.eq.1) then
                    ctmp = ctmp + T2(ix,iy)*posMatElem(ix,ic,iv)*posMatElem(iy,iv,ic)
                    ! written in terms of the momentum matrix elements => velocity-gauge (uncomment omega... above)
                    ! ctmp = ctmp - fsc*T2(ix,iy)*momMatElem(ix,ic,iv)*momMatElem(iy,iv,ic)/(omegamn*omeganm)
                 end if
+                ! w=0 (static-value) length-gauge
                 if(static.eq.0) then
-                   ! w=0 (static-value) length-gauge
                    ! PF[\chi(0;0)]=(1/PI)PF[Im[\chi(-w;w)]] where PF=prefactor
                    ctmp = ctmp + (2.d0/PI)*T2(ix,iy)*posMatElem(ix,iv,ic)*posMatElem(iy,ic,iv)/omegacv
                 end if
@@ -587,12 +608,13 @@ CONTAINS
           
           DO ix=1,3
              DO iy=1,3
+                !vs omega
                 if(static.eq.1) then
                    ctmp1 = posMatElem(ix,ic,iv)*calMomMatElem(iy,iv,ic)/(0.d0,1.d0)/omegamn
                    ctmp = ctmp + T2(ix,iy)*ctmp1
                 end if
+                ! w=0 (static-value) length-gauge
                 if(static.eq.0) then
-                   ! w=0 (static-value) length-gauge
                    ! PF[\chi(0;0)]=(1/PI)PF[Im[\chi(-w;w)]] where PF=prefactor
                    ctmp1 = posMatElem(ix,ic,iv)*calMomMatElem(iy,iv,ic)/(0.d0,1.d0)/omegamn
                    ctmp = ctmp + (2.d0/PI)*T2(ix,iy)*ctmp1/omegacv
@@ -1611,61 +1633,103 @@ CONTAINS
 !!!############
   SUBROUTINE mu
 !!!############
+!!!Spin injection current
+!!!The formulas are in /Users/bms/research/spin-current/notes/mu.tex
+!!!############
     IMPLICIT NONE
-    COMPLEX(DPC) :: ctmp
-    REAL(DP) :: omegamn
-    COMPLEX(DPC) :: Kab
-    REAL(DP) :: PT4(3,3,3,3)
-    
+    COMPLEX(DPC) :: ctmp ! acumulator
+    REAL(DP) :: omegamn ! \omega_m-\omega_n
+    COMPLEX(DPC) :: Kab ! K^{ab}=v^a\gs^a
+    REAL(DP) :: PT4(3,3,3,3) ! rank-4 Symmetry matrices
+    INTEGER :: v,c,cp,l ! band indices
+    INTEGER :: ia,ib,ic,id ! Cartesian Indices
     PT4(1:3,1:3,1:3,1:3) = reshape( spectrum_info(i_spectra)%transformation_elements(1:81), (/3,3,3,3/) )
-    
-    DO iv = 1, nVal
-       DO ic = nVal+1, nMax
+
+    DO v = 1, nVal
+       DO c = nVal+1, nMax
           ctmp = (0.d0, 0.d0)
-          DO iq = nVal+1, nMax
-             IF (DABS(band(iq)-band(ic)).LT.tol) THEN
+          DO cp = nVal+1, nMax
+             IF (DABS(band(cp)-band(c)).LT.tol) THEN !Only quasi degenerate conduction bands
                 Kab = (0.d0, 0.d0)
-                DO ix=1,3
-                   DO iy=1,3
-                      DO ip = 1, nMax
-!!!
-!!! we symmetrize Kab for the layer-by-layer case, which also works
-!!! for the normal case, indeed, it does two identical terms
-!!! but it ain't a botleneck
-!!! For the layer-by-layer case, spiMatElem are properly calculated with S(z)
-!!!                      Kab = Kab + momMatElem(ix,ic,ip)*spiMatElem(iy,ip,iq)
-!!!
-                         Kab = Kab + (  momMatElem(ix,ic,ip)*spiMatElem(iy,ip,iq) &
-                                      + spiMatElem(iy,ic,ip)*momMatElem(ix,ip,iq) )/2.
+                DO ia=1,3 !Cartesian index for Kab
+                   DO ib=1,3 !Cartesian index for Kab
+                      DO l = 1, nMax ! Eq. {11.e}
+                         Kab = Kab + calVsig(ia,cp,l)*spiMatElem(ib,l,c) 
                       END DO
-                      DO iz=1,3
-                         DO iw=1,3
-                            ctmp = ctmp + PT4(ix,iy,iz,iw)*Kab                &
-                                 *(posMatElem(iz,iq,iv)*posMatElem(iw,iv,ic)  &
-                                 + posMatElem(iw,iq,iv)*posMatElem(iz,iv,ic))
-                         END DO
-                      END DO
-                   END DO
-                END DO
-             END IF
-          END DO
-          
-          
-          
-          IF (ic==nMax) THEN
+                      DO ic=1,3 !Cartesian index for internal part of {10.e}  
+                         DO id=1,3 !Cartesian index for internal part of {10.e}  
+                            ctmp = ctmp + PT4(ia,ib,ic,id)*Kab &
+                                 *(posMatElem(ic,v,cp)*posMatElem(id,c,v)  & 
+                                 +posMatElem(id,v,cp)*posMatElem(ic,c,v)) ! ic<->id
+                         END DO !DO id=1,3
+                      END DO !DO ic=1,3
+                   END DO !DO ib=1,3
+                END DO !DO ia=1,3
+             END IF !Only quasi degenerate conduction bands
+          END DO !DO cp = nVal+1, nMax
+!!!          
+          IF (c==nMax) THEN
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
-                  FMT=104,ADVANCE="YES") REAL(ctmp)
+                  FMT=104,ADVANCE="YES") real(ctmp)
           ELSE
              WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
-                  FMT=104,ADVANCE="NO") REAL(ctmp)
+                  FMT=104,ADVANCE="NO") real(ctmp)
           END IF
-          
-       END DO
-    END DO
+ !!         
+       END DO !DO c = nVal+1, nMax
+    END DO !DO v = 1, nVal
 104 FORMAT(E15.7)
     
 !!!################
   END SUBROUTINE mu
+!!!################
+
+!!!############
+  SUBROUTINE eta_ec
+!!!############
+!!!electric current
+!!!The formulas are in /Users/bms/research/spin-current/notes/mu.tex
+!!!############
+    IMPLICIT NONE
+    COMPLEX(DPC) :: ctmp ! acumulator
+    REAL(DP) :: omegamn ! \omega_m-\omega_n
+    COMPLEX(DPC) :: Kab ! K^{ab}=v^a\gs^a
+    REAL(DP) :: PT3(3,3,3) ! rank-3 Symmetry matrices
+    INTEGER :: v,c,cp ! band indices
+    INTEGER :: ia,ib,ic ! Cartesian Indices
+    PT3(1:3,1:3,1:3) = reshape( spectrum_info(i_spectra)%transformation_elements(1:27), (/3,3,3/) )
+
+    DO v = 1, nVal
+       DO c = nVal+1, nMax
+          ctmp = (0.d0, 0.d0)
+          DO cp = nVal+1, nMax
+             IF (DABS(band(cp)-band(c)).LT.tol) THEN !Only quasi degenerate conduction bands
+                DO ia=1,3 !Cartesian index for v^a
+                   DO ib=1,3 !Cartesian index for r^b
+                      DO ic=1,3 !Cartesian index for r^c
+                         ctmp = ctmp + PT3(ia,ib,ic) &
+                              *(calVsig(ia,c,cp)*posMatElem(ib,v,c)*posMatElem(ic,cp,v)  & 
+                              + calVsig(ia,cp,c)*posMatElem(ib,v,cp)*posMatElem(ic,c,v))
+                      END DO !DO ic=1,3
+                   END DO !DO ib=1,3
+                END DO !DO ia=1,3
+             END IF !Only quasi degenerate conduction bands
+          END DO !DO cp = nVal+1, nMax
+!!!          
+          IF (c==nMax) THEN
+             WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
+                  FMT=104,ADVANCE="YES") aimag(ctmp)
+          ELSE
+             WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
+                  FMT=104,ADVANCE="NO") aimag(ctmp)
+          END IF
+ !!         
+       END DO !DO c = nVal+1, nMax
+    END DO !DO v = 1, nVal
+104 FORMAT(E15.7)
+    
+!!!################
+  END SUBROUTINE eta_ec
 !!!################
   
 !!!##################
@@ -1833,13 +1897,14 @@ CONTAINS
 !!! This computes the integrand of the imaginary part of
 !!! the nonlinear response tensor for the 1-omega term
 !!! using the length-gauge correctly scissored according to
-!!! shg-layer.tex \ref{imchiewn,imchiiwn}, i.e. Eq. (99,101)
+!!! /Users/bms/research/austin/shg/shg-notes/shg-layer-nonlocal.tex
+!!! \ref{imchiew,imchiwf}, i.e. Eq. (I34,I36)
 !!!
     IMPLICIT NONE
     
     INTEGER :: v,c,l
     INTEGER :: da, db, dc
-    COMPLEX(DPC) :: psym1,psym2,primero,segundo
+    COMPLEX(DPC) :: psym0,psym1,psym2,primero,segundo
     REAL(DP) :: omegacv,omegalv,omegacl
     REAL(DP) :: omegacvcl,omegacvlv
     REAL(DP) :: T3(3,3,3),tmp,tol
@@ -1868,18 +1933,48 @@ CONTAINS
                          omegacvlv=(2.*omegacv-omegalv)
                          IF ((omegacvlv.ge.0.d0).and.(omegacvlv.le.tol))    omegacvlv=omegacvlv+tol   !agrege
                          IF ((omegacvlv.le.0.d0).and.(omegacvlv.ge.(-tol))) omegacvlv=omegacvlv-tol    !agrege
-                         psym1=(posMatElem(db,c,v)*posMatElem(dc,v,l)+posMatElem(dc,c,v)*posMatElem(db,v,l))/2.
-                         psym2=(posMatElem(dc,l,c)*posMatElem(db,c,v)+posMatElem(db,l,c)*posMatElem(dc,c,v))/2.
-                         tmp=tmp+T3(da,db,dc)*( real(-omegacl*posMatElem(da,l,c)*psym1)/(omegacv*omegacvcl) &
-                                               -real(-omegalv*posMatElem(da,v,l)*psym2)/(omegacv*omegacvlv)) 
+                         !vs omega
+                         if(static.eq.1) then
+                            psym1=(posMatElem(db,c,v)*posMatElem(dc,v,l)+posMatElem(dc,c,v)*posMatElem(db,v,l))/2.
+                            psym2=(posMatElem(dc,l,c)*posMatElem(db,c,v)+posMatElem(db,l,c)*posMatElem(dc,c,v))/2.
+                            tmp=tmp+T3(da,db,dc)*( real(-omegacl*posMatElem(da,l,c)*psym1)/(omegacv*omegacvcl) &
+                                 -real(-omegalv*posMatElem(da,v,l)*psym2)/(omegacv*omegacvlv)) 
+                         end if
+                         !omega=0
+                         if(static.eq.0) then
+                            ! PF[\chi(0;0,0)]=(1/PI)PF[Im[\chi(-w;w,w)]] where PF=prefactor
+                            ! according to Anderson et al. PRB  91, 075302 (2015)
+                            if (1.eq.1) then 
+                               psym1=(posMatElem(db,c,v)*posMatElem(dc,v,l)+posMatElem(dc,c,v)*posMatElem(db,v,l))/2.
+                               psym2=(posMatElem(dc,l,c)*posMatElem(db,c,v)+posMatElem(db,l,c)*posMatElem(dc,c,v))/2.
+                               tmp=tmp+(2./PI)*(T3(da,db,dc)/omegacv**2)*(&
+                                     aimag(momMatElem(da,l,c)*psym1)/omegacvcl&
+                                    -aimag(momMatElem(da,v,l)*psym2)/omegacvlv)
+                            end if
+                         end if
                       end if
                    end do
 !!! this is for intraband 1w contributions
-                   psym1=( posMatElem(db,c,v)*derMatElem(da,dc,v,c) &
-                          +posMatElem(dc,c,v)*derMatElem(da,db,v,c) )/2.
-                   psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
-                          +posMatElem(dc,c,v)*delta(db,c,v) )/2.
-                   tmp=tmp+(T3(da,db,dc)/omegacv)*(aimag(psym1)+2.*aimag(posMatElem(da,v,c)*psym2)/omegacv)
+                   !vs omega
+                   if(static.eq.1) then
+                      psym1=( posMatElem(db,c,v)*derMatElem(da,dc,v,c) &
+                           +posMatElem(dc,c,v)*derMatElem(da,db,v,c) )/2.
+                      psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
+                           +posMatElem(dc,c,v)*delta(db,c,v) )/2.
+                      tmp=tmp+(T3(da,db,dc)/omegacv)*(aimag(psym1)+2.*aimag(posMatElem(da,v,c)*psym2)/omegacv)
+                   end if
+                   !omega=0
+                   if(static.eq.0) then
+                      ! PF[\chi(0;0,0)]=(1/PI)PF[Im[\chi(-w;w,w)]] where PF=prefactor
+                      ! according to Anderson et al. PRB  91, 075302 (2015)
+                      psym0=( posMatElem(db,c,v)*gdVsig(da,dc,v,c) &
+                           +posMatElem(dc,c,v)*gdVsig(da,db,v,c) )/2.
+                      psym1=(derMatElem(db,dc,c,v)+derMatElem(dc,db,c,v))/2.
+                      psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
+                           +posMatElem(dc,c,v)*delta(db,c,v) )/2.
+                      tmp=tmp+(2./PI)*(T3(da,db,dc)/omegacv**3)&
+                           *(real(psym0 + momMatElem(da,v,c)*(4.*psym1 - 7.*psym2/omegacv)))
+                   end if
 !!!
                 END DO
              END DO
@@ -1901,6 +1996,186 @@ CONTAINS
   END SUBROUTINE shg1L
 !!!##################
 
+!!!##################
+  SUBROUTINE shg1Lrashkeev
+!!!##################
+!!!
+!!! This computes the integrand of the imaginary part of
+!!! the nonlinear response tensor for the 1-omega term
+!!! using the length-gauge correctly scissored according to
+!!! /Users/bms/research/austin/shg/shg-notes/shg-layer-nonlocal.tex
+!!! \ref{imchiew,imchiwf}, i.e. Eq. (I34,I36)
+!!!
+    IMPLICIT NONE
+    
+    INTEGER :: v,c,l,vp,cp
+    INTEGER :: da, db, dc
+    COMPLEX(DPC) :: psym0,psym1,psym2,primero,segundo
+    REAL(DP) :: omegacv,omegalv,omegacl
+    REAL(DP) :: omegacvcl,omegacvlv
+    REAL(DP) :: omegacvp,omegacpv
+    REAL(DP) :: calF1,calF2,calF3
+    REAL(DP) :: T3(3,3,3),tmp,tol
+!    write(*,*)'*********'
+!    write(*,*)'@intergands.f90-shg1L: Length gauge'
+!    write(*,*)'*********'
+
+!!!
+!    write(*,*)'shg1L@integrands.f90: static=',static
+    T3(1:3,1:3,1:3) = reshape( spectrum_info(i_spectra)%transformation_elements(1:27), (/3,3,3/))    
+    tol = 0.03   ! agrege
+    DO v = 1, nVal
+       DO c = nVal+1, nMax
+          omegacv=band(c) - band(v)
+          tmp = 0.d0
+          DO da=1,3
+             DO db=1,3
+                DO dc=1,3
+!!! this is for interband 1w contributions
+                   !vs omega
+                   if(static.eq.1) then
+                      do l=1,nMax
+                         if((l.ne.v).and.(l.ne.c))then
+                            omegacl=band(c)-band(l)
+                            omegacvcl=(2.*omegacv-omegacl)
+                            IF ((omegacvcl.ge.0.d0).and.(omegacvcl.le.tol))    omegacvcl=omegacvcl+tol ! agrege
+                            IF ((omegacvcl.le.0.d0).and.(omegacvcl.ge.(-tol))) omegacvcl=omegacvcl-tol ! agrege
+                            omegalv=band(l)-band(v)
+                            omegacvlv=(2.*omegacv-omegalv)
+                            IF ((omegacvlv.ge.0.d0).and.(omegacvlv.le.tol))    omegacvlv=omegacvlv+tol   !agrege
+                            IF ((omegacvlv.le.0.d0).and.(omegacvlv.ge.(-tol))) omegacvlv=omegacvlv-tol    !agrege
+                            !vs omega
+                            if(static.eq.1) then
+                               psym1=(posMatElem(db,c,v)*posMatElem(dc,v,l)+posMatElem(dc,c,v)*posMatElem(db,v,l))/2.
+                               psym2=(posMatElem(dc,l,c)*posMatElem(db,c,v)+posMatElem(db,l,c)*posMatElem(dc,c,v))/2.
+                               tmp=tmp+T3(da,db,dc)*( real(-omegacl*posMatElem(da,l,c)*psym1)/(omegacv*omegacvcl) &
+                                    -real(-omegalv*posMatElem(da,v,l)*psym2)/(omegacv*omegacvlv)) 
+                            end if
+                            !omega=0
+                            if(static.eq.0) then
+                               ! PF[\chi(0;0,0)]=(1/PI)PF[Im[\chi(-w;w,w)]] where PF=prefactor
+                               ! according to Anderson et al. PRB  91, 075302 (2015)
+                               if (1.eq.2) then 
+                                  psym1=(posMatElem(db,c,v)*posMatElem(dc,v,l)+posMatElem(dc,c,v)*posMatElem(db,v,l))/2.
+                                  psym2=(posMatElem(dc,l,c)*posMatElem(db,c,v)+posMatElem(db,l,c)*posMatElem(dc,c,v))/2.
+                                  tmp=tmp+(2./PI)*(T3(da,db,dc)/omegacv**2)*(aimag(momMatElem(da,v,l)*psym2)/omegacvlv&
+                                       -aimag(momMatElem(da,l,c)*psym1)/omegacvcl)
+                               end if
+                            end if
+                         end if
+                      end do
+                   end if !static=1
+                   !omega=0
+                   if(static.eq.0) then
+                      ! according to Rashkeev et al. PRB  57, 3905 (1998)
+                      ! and /Users/bms/research/paris/shg/length/static/manuscript.tex eq.{rn5nn}
+                      ! sum_v'
+                      DO vp = 1, nVal
+                         if(vp.ne.v)then
+                            l=vp
+                            omegacvp=band(c) - band(l)
+                            !calF1
+                            psym0=(posMatElem(db,c,v)*posMatElem(dc,v,l)&
+                                  +posMatElem(dc,c,v)*posMatElem(db,v,l))/2.
+                            psym1=(posMatElem(db,v,c)*posMatElem(dc,c,l)&
+                                  +posMatElem(dc,v,c)*posMatElem(db,c,l))/2.
+                            calF1=real(posMatElem(da,l,c)*psym0+posMatElem(da,l,v)*psym1)
+                            !calF2
+                            psym0=(posMatElem(db,l,c)*posMatElem(dc,c,v)&
+                                  +posMatElem(dc,l,c)*posMatElem(db,c,v))/2.
+                            psym1=(posMatElem(db,l,v)*posMatElem(dc,v,c)&
+                                  +posMatElem(dc,l,v)*posMatElem(db,v,c))/2.
+                            calF2=real(posMatElem(da,v,l)*psym0+posMatElem(da,c,l)*psym1)
+                            !calF3
+                            psym0=(posMatElem(db,v,l)*posMatElem(dc,l,c)&
+                                  +posMatElem(dc,v,l)*posMatElem(db,l,c))/2.
+                            psym1=(posMatElem(db,c,l)*posMatElem(dc,l,v)&
+                                  +posMatElem(dc,c,l)*posMatElem(db,l,v))/2.
+                            calF3=real(posMatElem(da,c,v)*psym0+posMatElem(da,v,c)*psym1)
+                            tmp=tmp-(2./PI)*(T3(da,db,dc)/(omegacvp*omegacv))*(calF1+calF2+calF3)
+                         end if
+                      end DO
+                      !!! sum_c'
+                      DO cp = nVal+1, nMax
+                         if(cp.ne.c)then
+                            l=cp
+                            omegacpv=band(l) - band(v)
+                            !calF1
+                            psym0=(posMatElem(db,c,v)*posMatElem(dc,v,l)&
+                                  +posMatElem(dc,c,v)*posMatElem(db,v,l))/2.
+                            psym1=(posMatElem(db,v,c)*posMatElem(dc,c,l)&
+                                  +posMatElem(dc,v,c)*posMatElem(db,c,l))/2.
+                            calF1=real(posMatElem(da,l,c)*psym0+posMatElem(da,l,v)*psym1)
+                            !calF2
+                            psym0=(posMatElem(db,l,c)*posMatElem(dc,c,v)&
+                                  +posMatElem(dc,l,c)*posMatElem(db,c,v))/2.
+                            psym1=(posMatElem(db,l,v)*posMatElem(dc,v,c)&
+                                  +posMatElem(dc,l,v)*posMatElem(db,v,c))/2.
+                            calF2=real(posMatElem(da,v,l)*psym0+posMatElem(da,c,l)*psym1)
+                            !calF3
+                            psym0=(posMatElem(db,v,l)*posMatElem(dc,l,c)&
+                                  +posMatElem(dc,v,l)*posMatElem(db,l,c))/2.
+                            psym1=(posMatElem(db,c,l)*posMatElem(dc,l,v)&
+                                  +posMatElem(dc,c,l)*posMatElem(db,l,v))/2.
+                            calF3=real(posMatElem(da,c,v)*psym0+posMatElem(da,v,c)*psym1)
+                            tmp=tmp+(2./PI)*(T3(da,db,dc)/(omegacpv*omegacv))*(calF1+calF2+calF3)
+                         end if
+                      end DO
+                   end if !static=0
+!!! this is for intraband 1w contributions
+                   !vs omega
+                   if(static.eq.1) then
+                      psym1=( posMatElem(db,c,v)*derMatElem(da,dc,v,c) &
+                           +posMatElem(dc,c,v)*derMatElem(da,db,v,c) )/2.
+                      psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
+                           +posMatElem(dc,c,v)*delta(db,c,v) )/2.
+                      tmp=tmp+(T3(da,db,dc)/omegacv)*(aimag(psym1)+2.*aimag(posMatElem(da,v,c)*psym2)/omegacv)
+                   end if
+                   !omega=0
+                   if(static.eq.0) then
+                      ! PF[\chi(0;0,0)]=(1/PI)PF[Im[\chi(-w;w,w)]] where PF=prefactor
+                      ! according to Anderson et al. PRB  91, 075302 (2015)
+                      if (1.eq.2) then 
+                         psym0=(derMatElem(db,dc,c,v)+derMatElem(dc,db,c,v))/2.
+                         psym1=( posMatElem(db,c,v)*gdVsig(da,dc,v,c) &
+                              +posMatElem(dc,c,v)*gdVsig(da,db,v,c) )/2.
+                         psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
+                              +posMatElem(dc,c,v)*delta(db,c,v) )/2.
+                         tmp=tmp+(2./PI)*(T3(da,db,dc)/omegacv**3)&
+                              *(real(psym1 + momMatElem(da,v,c)*(4.*psym0 - 7.*psym2/omegacv)))
+                      end if
+                      ! according to Rashkeev et al. PRB  57, 3905 (1998)
+                      ! and /Users/bms/research/paris/shg/length/static/manuscript.tex eq.{i.1}
+                      if (1.eq.1) then
+                         psym0=(derMatElem(db,dc,c,v)+derMatElem(dc,db,c,v))/2.
+                         psym1=(derMatElem(da,db,v,c)+derMatElem(db,da,v,c))/2.
+                         psym2=(derMatElem(dc,da,v,c)+derMatElem(da,dc,v,c))/2.
+                         tmp=tmp+(1./PI)*(T3(da,db,dc)/omegacv**2)&
+                              *(aimag(posMatElem(da,v,c)*psym0+posMatElem(dc,c,v)*psym1&
+                              +posMatElem(db,c,v)*psym2))
+                      end if
+                   end if
+!!!
+                END DO
+             END DO
+          END DO
+          
+          IF (c==nMax) THEN
+             WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
+                  FMT=104,ADVANCE="YES") tmp
+          ELSE
+             WRITE(UNIT=spectrum_info(i_spectra)%integrand_filename_unit, &
+                  FMT=104,ADVANCE="NO") tmp
+          END IF
+          
+       END DO
+    END DO
+104 FORMAT(E15.7)
+    
+!!!##################
+  END SUBROUTINE shg1Lrashkeev
+!!!##################
+
 !!!##############
   SUBROUTINE shg2L
 !!!##############
@@ -1908,7 +2183,8 @@ CONTAINS
 !!! This computes the integrand of the imaginary part of
 !!! the nonlinear response tensor for the 2-omega term
 !!! using the length-gauge correctly scissored according to
-!!! shg-layer.tex \ref{imchie2wn,imchi2wn}, i.e. Eq. (100,102)
+!!! /Users/bms/research/austin/shg/shg-notes/shg-layer-nonlocal.tex
+!!! \ref{imchie2w,imchi2wf}, i.e. Eq. (I38,I40)
 !!!
 
     IMPLICIT NONE
@@ -1996,7 +2272,7 @@ CONTAINS
     
     INTEGER :: v,c,l
     INTEGER :: da, db, dc
-    COMPLEX(DPC) :: psym1,psym2,primero,segundo
+    COMPLEX(DPC) :: psym0,psym1,psym2,primero,segundo
     REAL(DP) :: omegacv,omegalv,omegacl
     REAL(DP) :: omegacvcl,omegacvlv
     REAL(DP) :: T3(3,3,3),tmp,tol
@@ -2025,20 +2301,45 @@ CONTAINS
                          omegacvlv=(2.*omegacv-omegalv)
                          IF ((omegacvlv.ge.0.d0).and.(omegacvlv.le.tol))    omegacvlv=omegacvlv+tol ! agrege
                          IF ((omegacvlv.le.0.d0).and.(omegacvlv.ge.(-tol))) omegacvlv=omegacvlv-tol ! agrege
-                         psym1=(posMatElem(db,c,v)*posMatElem(dc,v,l)+posMatElem(dc,c,v)*posMatElem(db,v,l))/2.
-                         psym2=(posMatElem(dc,l,c)*posMatElem(db,c,v)+posMatElem(db,l,c)*posMatElem(dc,c,v))/2.
-                         tmp=tmp+T3(da,db,dc)*( aimag(calVsig(da,l,c)*psym1)/(omegacv*omegacvcl) &
+                         !vs omega
+                         if(static.eq.1) then
+                            psym1=(posMatElem(db,c,v)*posMatElem(dc,v,l)+posMatElem(dc,c,v)*posMatElem(db,v,l))/2.
+                            psym2=(posMatElem(dc,l,c)*posMatElem(db,c,v)+posMatElem(db,l,c)*posMatElem(dc,c,v))/2.
+                            tmp=tmp+T3(da,db,dc)*( aimag(calVsig(da,l,c)*psym1)/(omegacv*omegacvcl) &
                               -aimag(calVsig(da,v,l)*psym2)/(omegacv*omegacvlv)) 
+                         end if
+                         !omega=0
+                         if(static.eq.0) then
+                            ! PF[\chi(0;0,0)]=(1/PI)PF[Im[\chi(-w;w,w)]] where PF=prefactor
+                            psym1=(posMatElem(db,c,v)*posMatElem(dc,v,l)+posMatElem(dc,c,v)*posMatElem(db,v,l))/2.
+                            psym2=(posMatElem(dc,l,c)*posMatElem(db,c,v)+posMatElem(db,l,c)*posMatElem(dc,c,v))/2.
+                            tmp=tmp+(2./PI)*(T3(da,db,dc)/omegacv**2)*(aimag(calVsig(da,v,l)*psym2)/omegacvlv&
+                                 -aimag(calVsig(da,l,c)*psym1)/omegacvcl)
+                         end if
                       end if
                    end do
 !!! this is for intraband 1w contributions Eq. (28b) Anderson et al. PRB 91, 075302 (2015)
-                   psym1=( posMatElem(db,c,v)*gdcalVsig(da,dc,v,c) &
-                          +posMatElem(dc,c,v)*gdcalVsig(da,db,v,c) )/2.
-                   psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
-                          +posMatElem(dc,c,v)*delta(db,c,v) )/2.
-                   tmp=tmp+(T3(da,db,dc)/(omegacv)**2)&
-                        *( real(psym1)&
-                        +real(calVsig(da,v,c)*psym2)/omegacv)
+                   !vs omega
+                   if(static.eq.1) then
+                      psym1=( posMatElem(db,c,v)*gdcalVsig(da,dc,v,c) &
+                           +posMatElem(dc,c,v)*gdcalVsig(da,db,v,c) )/2.
+                      psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
+                           +posMatElem(dc,c,v)*delta(db,c,v) )/2.
+                      tmp=tmp+(T3(da,db,dc)/omegacv**2)&
+                           *( real(psym1)&
+                           +real(calVsig(da,v,c)*psym2)/omegacv)
+                   end if
+                   !omega=0
+                   if(static.eq.0) then
+                      ! PF[\chi(0;0,0)]=(1/PI)PF[Im[\chi(-w;w,w)]] where PF=prefactor
+                      psym0=(derMatElem(db,dc,c,v)+derMatElem(dc,db,c,v))/2.
+                      psym1=( posMatElem(db,c,v)*gdcalVsig(da,dc,v,c) &
+                           +posMatElem(dc,c,v)*gdcalVsig(da,db,v,c) )/2.
+                      psym2=( posMatElem(db,c,v)*delta(dc,c,v) &
+                           +posMatElem(dc,c,v)*delta(db,c,v) )/2.
+                      tmp=tmp+(2./PI)*(T3(da,db,dc)/omegacv**3)&
+                           *(real(psym1 + calVsig(da,v,c)*(4.*psym0 - 7.*psym2/omegacv)))
+                   end if
 !!!
                 END DO
              END DO
@@ -2047,6 +2348,7 @@ CONTAINS
           !!! This calculatues the necessary scaling factor for normalizing layered SHG spectra.
           !!! Units are in (\times 10^6 pm^2/V). The 52.9177249 factor is the conversion from Bohr to pm.
           !!! We divide by 1.e6 to get the correct scale.
+          !!! See /Users/bms/research/austin/shg/shg-notes/shg-layer-nonlocal.tex
           tmp=(acellz*52.9177249*1/1.e6)*tmp
           
           IF (c==nMax) THEN
@@ -2124,7 +2426,7 @@ CONTAINS
 !!! this is for intraband 2w contributions Eq. (28d) Anderson et al. PRB 91, 075302 (2015)
                    psym=(derMatElem(db,dc,c,v)+derMatElem(dc,db,c,v))/2.
                    psym1=(posMatElem(db,c,v)*delta(dc,c,v)+posMatElem(dc,c,v)*delta(db,c,v))/2.
-                   tmp=tmp+4.*(T3(da,db,dc)/(omegacv)**2)&
+                   tmp=tmp+4.*(T3(da,db,dc)/omegacv**2)&
                         *(real(calVsig(da,v,c)*psym) &
                         -2.*real(calVsig(da,v,c)*psym1)/omegacv)
                 END DO
@@ -2134,6 +2436,7 @@ CONTAINS
           !!! This calculatues the necessary scaling factor for normalizing layered SHG spectra.
           !!! Units are in (\times 10^6 pm^2/V). The 52.9177249 factor is the conversion from Bohr to pm.
           !!! We divide by 1.e6 to get the correct scale.
+          !!! See /Users/bms/research/austin/shg/shg-notes/shg-layer-nonlocal.tex
           tmp=(acellz*52.9177249*1/1.e6)*tmp
 
           IF (c==nMax) THEN

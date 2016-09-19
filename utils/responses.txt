@@ -14,3 +14,7 @@
 27 : ndotvv : carrier injection
 46 : sigma : shift current
 47 : calsigma : layer shift current 
+32 : eta_ec : electric current 
+33 : caleta_ec : layer electric current 
+48 : mu : spin injection current 
+49 : calmu : layer spin injection current 

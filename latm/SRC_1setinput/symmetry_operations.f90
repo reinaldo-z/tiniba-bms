@@ -98,7 +98,14 @@ CONTAINS
           CALL transformationLinearResponse(i_spectra)
      CASE(40,41)
           CALL transformationOneBeamSpinInjection(i_spectra)
-
+!!!#BMSd sep/13/16
+       CASE(32,33)
+          CALL transformationSecondOrderResponse(i_spectra)
+!!!#BMSu sep/13/16
+!!!#BMSd sep/09/16
+       CASE(48,49)
+          CALL transformationSpinInjectionCurrent(i_spectra)
+!!!#BMSu sep/09/16
        CASE DEFAULT
           WRITE(6,*) 'Error in initializeSymOps:'
           WRITE(6,*) '   No tranformation for case i_spectra ', i_spectra,' is coded yet'
@@ -138,7 +145,7 @@ CONTAINS
 !       IF (debug) THEN
 !          WRITE(*,*) SymOp(iSym,1,1:3), SymOp(iSym,2,1:3), SymOp(iSym,3,1:3)
 !       END IF
-
+!      BMS: this is the determinant of the symmetry matrices.
        dSymOp(iSym) = SymOp(iSym,1,1) * ( SymOp(iSym,2,2)* SymOp(iSym,3,3)-SymOp(iSym,3,2)* SymOp(iSym,2,3) )&
                     - SymOp(iSym,1,2) * ( SymOp(iSym,2,1)* SymOp(iSym,3,3)-SymOp(iSym,3,1)* SymOp(iSym,2,3) )&  
                     + SymOp(iSym,1,3) * ( SymOp(iSym,2,1)* SymOp(iSym,3,2)-SymOp(iSym,3,1)* SymOp(iSym,2,2) )
@@ -671,6 +678,53 @@ CONTAINS
 !!!############################################
   
 !!!BW End!
+!!!#BMSd sep/09/16
+!!!###################################################
+  SUBROUTINE transformationSpinInjectionCurrent(i_spectra)
+!!!###################################################
+    IMPLICIT NONE
+    INTEGER :: i_spectra
+    REAL(DP) :: T4(3,3,3,3)
+    INTEGER :: ia, ib, ic, id
+    INTEGER :: ix, iy, iz, iw
+    INTEGER :: i
+    
+    ia = spectrum_info(i_spectra)%spectrum_tensor_component(1)
+    ib = spectrum_info(i_spectra)%spectrum_tensor_component(2)
+    ic = spectrum_info(i_spectra)%spectrum_tensor_component(3)
+    id = spectrum_info(i_spectra)%spectrum_tensor_component(4)
+
+    T4(1:3,1:3,1:3,1:3) = 0.d0
+    DO ix = 1,3
+       DO iy = 1,3
+          DO iz = 1,3
+             DO iw = 1,3
+                DO i = 1,nSym
+                   T4(ix,iy,iz,iw) = T4(ix,iy,iz,iw) +         &
+                        SymOp(i,ia,ix)*SymOp(i,ib,iy)*SymOp(i,ic,iz)*SymOp(i,id,iw)
+                END DO
+             END DO
+          END DO
+       END DO
+    END DO
+    
+    spectrum_info(i_spectra)%transformation_elements(1:81) = reshape(T4,(/81/))
+    
+    WRITE(99,*) "T4", ia, ib, ic, id
+    WRITE(99,*) spectrum_info(i_spectra)%transformation_elements(1:81)
+    DO ix = 1,3
+       DO iy = 1,3
+          DO iz = 1,3
+             DO iw = 1,3
+                WRITE(99,*)  ix, iy, iz, iw, T4(ix,iy,iz,iw)
+             END DO
+          END DO
+       END DO
+    END DO
+!!!############################################
+  END SUBROUTINE transformationSpinInjectionCurrent
+!!!############################################
+!!!#BMSu sep/09/16
   
 !############################
 END MODULE symmetryOperations

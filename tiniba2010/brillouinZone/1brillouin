@@ -1,0 +1,208 @@
+program brillouin
+  implicit none
+  INTEGER, PARAMETER :: SP = KIND(1.0)            ! single precision
+  INTEGER, PARAMETER :: DP = KIND(1.0D0)          ! double precision
+  INTEGER, PARAMETER :: SPC = KIND((1.0,1.0))     ! single precision complex
+  INTEGER, PARAMETER :: DPC = KIND((1.0D0,1.0D0)) ! double precision complex
+
+  integer :: IArgC,ArgC,isthis
+  integer :: iteracion,i,j,NofL
+  integer :: ioerror
+  REAL(DP) :: inputdata(2) 
+  REAL(DP),allocatable :: mydato(:) 
+  REAL(DP),allocatable :: fx(:) 
+  REAL(DP),allocatable :: xx(:) 
+  REAL(DP) :: lambda 
+  
+
+
+  character :: ArgV(4)*200
+  character(len=200) :: filein
+  character(len=255) :: fileout
+  character(len=255) :: option
+!!!
+  character(len=255) :: pmnFile
+  character(len=255) :: eigenFile
+  integer :: io_status
+  REAL(DP) :: matTemp(6)
+  COMPLEX(DPC), ALLOCATABLE :: momMatElem(:,:,:)
+  COMPLEX(DPC), ALLOCATABLE :: posMatElem(:,:,:)
+  REAL(DP), ALLOCATABLE :: energy(:,:), energys(:,:)
+
+  logical :: filexist
+  REAL(DP) :: divide
+!!!==================================
+  integer :: kMax !! number of kpoints
+  integer :: nMax !! total number of bands
+  integer :: nCon !! number of conduction bands
+  integer :: nVal !! number of valence bands
+
+  integer :: iv,ic,ik
+  integer :: istat,l,ii,jj
+  integer :: fik
+  
+  kMax=8
+  nVal=4
+  nCon=4
+  nMax=nVal+nCon
+  nMax=8
+!!!==================================
+  
+
+
+!!!==========begin executable===============
+!!!==========begin executable===============
+!!!==========begin executable===============
+
+   ALLOCATE (momMatElem(3,nMax,nMax), STAT=istat)
+   if (istat.NE.0) then
+       write(6,*) 'Could not allocate momMatElem'
+       write(6,*) 'Stopping'
+       stop
+   end if
+   ALLOCATE (energy(kMax,nMax), STAT=istat)
+    IF (istat.NE.0) THEN
+       WRITE(6,*) 'Could not allocate energy'
+       WRITE(6,*) 'Stopping'
+       STOP
+    END IF
+   ALLOCATE (energys(kMax,nMax), STAT=istat)
+    IF (istat.NE.0) THEN
+       WRITE(6,*) 'Could not allocate energys'
+       WRITE(6,*) 'Stopping'
+       STOP
+    END IF
+
+
+
+  ArgC=IArgC() !number of arguemnts
+  if (ArgC==2) then
+    call GETARG(1,eigenFile)
+    call GETARG(2,pmnFile)   
+  else
+        write(*,*) " Usage: brillouin [Energy File] [Momentum File] "       
+      stop
+ endif
+  
+  eigenFile=trim(eigenFile)
+  pmnFile=trim(pmnFile)
+
+       inquire (file=eigenFile,exist=filexist)
+       if (.NOT. filexist) then
+          write(*,*)'Error, missing file: ',trim(eigenFile)
+          stop
+       else 
+       write(*,*)"Energy file  : ",trim(eigenFile)
+       end if
+       inquire (file=pmnFile,exist=filexist)
+       if (.NOT. filexist) then
+          write(*,*)'Error, missing file : ',trim(pmnFile)
+          stop
+       else 
+       write(*,*)"pmn file     : ",trim(pmnFile)
+       end if
+WRITE(*,*) "Program Flow: entered read PmnFile  : ", trim(pmnFile)
+!!!========== read pmn =============
+!!!========== read pmn =============
+!!!========== read pmn =============       
+       open (11, FILE=pmnFile, STATUS='OLD', IOSTAT=io_status) 
+        if (io_status /= 0) then
+         write(*,*)"Error trying to open:",trim(pmnFile)
+         stop "Stopping"
+        end if
+
+      write(*,*)"Pmn File: ",trim(pmnFile)
+       jj=0
+      do ik = 1, kMax
+        write(*,*)"ik=",ik
+         do iv = 1,nMax
+          do ic = iv,nMax 
+          !CALL sleep(1)
+          READ(11,*) (matTemp(l), l=1,6)
+           momMatElem(1,iv,ic) = matTemp(1) + (0.0d0,1.0d0)*matTemp(2)
+           momMatElem(2,iv,ic) = matTemp(3) + (0.0d0,1.0d0)*matTemp(4)
+           momMatElem(3,iv,ic) = matTemp(5) + (0.0d0,1.0d0)*matTemp(6)
+           IF (ic.NE.iv) THEN
+              DO ii=1,3
+                 momMatElem(ii,ic,iv) = CONJG(momMatElem(ii,iv,ic))
+              END DO
+           END IF
+        end do  !! iv
+       end do   !! ic
+            do iv = 1, nMax
+              momMatElem(1,iv,iv)= REAL(momMatElem(1,iv,iv)) + 0.d0*(0.d0,1.d0)
+              momMatElem(2,iv,iv)= REAL(momMatElem(2,iv,iv)) + 0.d0*(0.d0,1.d0)
+              momMatElem(3,iv,iv)= REAL(momMatElem(3,iv,iv)) + 0.d0*(0.d0,1.d0)
+            end do 
+      end do 
+
+!!! check the end of input pmn file 
+!!! check the end of input pmn file 
+!!! check the end of input pmn file 
+  matTemp(1:6) = 0.d0
+  READ(11,*,IOSTAT=io_status) (matTemp(l), l=1,6)
+  IF (io_status.LE.0) THEN
+     WRITE(*,*) "   End of matrix elements file reached"
+     CLOSE(11)
+  ELSE IF(io_status.EQ.0) THEN
+     WRITE(*,*) (matTemp(l), l=1,6)
+     STOP 'pmn file contains more data than expected'
+  ELSE
+     STOP 'reading end of pmn file caused an error.'
+  END IF
+
+!!!========== read pmn =============
+!!!========== read pmn =============
+!!!========== read pmn =============
+  
+  
+!!!========== read eigen =============
+!!!========== read eigen =============
+!!!========== read eigen =============
+
+  write(*,*)
+  write(*,*) "Program Flow: entered read EnergyFile  : ", trim(eigenFile)
+       
+  open(UNIT=10, FILE=eigenFile, STATUS='OLD', IOSTAT=istat)
+    if (istat.NE.0) then
+       write(*,*) "Could not open file ", trim(eigenFile)
+       write(*,*) "Stopping"
+       stop
+    else
+       write(6,*) 'Opened file: ', trim(eigenFile)
+    end if
+
+    do ik = 1, kMax
+     read(UNIT=10,FMT=*, IOSTAT=istat) fik, (energy(ik,i), i = 1, nMax)
+
+       if (istat.eq.0) then 
+        write(*,*)ik,fik
+       else if (istat.EQ.-1) then 
+        write(*,*)"Prematurely reached end of file", trim(eigenFile)
+        stop "Stopping"
+       else if (istat.EQ.1) then 
+        write(*,*)"Problem reading file", trim(eigenFile)
+        stop "Stopping"
+       else 
+        write(*,*)"Problem reading file", trim(eigenFile)
+        stop "Stopping"
+       end if
+    end do 
+         READ(UNIT=10,FMT=*, IOSTAT=istat) fik
+        if (istat.EQ.-1) then 
+         write(*,*)"reached end of file  : ", trim(eigenFile)
+         close(10)
+        else 
+        write(*,*)"Problem reading file was not EOF : ", trim(eigenFile)
+        stop "Stopping"
+        end if
+    
+ 
+
+         
+deallocate (momMatElem, STAT=istat)
+deallocate (energy, STAT=istat)
+deallocate (energys, STAT=istat)
+end program brillouin
+
+

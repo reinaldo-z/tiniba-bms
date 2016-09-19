@@ -1,0 +1,150 @@
+#!/bin/bash  
+
+IPS_FILE=/tmp/ping-nodes
+HOSTS_UP=$IPS_FILE-up
+HOSTS_DOWN=$IPS_FILE-down
+
+DEFAULT_PORT=514
+DEFAULT_GROUP="ALL"
+DEFAULT_NODES="down"
+LIST=""
+
+usage(){
+echo "
+usage
+
+cluster_ping [up|down|dsh]
+	show only up or down node.
+	dsh display available nodes in dsh nodes format: 
+	node01, node02, ... etc.
+
+cluster_ping -p PORT_NUMBER [up|down|dsh]
+	send ping to port PORT_NUMBER to nodes for determine
+	if a node is up or down.
+
+cluster_ping -g GROUP_NAME [up|down|dsh]
+	show nodes from group GROUP_NAME	
+	cluster_ping -g help show groups nodes
+	in this cluster.
+
+cluster_ping -l [up|down|dsh]
+	list nodes without stats.
+	usefull to pipe with others commands
+
+cluster_ping -h 
+	show this help
+---
+$1"
+
+exit 255
+
+}
+
+while [ ! -z $1 ];do
+flag=$1
+case $flag in
+-g|--group)
+# group from $CIA_ROOT/config/node_groups
+	shift
+	DEFAULT_GROUP=$(echo $1| tr a-z A-Z)
+	[ "$DEFAULT_GROUP" == "HELP" ] && {
+	echo "groups in this cluster"
+	echo
+	ls $CIA_ROOT/config/install_groups
+	exit 150
+	}
+
+	[ ! -f $CIA_ROOT/config/node_groups/$DEFAULT_GROUP ] &&
+	usage "group $1 not exist"
+	;;
+-p|--port)
+#port to ping nodes
+	shift
+	DEFAULT_PORT=$1
+	test=$1
+	let test++ 2>/dev/null || usage "invalid port $test"
+	;;
+-l|--list)
+#onlu list nodes without stats
+	LIST="y"	
+	;;
+-h|--help)
+	usage
+	;;
+-*)
+	usage "invalid option $1"
+	;;
+*)
+	SHOW=$1
+	[ "$SHOW" != "up" ] && [ "$SHOW" != "down" ] && [ "$SHOW" != "dsh" ] &&
+	usage "unknow nodes request $SHOW"
+	DEFAULT_NODES=$SHOW
+	;;
+esac
+shift
+done
+
+cat $CIA_ROOT/config/node_groups/$DEFAULT_GROUP | 
+nmap --max_rtt_timeout 20  -oG - -iL - -p $DEFAULT_PORT | 
+grep open | cut -d" " -f2 > $IPS_FILE
+
+touch $HOSTS_UP  $HOSTS_DOWN
+
+awk '/^[ \t]*[^#]/ {  print $0 }' $INSTALL_HOSTS |
+while read ip name dsk boot kernel initrd install ; do
+
+	if grep  -q -w $ip  $IPS_FILE ; then
+		echo $name >> $HOSTS_UP
+	else  
+	        echo $name >> $HOSTS_DOWN
+        fi
+done
+
+[ $DEFAULT_GROUP != "ALL"  ] && {
+touch /tmp/$DEFAULT_GROUP-up /tmp/$DEFAULT_GROUP-down
+cat $CIA_ROOT/config/node_groups/$DEFAULT_GROUP |
+while read name ;do
+if grep -q -w $name $HOSTS_UP ;then
+	echo $name >> /tmp/$DEFAULT_GROUP-up
+else
+	echo $name >> /tmp/$DEFAULT_GROUP-down
+fi
+done
+
+cat /tmp/$DEFAULT_GROUP-up > $HOSTS_UP
+cat /tmp/$DEFAULT_GROUP-down > $HOSTS_DOWN
+
+rm -f /tmp/$DEFAULT_GROUP-up /tmp/$DEFAULT_GROUP-down
+}
+
+
+[ $DEFAULT_NODES == "dsh" ] && {
+DSH_NODES=$(cat $HOSTS_UP | while read node ; do echo -n ", $node"; done)
+DSH_NODES=${DSH_NODES:1}
+echo $DSH_NODES 
+rm -f $IPS_FILE $HOSTS_UP $HOSTS_DOWN
+
+exit 0
+}
+
+[ -z $LIST ] &&
+echo "nodes $DEFAULT_NODES group $DEFAULT_GROUP 
+---------------------------------------------------------------------"
+[ $DEFAULT_NODES == "up" ] &&  cat $HOSTS_UP
+[ $DEFAULT_NODES == "down" ] && cat $HOSTS_DOWN
+
+UP=$(wc -l < $HOSTS_UP)
+DOWN=$(wc -l < $HOSTS_DOWN)
+
+[ -z $LIST ] &&
+echo "---------------------------------------------------------------------
+stats 
+ping to port:	$DEFAULT_PORT
+nodes up:	$UP
+nodes down:	$DOWN
+___________________
+total nodes	$((UP+DOWN))"
+
+rm -f $IPS_FILE $HOSTS_UP $HOSTS_DOWN
+
+exit 0

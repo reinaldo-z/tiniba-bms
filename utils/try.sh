@@ -1,7 +1,5 @@
-#($(<hoy))
-#< hoy
-source hoy
-printf "\t$ab_exec_hexa\n"
-printf "\t$ab_exec_quad\n"
-printf "\t$ab_exec_itanium\n"
-printf "\t$ab_exec_xeon\n"
+nw=$1
+cores=6
+factor=`echo "scale=0; $nw/$cores" | bc -l`
+reminder=`echo "scale=0; $nw - $factor*$cores" | bc -l`
+echo $factor $reminder

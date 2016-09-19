@@ -115,8 +115,8 @@ if [ "$ANFIBIO" == "quad01" ];then
     fi
 else 
 #    printf "\t ${RED}Hold on !${NC}\n"
-    printf "\tTo run with infiniband\n"
-    printf "\tyou need to be in quad01\n"
+#    printf "\tTo run with infiniband\n"
+#    printf "\tyou need to be in quad01\n"
 #    printf "\t ${RED}Stop right now ...${NC}\n"
     exit 0 
 fi 

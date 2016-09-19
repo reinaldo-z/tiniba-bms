@@ -1,3 +1,7 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! prefactors, units and equations references form
+!! $TINIBA/tiniba-manual/tiniba-manual.tex
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!$ 1 : chi1 : linear response
 !!$ 24 : calChi1 : layer linear response 
 !!$ 3 : eta2 : bulk injection current
@@ -11,6 +15,14 @@
 !!$ 27 : ndotvv : carrier injection
 !!$ 46 : sigma :  shift current
 !!$ 47 : calsigma : layer shift current
+!!#BMSd sep/13/16
+!! 32 : eta_ec :    bulk electric current
+!! 33 : caleta_ec : layered electric current
+!!#BMSu sep/13/16
+!!#BMSd sep/09/16
+!! 48 : mu : bulk spin injection current
+!! 49 : calmu : layered spin injection current
+!!#BMSu sep/09/16
 !!!############
 MODULE inparams
 !!!############
@@ -114,7 +126,7 @@ MODULE inparams
   ! -pi * H^3 * e^3/\hbar^2 in cgs * 3.708833177694700d-15 => C^3/(J^2 s^2)
   ! surface differs from bulk by a factor of 2, since we use the Im[rr] in the surface
   ! term instead of [r,r] for the bulk term, and Im[rr]=[r,r]/2
-  REAL(DP), PARAMETER :: caleta_factor = -pi*(27.21d0)**3*(9.985d25)*3.7037d-15
+  REAL(DP), PARAMETER :: caleta_factor = -pi*(27.21d0)**3*(9.967d25)*3.7037d-15
   !#BMSd feb/11/16
   ! sigma factor (see Sec. 8.5.3 in tiniba-manual.pdf) [sigma]=A/V^2
   REAL(DP), PARAMETER :: sigma_factor = -pi*(2.4085102d9)*(27.21d0)**4*3.7037d-15
@@ -129,11 +141,12 @@ MODULE inparams
   REAL(DP), PARAMETER :: staticRec_factor = -(27.21d0)**4*(1.5875d-6)
   ! one-beam spin population bulk 
   !! need to check the sign 
-!  REAL(DP), PARAMETER :: spin_injection_factor_bulk =  -(pi/2.)*(27.21d0)**3
-!  REAL(DP), PARAMETER :: spin_injection_factor_layered = -(pi/4.)*(27.21d0)**3
 !!!!!!!!!!!!!!!!!! 26 Marzo 2009 
-  REAL(DP), PARAMETER :: spin_injection_factor_bulk =  (pi/2.)*(27.21d0)**3
-  REAL(DP), PARAMETER :: spin_injection_factor_layered = (pi/2)*(27.21d0)**3
+!  REAL(DP), PARAMETER :: spin_injection_factor_bulk =  (pi/2.)*(27.21d0)**3
+!  REAL(DP), PARAMETER :: spin_injection_factor_layered = (pi/2)*(27.21d0)**3
+!!!!!!! sep-3-2016 tiniba-manual.tex {dim16} 10^{-11} J/mV^2
+  REAL(DP), PARAMETER :: spin_injection_factor_bulk = 5.56325* pi*(27.21d0)**3
+  REAL(DP), PARAMETER :: spin_injection_factor_layered = 5.56325*pi*(27.21d0)**3
 !!!!!!!!!!!!!!!!!! 26 Marzo 2009 
 ! one-beam spin current
 !  REAL(DP), PARAMETER :: one_beam_spin_current_factor = pi*(27.21d0)**3*(2.187676d8)
@@ -163,17 +176,29 @@ MODULE inparams
   
   !REAL(DP), PARAMETER :: one_beam_current_injection_factor = -pi*(27.21d0)**3*(9.985d25)
 !!! For SHG is the same prefactor for all 3 cases
-  REAL(DP), PARAMETER :: shg1_factor = 1144690529.7519768d0/2.d0
-  REAL(DP), PARAMETER :: shg2_factor = 1144690529.7519768d0/2.d0
+  !!#BMSd-Jun/20/2016
+  !!See /Users/bms/research/tiniba/tiniba-manual/tiniba-manual.tex
+  !!Eq. {si4n}
+  REAL(DP), PARAMETER :: shg1_factor = 0.57768*(pi**2)*1.d8 !pm/V
+  REAL(DP), PARAMETER :: shg2_factor = shg1_factor 
+  !!#BMSu-Jun/20/2016
+  !!#BMSd-Jun/20/2016
+  !!below prefactor differs from above by 0.00386, most likely from
+  !!the values used for \hbar, m and e
+!  REAL(DP), PARAMETER :: shg1_factor = 1144690529.7519768d0/2.d0
+!  REAL(DP), PARAMETER :: shg2_factor = 1144690529.7519768d0/2.d0
 !in principle above should be below term that appears in Cabellos tiniba version
 !(pi*(4.803d-10)**3*(4.189d8) &
 !  /((1.0546d-27)**2*(9.109d-28)**3*(1.519d15)**5*(5.291d-9)**3*(1.993d-19)**3))/2.
-  !!#BMSd
-  
-  !!#BMSu
+  !!#BMSu-Jun/20/2016
 !!!
   REAL(DP), PARAMETER :: leo_factor = 0.d0  !! LEO not implemented
-  
+!!!#BMSd sep/09/16
+  !! spin injection current Eq. {e.5}
+  !! in J/sV^2 Eq. {e.6}
+  REAL(DP), PARAMETER :: mu_factor = 7.704  
+  REAL(DP), PARAMETER :: calmu_factor = 7.704  !WARNING: need to be checked
+!!!#BMSu sep/09/16
 !!!FN
 !!!!! Martes 27 Febrero 2009 cab 
   INTEGER, PARAMETER :: number_of_known_spectrum_types = 50
@@ -202,12 +227,12 @@ MODULE inparams
        ! 26            27           28         29 
        Chi1_factor,Chi1_factor, Chi1_factor, spin_injection_factor_layered, &
        ! Chi1_factor,Chi1_factor, Chi1_factor,  Chi1_factor, &
-       ! 30     31    32    33   34   35   36   37   38   39           40
-       uno,  uno,  uno,  uno, uno,  uno, uno, uno, uno, Chi1_factor, Chi1_factor, &
+       ! 30  31   32             33             34   35   36   37   38   39           40
+       uno,  uno, caleta_factor, caleta_factor, uno, uno, uno, uno, uno, Chi1_factor, Chi1_factor, &
        ! 41                            42          43          44          45
        spin_injection_factor_bulk ,shg1_factor,shg2_factor,shg1_factor,shg2_factor, &
-       !46  47   48   49   50 
-       sigma_factor, calsigma_factor, uno, uno, uno/)
+       ! 46           47              48         49         50 
+       sigma_factor, calsigma_factor, mu_factor, calmu_factor, uno/)
 !!!FN
   
 CONTAINS
@@ -551,6 +576,20 @@ CONTAINS
           WRITE(6,*) '       inparams.f90:Spin Injection abs Viernes 20 Febrero 2009'
           dims = 3
           length = 27
+!!!#BMSd sep/09/16
+!!! spin injection current
+        CASE(48,49)
+          WRITE(6,*) '       inparams.f90:spin injection current Viernes 9 septiembre 2016'
+          dims = 4
+          length = 81
+!!!#BMSu sep/09/16
+!!!#BMSd sep/13/16
+!!! spin injection current
+        CASE(32,33)
+          WRITE(6,*) '       inparams.f90:electric current Viernes 9 septiembre 2016'
+          dims = 3
+          length = 27
+!!!#BMSu sep/13/16
        CASE DEFAULT
           WRITE(6,*) "Error in input file:"
           WRITE(6,*) "Spectrum_type ", spectrum_info(i)%spectrum_type," unknown"

@@ -1,0 +1,5 @@
+50000 1        number of k-points, first k-point 
+-5.0 2.2      Emin, Emax for matrix elements
+0             number of choices (columns in *outmat) - 0: MME into case.mme
+
+

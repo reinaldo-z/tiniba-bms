@@ -268,16 +268,32 @@ fi
 	Nk=`awk -F _ '{print $1}' chispas`
 	rm chispas
 #
-# if in medusa or any hexa, copy to the node given in .machines_latm.original
+# It is better to run the whole response in the same node
 # so the calculation is done locally, thus faster.
 #
 	
 	adondi=`awk '{print $1}' .machines_latm`
 	quien=`whoami`
 	yesno=no
+	aqui=`hostname`
 	printf "\tLATM to be run at $adondi\n"
-	if [[ "$adondi" == "medusa" || "$adondi" == "hexa"* ]]
+	if [[ ! "$adondi" == "$aqui" ]]
 	then
+	    Line
+	    echo -e "\t\033[33;5mWARNING\033[0m"
+	    printf "\t${RED}You have chosen to run in ${GREEN}$adondi${RED}\n"
+	    printf "\twhich is different from your current ${GREEN}$aqui${RED} node${NC}.\n"
+	    printf "\t${BLUE}This would be very inefficient${NC}\n"
+	    printf "\t${RED}Is better to work in ${GREEN}$adondi${RED}\n"
+	    Line
+	    exit 1
+	fi
+	if [[ "$adondi" == "void" ]]
+	then
+	    # this part would copy and run in a different node
+	    # and it is not recommended and perhaps is not well implemente
+	    # for all the responses, so it is better not tu use it.
+	    # We leave the code just for sentimental reasons 
 	    printf "\tCopying the required files through infiniband\n"
 # present hexa
 	    yesno=si
@@ -296,17 +312,17 @@ fi
 	    scp me*_* $adondi"ib":/data/$quien/workspace/$parent/$case/. >& /dev/null 
 	    #printf "\t scp me*_* $adondi ib:/data/$quien/workspace/$parent/$case/.\n" #DEBUG
 	else
-	    printf "\tLocal calculation, no copying required\n"
+	    printf "\t${GREEN}Local calculation, no copying required => faster${NC}\n"
 	fi
 # SHG Length Gauge
 	if [ $response -eq "21" ]
 	then
 	    Line
-	    printf "\t${RED}Calculating Length Gauge shg1 and shg2${NC}\n"
+	    printf "\t${RED}Calculating Length Gauge shg1w and shg2w${NC}\n"
 	    Line
-#
+	    #
 	    Line
-	    printf "\t${RED}shg1${NC}\n"
+	    printf "\t${RED}shg1w ${NC}\n"
 	    Line
 	    response=21
 	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -b $smearvalue -n $vnlkss > mtita
@@ -364,7 +380,9 @@ fi
 	    awk '{print $2,$3}' res/$f2w > perro
 	    lastname=`awk -Fshg2L. '{print $2}' 22.sm.dat`
 	    paste res/$f1w perro > res/shgL.$lastname 
-	    printf "\t${blue}res/${GREEN}shgL.$lastname${NC}\n"
+	    #KK-shifted SHG results
+	    paste res/$f1w'_kks' perro > res/shgL.$lastname'_kks' 
+	    printf "\t${blue}res/${GREEN}shgL.$lastname(_kks)${NC}\n"
 	    Line
 	    rm -f perro
 	    rm 21* 22*
@@ -389,6 +407,7 @@ fi
 # decides if it runs locally or non-locally 
 	    if [ "$yesno" == "si" ]
 	    then
+		printf "\tCOPY:\n"
 		scp mtita $adondi"ib":/data/$quien/workspace/$parent/$case/.
 		qui=$ontoi"ib"
 		ssh $adondi "cd /data/$quien/workspace/$parent/$case/;./mtita;scp res/* $qui:$aqui/res/.;rm -f res/*;rm mtita"
@@ -401,7 +420,7 @@ fi
 	    fi
 #
 	    Line
-	    printf "\t${RED}shg2${NC}\n"
+	    printf "\t${RED}shg2w${NC}\n"
 	    Line
 	    response=45
 	    echo $exec -w $lt -m $caso -s $tijera -o $option -v $Nv -c $Nc -r $response  -t \"${scases[@]}\" -b $smearvalue -n $vnlkss > mtita
@@ -425,8 +444,8 @@ fi
 		rm fallo
 		exit 1
 	    fi
-# puts shg1 and shg2 into one file
-# kk
+# puts shg1w and shg2w into one file
+# kk results are NOT KK-shifted
 	    f1w=`awk '{print $1}' 44.kk.dat`
 	    f2w=`awk '{print $1}' 45.kk.dat`
 	    awk '{print $2,$3}' res/$f2w > perro
@@ -442,8 +461,10 @@ fi
 	    f2w=`awk '{print $1}' 45.sm.dat`
 	    awk '{print $2,$3}' res/$f2w > perro
 	    lastname=`awk -Fshg2C. '{print $2}' 45.sm.dat`
-	    paste res/$f1w perro > res/shgC.$lastname 
-	    printf "\t${blue}res/${GREEN}shgC.$lastname${NC}\n"
+	    paste res/$f1w perro > res/shgC.$lastname
+	    #KK-shifted SHG results
+	    paste res/$f1w'_kks' perro > res/shgC.$lastname'_kks' 
+	    printf "\t${blue}res/${GREEN}shgC.$lastname(_kks)${NC}\n"
 	    Line
 	    rm -f perro
 	    rm 44* 45*

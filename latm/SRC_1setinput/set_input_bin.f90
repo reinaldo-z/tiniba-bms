@@ -942,17 +942,17 @@ PROGRAM set_input
            write(*,*)'set_input_bin.f90: layered calculation'
            write(*,*)'********'
         end if
-        !########## MIMIC A BULK RESPONSE #######d
         !calMomMatElem calculated above is ONLY for non-diagonal elements
         !it contains v^nl and v^S if such options are chosen
         !Thus, calVsig bellow is only off-diagonal.
         calVsig=calMomMatElem !comment to check layered fromulas
         !The diagonal terms are calculated bellow
+        !########## MIMIC A BULK RESPONSE #######d
         ! uncomment next two lines to check layered fromulas
         !calVsig=momMatElem !\calv^\gs -> v^\gs
         !gdcalVsig=gdVsig   !(\calv^\gs);k -> (v^\gs);k
         ! comment previous two lines for layered fromulas
-        !########## MIMIC A BULK RESPONSE #######u
+        !########## MIMIC A BULK RESPONSE #######
      else !bulk calculation
         if ( ik .eq. 1 ) then 
            write(*,*)'********'
@@ -960,14 +960,26 @@ PROGRAM set_input
               write(*,*)'set_input_bin.f90: layered injection current'
            else
               write(*,*)'set_input_bin.f90: bulk calculation'
-              write(*,*)'momMatElem->calVsig'
-              write(*,*)'gdVsig->gdcalVsig'
+              write(*,*)'********'
+              write(*,*)'using momMatElem in calVsig,   do not panic'
+              write(*,*)'using gdVsig     in gdcalVsig, do not panic'
+              write(*,*)'calVsig and gdcalVsig cloud be used in integrands.f90'
+              write(*,*)'for a BULK calculation without any problems'
            end if
            write(*,*)'********'
         end if
+      !#BMSd-sep/12/2015
+      !The following two arrays are declared for both bulk and layer calculation
+      !according to /Users/bms/research/austin/shg/shg-notes/shg-layer-nonlocal.pdf 
+      !see "Layer or Bulk calculation"
+      !this way in integrands.f90 we use
+      !calVsig=momMatElem => \calv^\gs     -> v^\gs
+      !and
+      !gdcalVsig=gdVsig =>   (\calv^\gs);k -> (v^\gs);k
+      !for coding either a bulk or a layer response 
         calVsig=momMatElem !\calv^\gs -> v^\gs
         gdcalVsig=gdVsig !(\calv^\gs);k -> (v^\gs);k
-     end IF
+     end if
      !#BMSVer3.0d
      ! {\cal V}^\sigma_{nn} diagonal elements
      !In particular they are needed for checking that calVsig=curMatEelem
@@ -1007,8 +1019,8 @@ PROGRAM set_input
 
 !!! Now calculate the integrands
     
-
      CALL calculateintegrands
+     !write(*,*)'mas alla'
      
   END DO !ik=1,kMax
   

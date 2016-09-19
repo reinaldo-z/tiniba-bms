@@ -1,0 +1,9 @@
+An example is given below:
+
+---------------- top of file: case.inop --------------------
+256 1            : NKMAX, NKFIRST
+-5.0 2.0         : EMIN, EMAX
+2                : number of choices (columns in *outmat)
+1                : Re xx
+3                : Re zz
+------------------- bottom of file -------------------------

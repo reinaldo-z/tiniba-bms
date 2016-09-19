@@ -1,0 +1,49 @@
+## Makefile to compile in: XEON QUAD ITANIUM
+## Last Modification     : Monday 31 April 2007 9:26 
+CWD=$(shell pwd)
+PLATAFORM=$(shell hostname)
+PRINTF=@printf
+ab=ascii
+OBJS= sub_pmn_${ab}.o readAbinitWF.o geometry.o
+
+	ifeq  ($(PLATAFORM),master)
+	F90=/opt/intel/fc/9.0/bin/ifort
+	FFLAGS= -O3 -tpp7 -xW -static
+	NAME=rpmns_new_xeon
+	WHATPL=XEON
+	endif
+	ifeq    ($(PLATAFORM),itanium01)
+	F90 =/opt/intel/fc/9.0/bin/ifort
+	FFLAGS = -O3 -parallel -static -tpp2
+	NAME=rpmns_new_itanium
+	WHATPL=ITANIUM
+	endif
+
+	ifeq    ($(PLATAFORM),quad01)
+	F90 =/opt/intel/fce/9.1.036/bin/ifort
+	FFLAGS = -O3 -parallel -static
+	NAME=rpmns_new_quad
+	WHATPL=QUAD
+	endif
+
+all: pmn.f90 ${OBJS}
+	${F90} ${FFLAGS} -o rpmns_new pmn.f90 ${OBJS}
+	mv rpmns_new ../${NAME}
+	rm -f *.o *.mod *~
+	$(PRINTF) "\t*********************************\n"
+	$(PRINTF) "\tCOMPILED on: $(WHATPL)\n"
+	$(PRINTF) "\tOUTPUT     : ../${NAME}\n"
+	$(PRINTF) "\t*********************************\n"
+sub_pmn_${ab}.o: sub_pmn_${ab}.f90
+	${F90} ${FFLAGS} -c sub_pmn_${ab}.f90
+
+geometry.o: geometry.f90
+	${F90} ${FFLAGS} -c geometry.f90
+
+readAbinitWF.o: readAbinitWF.f90
+	${F90} ${FFLAGS} -c readAbinitWF.f90
+
+clean:
+	rm -f *.o;
+	rm -f *.mod;
+	#rm -f ../rpmns_new_xeon;

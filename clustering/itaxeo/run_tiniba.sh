@@ -188,7 +188,8 @@ then
     weigth2=`awk '{print $1}' .peso2`
     mensaje=$weigth1-$weigth2
 else
-    mensaje='choose one: -r setkp...'
+    orale=`echo -e "\t\033[33;5mWARNING\033[0m"`
+    mensaje=$orale'choose one: -r setkp...'
 fi
 #
 #
@@ -495,9 +496,9 @@ if [ $action == 'setkp' ]
     if [ $option == "2" ] 
 	then 
 #rm unecesary files
-#	rm -f startpoint.txt
-#	rm -f endpoint.txt
-#	rm -f klist_length.txt
+	rm -f startpoint.txt
+	rm -f endpoint.txt
+	rm -f klist_length.txt
 	rm -f hoy
 	exit 1
     fi
@@ -519,9 +520,9 @@ if [ $action == 'setkp' ]
 	fi
     done
 #rm unecesary files
-#    rm -f startpoint.txt
-#    rm -f endpoint.txt
-#    rm -f klist_length.txt
+    rm -f startpoint.txt
+    rm -f endpoint.txt
+    rm -f klist_length.txt
     rm -f hoy
     exit 1
 fi
@@ -811,10 +812,10 @@ then
     rm -f medusa.jdf
     rm -fr $case'_bandstructure'
     rm $case.files
-#   rm latm.params
-#    rm -f startpoint.txt
-#    rm -f endpoint.txt
-#    rm -f klist_length.txt
+    #m latm.params
+    rm -f startpoint.txt
+    rm -f endpoint.txt
+    rm -f klist_length.txt
 # run all-nodes.sh
     $where/$cual 1 $Nk $Nlayer $serialp $last_name $wf $rho $em $pmn $rhoccp $lpmn $lpmm $sccp $lsccp $vnlkss $calvnlkss $wfcheck
 #

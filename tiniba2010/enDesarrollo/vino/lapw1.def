@@ -1,0 +1,11 @@
+ 4,'vino.klist',          'unknown','formatted',0
+ 5,'vino.in1',   'old',    'formatted',0
+ 6,'vino.output1','unknown','formatted',0
+10,'./vino.vector', 'unknown','unformatted',9000
+11,'vino.energy', 'unknown','formatted',0
+18,'vino.vsp',       'old',    'formatted',0
+19,'vino.vns',       'unknown','formatted',0
+20,'vino.struct',         'old',    'formatted',0
+21,'vino.scf1',   'unknown','formatted',0
+55,'vino.vec',            'unknown','formatted',0
+71,'vino.nsh',    'unknown','formatted',0
