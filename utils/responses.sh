@@ -35,8 +35,8 @@ function ERROR {
 exec=`$TINIBA/utils/cual_node.sh`
 ## input at will
 eminw=0
-emaxw=20
-stepsw=2001
+emaxw=2
+stepsw=501
 #emaxw=3
 #stepsw=601
 #sicw=0

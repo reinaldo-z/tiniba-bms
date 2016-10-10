@@ -36,8 +36,8 @@ exec="$TINIBA/utils/responses.sh"
 ## input at will
 ########### this is really set in responses.sh 
 eminw=0
-emaxw=20
-stepsw=2001
+emaxw=2
+stepsw=501
 #sicw=0
 ###########
 #toldef=0.015 ## zeta 
